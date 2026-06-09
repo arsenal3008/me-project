@@ -1,110 +1,103 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-AgentChecker — GUI-приложение для проверки доступности AI-моделей.
-Встроенный каталог моделей FreeTheAI + OpenCode Zen - free +
-пользовательские модели + загрузка opencode.jsonc + управление ключами/URL провайдеров.
+AgentChecker 3.0 — современное GUI-приложение для проверки доступности AI-моделей.
+
+Возможности:
+    • Загрузка провайдеров и моделей из opencode.jsonc / opencode.json
+    • Проверка доступности моделей (многопоточно, с ретраями)
+    • Управление API-ключами и URL провайдеров (с маскировкой ключей)
+    • Экспорт рабочих моделей обратно в opencode.jsonc + экспорт результатов в JSON/CSV
+    • Современный интерфейс с вкладками (Дашборд / Модели / Провайдеры / Лог / Настройки)
+    • Светлая и тёмная темы
+
+Безопасность:
+    • Проверка TLS-сертификатов ВКЛЮЧЕНА по умолчанию (можно отключить только осознанно)
+    • API-ключи маскируются в логах
+    • Файл providers.json сохраняется с правами 0600 (только владелец)
+
+Требуется Python 3.7+. Зависимость `requests` опциональна (есть fallback на urllib).
 """
 
-from __future__ import print_function, division, unicode_literals
+from __future__ import annotations
 
 import json
 import os
 import socket
+import ssl
 import sys
-import time
 import threading
+import time
+import urllib.request
+import urllib.error
+from datetime import datetime
 from urllib.parse import urlparse
 
-# ── Python version compat ──────────────────────────────────────────
-IS_PY3 = sys.version_info >= (3,)
+import tkinter as tk
+from tkinter import ttk, messagebox, filedialog
 
-if IS_PY3:
-    import urllib.request as urllib2
-    import ssl
-    import tkinter as tk
-    from tkinter import ttk, messagebox, filedialog
-else:
-    import urllib2
-    import ssl
-    import Tkinter as tk
-    import ttk
-    import tkMessageBox as messagebox
-    import tkFileDialog as filedialog
-
-# ── SSL context ────────────────────────────────────────────────────
-_ssl_ctx = None
+# ── Опциональный backend requests ──────────────────────────────────
 try:
-    _ssl_ctx = ssl.create_default_context()
-    _ssl_ctx.check_hostname = False
-    _ssl_ctx.verify_mode = ssl.CERT_NONE
-except Exception:
-    pass
-
-# ── HTTP backend ───────────────────────────────────────────────────
-_HTTP = 'urllib2'
-try:
-    import warnings
-    warnings.filterwarnings('ignore')
-    import requests
-    from requests.packages.urllib3.exceptions import InsecureRequestWarning
-    warnings.filterwarnings('ignore', category=InsecureRequestWarning)
-    _HTTP = 'requests'
+    import requests  # type: ignore
+    _HAS_REQUESTS = True
 except ImportError:
-    pass
+    requests = None  # type: ignore
+    _HAS_REQUESTS = False
 
-# ── Defaults ───────────────────────────────────────────────────────
+# ── Пути ───────────────────────────────────────────────────────────
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
-PROVIDERS_JSON = os.path.join(SCRIPT_DIR, 'providers.json')
-SETTINGS_JSON = os.path.join(SCRIPT_DIR, 'settings.json')
-LOGS_DIR = os.path.join(SCRIPT_DIR, 'logs')
+PROVIDERS_JSON = os.path.join(SCRIPT_DIR, "providers.json")
+SETTINGS_JSON = os.path.join(SCRIPT_DIR, "settings.json")
+LOGS_DIR = os.path.join(SCRIPT_DIR, "logs")
 
-# ── Built-in providers ─────────────────────────────────────────────
-# Все данные загружаются из opencode.jsonc
-BUILTIN_MODELS = {}
+APP_VERSION = "3.0"
+
+# Возможные расположения конфига opencode (кроссплатформенно)
+OPENCODE_CONFIG_CANDIDATES = [
+    os.path.expanduser("~/.config/opencode/opencode.jsonc"),
+    os.path.expanduser("~/.config/opencode/opencode.json"),
+    os.path.join(os.environ.get("APPDATA", ""), "opencode", "opencode.jsonc"),
+    os.path.join(os.environ.get("APPDATA", ""), "opencode", "opencode.json"),
+]
 
 ERR_DESC = {
-    400: 'Неизвестная модель', 401: 'Неверный API ключ',
-    403: 'Доступ запрещён (Cloudflare?)',
-    429: 'Превышен лимит запросов', 500: 'Внутренняя ошибка сервера',
-    502: 'Шлюз недоступен', 503: 'Провайдер не отвечает',
+    400: "Неизвестная модель",
+    401: "Неверный API-ключ",
+    403: "Доступ запрещён (Cloudflare?)",
+    429: "Превышен лимит запросов",
+    500: "Внутренняя ошибка сервера",
+    502: "Шлюз недоступен",
+    503: "Провайдер не отвечает",
 }
 
+ERR_TRANSLATE = {
+    "daily successful request limit exceeded": "превышен дневной лимит запросов",
+    "rate limit exceeded": "превышен лимит запросов",
+    "too many requests": "слишком много запросов",
+    "model not found": "модель не найдена",
+    "unknown model": "неизвестная модель",
+    "server error": "ошибка сервера",
+    "service unavailable": "сервис недоступен",
+}
 
-def read_jsonc(path):
-    """Читает JSONC (JSON с // комментариями)."""
-    with open(path, 'r', encoding='utf-8-sig') as f:
-        text = f.read()
-    lines = []
-    for line in text.split('\n'):
-        in_str = False
-        i = 0
-        while i < len(line):
-            if line[i] == '"':
-                in_str = not in_str
-            elif line[i:i+2] == '//' and not in_str:
-                line = line[:i]
-                break
-            i += 1
-        lines.append(line)
-    return json.loads('\n'.join(lines))
-
-def save_jsonc(path, data):
-    try:
-        with open(path, 'w', encoding='utf-8') as f:
-            json.dump(data, f, ensure_ascii=False, indent=2)
-    except Exception as e:
-        print('[ERROR] Ошибка сохранения конфига: %s' % e)
-
-
-# ── Helpers ────────────────────────────────────────────────────────
-
-# Кеш валидных ключей: {base_url: [key1, key2, ...]}
-VALID_KEYS_CACHE = {}
+# Кеш валидных ключей: {base_url: [key, ...]}
+VALID_KEYS_CACHE: dict = {}
 VALID_KEYS_LOCK = threading.Lock()
 
 
-def _plural(n, forms):
+# ════════════════════════════════════════════════════════════════════
+#  Утилиты
+# ════════════════════════════════════════════════════════════════════
+def mask_key(key: str) -> str:
+    """Маскирует API-ключ для безопасного вывода в лог: sk-…wxyz."""
+    if not key:
+        return "(пусто)"
+    if len(key) <= 8:
+        return key[:2] + "…"
+    return "%s…%s" % (key[:4], key[-4:])
+
+
+def _plural(n: int, forms) -> str:
     n = abs(n) % 100
     if 10 < n < 20:
         return forms[2]
@@ -116,704 +109,742 @@ def _plural(n, forms):
     return forms[2]
 
 
-def _key_fmt(n, total=None):
-    w = _plural(total or n, ('\u043a\u043b\u044e\u0447', '\u043a\u043b\u044e\u0447\u0430', '\u043a\u043b\u044e\u0447\u0435\u0439'))
+def key_fmt(n: int, total=None) -> str:
+    word = _plural(total if total is not None else n, ("ключ", "ключа", "ключей"))
     if total is not None:
-        return '%d \u0438\u0437 %d %s' % (n, total, w)
-    return '%d %s' % (n, w)
+        return "%d из %d %s" % (n, total, word)
+    return "%d %s" % (n, word)
 
 
-def validate_keys(base_url, all_keys, provider_models=None, provider_name='', timeout=10):
-    url = base_url.rstrip('/') + '/chat/completions'
+def read_jsonc(path: str) -> dict:
+    """Читает JSONC (JSON с // и /* */ комментариями)."""
+    with open(path, "r", encoding="utf-8-sig") as f:
+        text = f.read()
+    return json.loads(_strip_jsonc(text))
+
+
+def _strip_jsonc(text: str) -> str:
+    """Удаляет // и /* */ комментарии вне строк."""
+    out = []
+    i, n = 0, len(text)
+    in_str = False
+    in_line_comment = False
+    in_block_comment = False
+    while i < n:
+        ch = text[i]
+        nxt = text[i + 1] if i + 1 < n else ""
+        if in_line_comment:
+            if ch == "\n":
+                in_line_comment = False
+                out.append(ch)
+            i += 1
+            continue
+        if in_block_comment:
+            if ch == "*" and nxt == "/":
+                in_block_comment = False
+                i += 2
+                continue
+            i += 1
+            continue
+        if in_str:
+            out.append(ch)
+            if ch == "\\" and nxt:
+                out.append(nxt)
+                i += 2
+                continue
+            if ch == '"':
+                in_str = False
+            i += 1
+            continue
+        # вне строки и комментариев
+        if ch == '"':
+            in_str = True
+            out.append(ch)
+            i += 1
+            continue
+        if ch == "/" and nxt == "/":
+            in_line_comment = True
+            i += 2
+            continue
+        if ch == "/" and nxt == "*":
+            in_block_comment = True
+            i += 2
+            continue
+        out.append(ch)
+        i += 1
+    return "".join(out)
+
+
+def save_json_secure(path: str, data: dict) -> None:
+    """Сохраняет JSON и выставляет права 0600 (только владелец) — для файлов с ключами."""
+    with open(path, "w", encoding="utf-8") as f:
+        json.dump(data, f, ensure_ascii=False, indent=2)
+    try:
+        os.chmod(path, 0o600)
+    except OSError:
+        pass  # Windows / неподдерживаемая ФС
+
+
+# ════════════════════════════════════════════════════════════════════
+#  Сетевой слой (TLS-проверка включена по умолчанию)
+# ════════════════════════════════════════════════════════════════════
+def _ssl_context(verify: bool) -> ssl.SSLContext:
+    ctx = ssl.create_default_context()
+    if not verify:
+        ctx.check_hostname = False
+        ctx.verify_mode = ssl.CERT_NONE
+    return ctx
+
+
+def http_post(url, body, headers, timeout=20, verify=True):
+    """POST JSON. body — dict. Возвращает (status_code, response_text)."""
+    if _HAS_REQUESTS:
+        r = requests.post(url, json=body, headers=headers, timeout=timeout, verify=verify)
+        return r.status_code, r.text
+    data = json.dumps(body).encode("utf-8")
+    req = urllib.request.Request(url, data=data, headers=headers, method="POST")
+    ctx = _ssl_context(verify)
+    try:
+        resp = urllib.request.urlopen(req, timeout=timeout, context=ctx)
+        body_text = resp.read().decode("utf-8", errors="replace")
+        return resp.getcode(), body_text
+    except urllib.error.HTTPError as e:
+        body_text = e.read().decode("utf-8", errors="replace") if e.fp else ""
+        return e.code, body_text
+
+
+def validate_keys(base_url, all_keys, provider_models=None, provider_name="",
+                  timeout=10, verify=True, log=print):
+    """Возвращает список рабочих ключей (или один первый рабочий)."""
+    url = base_url.rstrip("/") + "/chat/completions"
     tag = provider_name or url
     provider_models = provider_models or {}
-    first_mid = next(iter(provider_models)) if provider_models else 'gpt-4o-mini'
+    first_mid = next(iter(provider_models)) if provider_models else "gpt-4o-mini"
     for k in all_keys:
         if not k:
             continue
-        body = {'model': first_mid, 'messages': [{'role': 'user', 'content': 'hi'}], 'max_tokens': 1}
-        headers = {'Authorization': 'Bearer %s' % k, 'Content-Type': 'application/json'}
-        c, t = http_post(url, body, headers, timeout=timeout)
-        if c == 200:
-            print('[%s] %s... -> HTTP 200 (ключ работает)' % (tag, k[:12]))
+        body = {"model": first_mid, "messages": [{"role": "user", "content": "hi"}], "max_tokens": 1}
+        headers = {"Authorization": "Bearer %s" % k, "Content-Type": "application/json"}
+        try:
+            code, text = http_post(url, body, headers, timeout=timeout, verify=verify)
+        except Exception as e:
+            log("[%s] %s -> ошибка сети: %s" % (tag, mask_key(k), str(e)[:60]))
+            continue
+        if code == 200:
+            log("[%s] %s -> HTTP 200 (ключ работает)" % (tag, mask_key(k)))
             return [k]
-        if c in (401, 403):
-            try:
-                err_data = json.loads(t)
-                err_msg = (err_data.get('error', {}) or err_data).get('message', '') or ''
-            except Exception:
-                err_msg = t[:120]
-            if 'model' in err_msg.lower() and ('support' in err_msg.lower() or 'not found' in err_msg.lower() or 'not exist' in err_msg.lower()):
-                print('[%s] %s... -> HTTP %d модель не найдена, ключ работает' % (tag, k[:12], c))
+        try:
+            err_data = json.loads(text)
+            err_msg = (err_data.get("error", {}) or err_data).get("message", "") or ""
+        except Exception:
+            err_msg = text[:120]
+        if code in (401, 403):
+            low = err_msg.lower()
+            if "model" in low and ("support" in low or "not found" in low or "not exist" in low):
+                log("[%s] %s -> HTTP %d: модель не найдена, ключ работает" % (tag, mask_key(k), code))
                 return [k]
-            else:
-                print('[%s] %s... -> HTTP %d ключ НЕВЕРНЫЙ (%s)' % (tag, k[:12], c, err_msg[:60]))
-        else:
-            try:
-                err_data = json.loads(t)
-                err_msg = (err_data.get('error', {}) or err_data).get('message', '') or ''
-            except Exception:
-                err_msg = ''
-            if err_msg:
-                trans = {
-                    'daily successful request limit exceeded': 'превышен дневной лимит запросов',
-                    'rate limit exceeded': 'превышен лимит запросов',
-                    'too many requests': 'слишком много запросов',
-                    'model not found': 'модель не найдена',
-                    'unknown model': 'неизвестная модель',
-                    'server error': 'ошибка сервера',
-                    'service unavailable': 'сервис недоступен',
-                }
-                for eng, rus in trans.items():
-                    if eng in err_msg.lower():
-                        err_msg = rus
-                        break
-                print('[%s] %s... -> HTTP %d: %s (ключ считается рабочим)' % (tag, k[:12], c, err_msg[:80]))
-            else:
-                print('[%s] %s... -> HTTP %d (ключ считается рабочим)' % (tag, k[:12], c))
-            return [k]
-    print('[%s] URL=%s keys=%d valid=0' % (tag, url, len(all_keys)))
+            log("[%s] %s -> HTTP %d: ключ НЕВЕРНЫЙ (%s)" % (tag, mask_key(k), code, err_msg[:60]))
+            continue
+        # прочие коды считаем «ключ рабочий, проблема на стороне модели/лимита»
+        for eng, rus in ERR_TRANSLATE.items():
+            if eng in err_msg.lower():
+                err_msg = rus
+                break
+        log("[%s] %s -> HTTP %d: %s (ключ считается рабочим)" % (tag, mask_key(k), code, err_msg[:80]))
+        return [k]
+    log("[%s] валидных ключей не найдено (проверено %d)" % (tag, len(all_keys)))
     return []
 
 
-def http_post(url, body, headers, timeout=20):
-    try:
-        if _HTTP == 'requests':
-            r = requests.post(url, json=body, headers=headers, timeout=timeout, verify=False)
-            return r.status_code, r.text
-        req = urllib2.Request(url, json.dumps(body).encode(), headers)
-        if _ssl_ctx:
-            resp = urllib2.urlopen(req, timeout=timeout, context=_ssl_ctx)
-        else:
-            resp = urllib2.urlopen(req, timeout=timeout)
-        return resp.getcode(), resp.read()
-    except Exception as e:
-        print('[HTTP] %s -> %s' % (url[:60], e))
-        raise
-
-
-def test_model(base_url, api_keys, model_id, timeout=20, retries=2):
-    """Проверяет модель, автоматически отфильтровывая невалидные ключи."""
+def test_model(base_url, api_keys, model_id, timeout=20, retries=2, verify=True, log=print):
+    """Проверяет модель, используя кешированные валидные ключи. -> (ok, msg, elapsed)."""
     start = time.time()
     if not api_keys:
-        return False, 'Нет API ключей', 0
-    # Используем только валидные ключи (кеш)
+        return False, "Нет API-ключей", 0.0
+    cache_key = base_url.rstrip("/")
     with VALID_KEYS_LOCK:
-        cache_key = base_url.rstrip('/')
         valid = VALID_KEYS_CACHE.get(cache_key)
         if valid is None:
-            print('[TEST] Кеш пуст для %s, запускаю validate_keys...' % cache_key)
-            valid = validate_keys(base_url, api_keys, timeout=10)
+            valid = validate_keys(base_url, api_keys, timeout=10, verify=verify, log=log)
             VALID_KEYS_CACHE[cache_key] = valid
-        else:
-            print('[TEST] Кеш для %s: %d валидных ключей' % (cache_key, len(valid)))
     if not valid:
-        print('[TEST] Нет валидных ключей для %s, модель=%s' % (cache_key, model_id))
-        return False, 'Ни один ключ не прошёл проверку', 0
+        return False, "Ни один ключ не прошёл проверку", round(time.time() - start, 2)
+
+    url = base_url.rstrip("/") + "/chat/completions"
     for key_idx, api_key in enumerate(valid):
+        body = {"model": model_id, "messages": [{"role": "user", "content": "say ok"}], "max_tokens": 5}
+        headers = {
+            "Content-Type": "application/json",
+            "Accept": "application/json",
+            "Authorization": "Bearer " + api_key,
+        }
         try:
-            body = {
-                'model': model_id,
-                'messages': [{'role': 'user', 'content': 'say ok'}],
-                'max_tokens': 5,
-            }
-            url = base_url.rstrip('/') + '/chat/completions'
-            headers = {
-                'Content-Type': 'application/json',
-                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
-                'Accept': 'application/json',
-            }
-            if 'localhost' not in url and '127.0.0.1' not in url:
-                headers['Origin'] = 'https://opencode.ai'
-                headers['Referer'] = 'https://opencode.ai/'
-            if api_key:
-                headers['Authorization'] = 'Bearer ' + api_key
             for attempt in range(retries + 1):
-                code, resp_text = http_post(url, body, headers, timeout=timeout)
-                elapsed = time.time() - start
-                print('[TEST] key=%s attempt=%d model=%s HTTP=%d resp=%.120s' % (api_key[:12]+'...', attempt, model_id, code, resp_text.strip()[:120]))
-                # Сначала обрабатываем HTTP-код (ретраи, смена ключа) до парсинга JSON
+                code, text = http_post(url, body, headers, timeout=timeout, verify=verify)
+                elapsed = round(time.time() - start, 2)
                 if code == 429 and attempt < retries:
                     time.sleep(3 * (attempt + 1))
                     continue
                 if code != 200 and key_idx < len(valid) - 1:
-                    break
-                # Парсим JSON
+                    break  # пробуем следующий ключ
                 try:
-                    data = json.loads(resp_text)
+                    data = json.loads(text)
                 except Exception:
-                    raw = resp_text.strip()[:120]
+                    raw = text.strip()[:120]
                     if raw:
                         return False, raw, elapsed
-                    reason = 'Cloudflare/блокировка' if code == 403 else 'пустой ответ'
-                    return False, 'HTTP %d: %s' % (code, reason), elapsed
-                if code == 200 and 'choices' in data and len(data['choices']) > 0:
-                    content = data['choices'][0].get('message', {}).get('content', '') or ''
+                    reason = "Cloudflare/блокировка" if code == 403 else "пустой ответ"
+                    return False, "HTTP %d: %s" % (code, reason), elapsed
+                if code == 200 and data.get("choices"):
+                    content = (data["choices"][0].get("message", {}) or {}).get("content", "") or ""
                     return True, content.strip()[:80], elapsed
-                err = data.get('error', {}).get('message', '')
+                err = (data.get("error", {}) or {}).get("message", "")
                 desc = ERR_DESC.get(code)
-                tag = 'RATE' if code == 429 else 'HTTP %d' % code
-                msg = desc if desc else (err or '')
-                return False, '%s: %s' % (tag, msg), elapsed
+                tag = "RATE" if code == 429 else "HTTP %d" % code
+                return False, "%s: %s" % (tag, desc or err or ""), elapsed
         except Exception as e:
-            elapsed = time.time() - start
             if key_idx < len(valid) - 1:
                 continue
-            return False, 'Ошибка соединения: %s' % str(e)[:60], elapsed
-    return False, 'Все ключи не подошли', time.time() - start
+            return False, "Ошибка соединения: %s" % str(e)[:60], round(time.time() - start, 2)
+    return False, "Все ключи не подошли", round(time.time() - start, 2)
 
 
-# ── GUI Application ────────────────────────────────────────────────
+# ════════════════════════════════════════════════════════════════════
+#  Палитра тем
+# ════════════════════════════════════════════════════════════════════
+LIGHT = {
+    "bg": "#f4f6fb", "panel": "#ffffff", "card": "#ffffff", "fg": "#1f2933",
+    "muted": "#6b7280", "border": "#e2e8f0", "accent": "#3b6cf6", "accent_fg": "#ffffff",
+    "ok": "#16a34a", "fail": "#dc2626", "warn": "#d97706", "untested": "#94a3b8",
+    "tree_bg": "#ffffff", "tree_alt": "#f1f5f9", "sel": "#dbe5ff", "sel_fg": "#1f2933",
+    "log_bg": "#ffffff", "log_fg": "#1f2933", "tab_active": "#3b6cf6",
+}
+DARK = {
+    "bg": "#11151c", "panel": "#1a202c", "card": "#1e2631", "fg": "#e6edf3",
+    "muted": "#9aa6b2", "border": "#2d3543", "accent": "#4f8cff", "accent_fg": "#ffffff",
+    "ok": "#3fb950", "fail": "#f85149", "warn": "#d29922", "untested": "#6e7681",
+    "tree_bg": "#161b22", "tree_alt": "#1b212b", "sel": "#1f3a5f", "sel_fg": "#ffffff",
+    "log_bg": "#0d1117", "log_fg": "#e6edf3", "tab_active": "#4f8cff",
+}
 
+
+# ════════════════════════════════════════════════════════════════════
+#  Приложение
+# ════════════════════════════════════════════════════════════════════
 class AgentCheckerApp:
-    def __init__(self, root):
+    def __init__(self, root: tk.Tk):
         self.root = root
-        self.root.title('AgentChecker — проверка AI-моделей')
-        self.root.geometry('1020x720')
-        self.root.minsize(860, 540)
+        self.root.title("AgentChecker %s — проверка AI-моделей" % APP_VERSION)
+        self.root.geometry("1080x740")
+        self.root.minsize(900, 600)
 
-        # state
+        # ── состояние ──
         self.timeout_val = tk.IntVar(value=20)
         self.retries_val = tk.IntVar(value=2)
         self.delay_val = tk.DoubleVar(value=0.3)
-        self.filter_status = tk.StringVar(value='all')
-        self.filter_provider_s = tk.StringVar(value='all')
-        self.filter_source = tk.StringVar(value='all')
-        self.filter_free = tk.StringVar(value='all')
-        self.providers = {}       # {name: {base_url, api_key, models: {id: {name,source}}}}
-        self.results = {}         # {pname: {mid: {ok,msg,elapsed}}}
-        self.model_list = []      # [(provider, model_id, model_name, source)]
+        self.dark_mode = tk.BooleanVar(value=True)
+        self.verify_ssl = tk.BooleanVar(value=True)
+        self.auto_save_config = tk.BooleanVar(value=False)
+        self.geometry_val = tk.StringVar(value="1080x740")
+
+        self.filter_provider = tk.StringVar(value="all")
+        self.filter_status = tk.StringVar(value="all")
+        self.filter_source = tk.StringVar(value="all")
+        self.filter_free = tk.StringVar(value="all")
+        self.search_var = tk.StringVar(value="")
+
+        self.providers: dict = {}   # {name: {base_url, api_key, api_keys, models:{id:{name,source,free}}}}
+        self.results: dict = {}     # {provider: {model_id: {ok,msg,elapsed}}}
+        self.model_list: list = []  # [(provider, model_id, model_name, source, free)]
         self.running = False
         self.cancel_flag = False
         self.sort_col = None
         self.sort_rev = False
-        self.dark_mode = tk.BooleanVar(value=False)
-        self.geometry_val = tk.StringVar(value='1020x720')
-        self.log_height_val = tk.IntVar(value=5)
-        self.auto_save_config = tk.BooleanVar(value=True)
-        self.auto_start_ollama = tk.BooleanVar(value=True)
-        self.hide_ollama_window = tk.BooleanVar(value=True)
         self.log_file = None
-        self._init_log_file()
 
+        self.pal = DARK
+        self._init_log_file()
         self._build_ui()
         self._load_settings()
-        self.root.geometry(self.geometry_val.get())
-        self.root.protocol('WM_DELETE_WINDOW', self._on_close)
-        self._load_builtin()
+        self.pal = DARK if self.dark_mode.get() else LIGHT
+        self.root.protocol("WM_DELETE_WINDOW", self._on_close)
         self._load_providers()
-        self._purge_empty_providers()
-        self._propagate_keys()
         self._rebuild_provider_filter()
         self._apply_theme()
         self._refresh_table()
-        self._ensure_ollama_running()
         self._auto_validate_keys()
 
-    # ── UI ─────────────────────────────────────────────────────────
-
+    # ════════════════════════════════════════════════════════════════
+    #  Построение интерфейса
+    # ════════════════════════════════════════════════════════════════
     def _build_ui(self):
-        style = ttk.Style()
-        style.theme_use('vista' if 'vista' in style.theme_names() else 'clam')
-        style.configure('TCombobox', padding=3, arrowsize=14)
-        style.configure('Accent.TButton', font=('', 9, 'bold'))
-        style.configure('Filter.TCombobox', arrowcolor='#555')
-        self._build_menu()
-        self._build_toolbar()
-        self._build_main()
+        self.style = ttk.Style()
+        self._build_header()
+        self.nb = ttk.Notebook(self.root)
+        self.nb.pack(fill=tk.BOTH, expand=True, padx=12, pady=(6, 8))
+        self.tab_dash = ttk.Frame(self.nb)
+        self.tab_models = ttk.Frame(self.nb)
+        self.tab_providers = ttk.Frame(self.nb)
+        self.tab_log = ttk.Frame(self.nb)
+        self.tab_settings = ttk.Frame(self.nb)
+        self.nb.add(self.tab_dash, text="  📊  Дашборд  ")
+        self.nb.add(self.tab_models, text="  🧠  Модели  ")
+        self.nb.add(self.tab_providers, text="  🔑  Провайдеры  ")
+        self.nb.add(self.tab_log, text="  📜  Лог  ")
+        self.nb.add(self.tab_settings, text="  ⚙  Настройки  ")
+        self._build_dashboard()
+        self._build_models_tab()
+        self._build_providers_tab()
+        self._build_log_tab()
+        self._build_settings_tab()
         self._build_statusbar()
 
-    def _build_menu(self):
-        mb = tk.Menu(self.root)
-        self.root.config(menu=mb)
-        fm = tk.Menu(mb, tearoff=0)
-        fm.add_command(label='Загрузить opencode.jsonc...', command=self._load_opencode_file)
-        fm.add_separator()
-        fm.add_command(label='Экспорт результатов...', command=self._export_results)
-        fm.add_separator()
-        fm.add_command(label='Просмотр логов...', command=self._show_log_browser)
-        fm.add_separator()
-        fm.add_command(label='Выход', command=self.root.quit)
-        mb.add_cascade(label='Файл', menu=fm)
-        mm = tk.Menu(mb, tearoff=0)
-        mm.add_command(label='Сбросить к встроенному каталогу', command=self._reset_to_builtin)
-        mm.add_command(label='Добавить пользовательскую модель...', command=self._add_custom_model)
-        mm.add_command(label='Удалить пользовательские модели', command=self._remove_custom_models)
-        mb.add_cascade(label='Модели', menu=mm)
-        tm = tk.Menu(mb, tearoff=0)
-        tm.add_command(label='Проверить все', command=self._start_all)
-        tm.add_command(label='Проверить выбранные', command=self._start_selected)
-        tm.add_command(label='Остановить', command=self._stop)
-        mb.add_cascade(label='Тест', menu=tm)
-        sm = tk.Menu(mb, tearoff=0)
-        sm.add_command(label='Настройки...', command=self._show_settings)
-        sm.add_separator()
-        sm.add_checkbutton(label='Авто-сохранение в opencode.jsonc', variable=self.auto_save_config, command=self._save_settings)
-        sm.add_checkbutton(label='Авто-запуск Ollama', variable=self.auto_start_ollama, command=self._save_settings)
-        sm.add_checkbutton(label='Сворачивать окно Ollama в трей', variable=self.hide_ollama_window, command=self._save_settings)
-        mb.add_cascade(label='Настройки', menu=sm)
-        hm = tk.Menu(mb, tearoff=0)
-        hm.add_command(label='О программе', command=self._about)
-        mb.add_cascade(label='Справка', menu=hm)
-        vm = tk.Menu(mb, tearoff=0)
-        vm.add_checkbutton(label='Тёмная тема', variable=self.dark_mode, command=self._toggle_theme)
-        mb.add_cascade(label='Вид', menu=vm)
+    def _build_header(self):
+        self.header = tk.Frame(self.root, height=64)
+        self.header.pack(side=tk.TOP, fill=tk.X)
+        self.header.pack_propagate(False)
+        self.title_lbl = tk.Label(self.header, text="🤖  AgentChecker",
+                                  font=("Segoe UI", 17, "bold"))
+        self.title_lbl.pack(side=tk.LEFT, padx=18)
+        self.subtitle_lbl = tk.Label(self.header, text="проверка доступности AI-моделей",
+                                     font=("Segoe UI", 10))
+        self.subtitle_lbl.pack(side=tk.LEFT, padx=(0, 10), pady=(6, 0))
 
-    def _build_toolbar(self):
-        tb = ttk.Frame(self.root)
-        tb.pack(side=tk.TOP, fill=tk.X, padx=5, pady=(5, 0))
-        self.btn_all = ttk.Button(tb, text='\u25b6 Проверить все', style='Accent.TButton', command=self._start_all)
-        self.btn_all.pack(side=tk.LEFT, padx=2)
-        self.btn_sel = ttk.Button(tb, text='\u25b6 Выбранные', command=self._start_selected)
-        self.btn_sel.pack(side=tk.LEFT, padx=2)
-        self.btn_stop = ttk.Button(tb, text='\u25a0 Стоп', command=self._stop, state=tk.DISABLED)
-        self.btn_stop.pack(side=tk.LEFT, padx=2)
-        ttk.Button(tb, text='\u2699 Настройки', command=self._show_settings).pack(side=tk.RIGHT, padx=5)
-        ttk.Button(tb, text='\U0001f511 Ключи', style='Accent.TButton', command=self._show_providers_dialog).pack(side=tk.RIGHT, padx=5)
-        ttk.Button(tb, text='\U0001f4e4 Экспорт', command=self._export_dialog).pack(side=tk.RIGHT, padx=2)
+        btns = tk.Frame(self.header)
+        btns.pack(side=tk.RIGHT, padx=14)
+        self.btn_all = ttk.Button(btns, text="▶  Проверить все", style="Accent.TButton",
+                                  command=self._start_all)
+        self.btn_all.pack(side=tk.LEFT, padx=3)
+        self.btn_sel = ttk.Button(btns, text="▶  Выбранные", command=self._start_selected)
+        self.btn_sel.pack(side=tk.LEFT, padx=3)
+        self.btn_stop = ttk.Button(btns, text="■  Стоп", command=self._stop, state=tk.DISABLED)
+        self.btn_stop.pack(side=tk.LEFT, padx=3)
+        self.theme_btn = ttk.Button(btns, text="🌗", width=3, command=self._toggle_theme)
+        self.theme_btn.pack(side=tk.LEFT, padx=(10, 0))
 
-    def _build_main(self):
-        mf = ttk.Frame(self.root)
-        mf.pack(side=tk.TOP, fill=tk.BOTH, expand=True, padx=5, pady=5)
-        left = ttk.Frame(mf, width=200)
-        left.pack(side=tk.LEFT, fill=tk.Y, padx=(0, 5))
-        left.pack_propagate(False)
+    # ── Дашборд ──
+    def _build_dashboard(self):
+        wrap = ttk.Frame(self.tab_dash, padding=18)
+        wrap.pack(fill=tk.BOTH, expand=True)
 
-        ttk.Label(left, text='\u0424\u0438\u043b\u044c\u0442\u0440\u044b', font=('', 11, 'bold')).pack(anchor=tk.W, pady=(0, 8))
-        ttk.Label(left, text='\u041f\u0440\u043e\u0432\u0430\u0439\u0434\u0435\u0440:', font=('', 8)).pack(anchor=tk.W)
-        self.provider_combo = ttk.Combobox(left, textvariable=self.filter_provider_s, state='readonly', values=['all'])
-        self.provider_combo.pack(fill=tk.X, pady=(0, 8))
-        self.provider_combo.bind('<<ComboboxSelected>>', lambda e: self._refresh_table())
-        ttk.Label(left, text='\u0421\u0442\u0430\u0442\u0443\u0441:', font=('', 8)).pack(anchor=tk.W)
-        ttk.Combobox(left, textvariable=self.filter_status, state='readonly', values=['all', 'yes', 'no', 'untested']).pack(fill=tk.X, pady=(0, 8))
-        self.filter_status.trace('w', lambda *a: self._refresh_table())
-        ttk.Label(left, text='\u0418\u0441\u0442\u043e\u0447\u043d\u0438\u043a:', font=('', 8)).pack(anchor=tk.W)
-        ttk.Combobox(left, textvariable=self.filter_source, state='readonly', values=['all', 'builtin', 'opencode', 'custom']).pack(fill=tk.X, pady=(0, 8))
-        self.filter_source.trace('w', lambda *a: self._refresh_table())
-        ttk.Label(left, text='\u0422\u0438\u043f \u0434\u043e\u0441\u0442\u0443\u043f\u0430:', font=('', 8)).pack(anchor=tk.W)
-        self.filter_free = tk.StringVar(value='all')
-        typ_combo = ttk.Combobox(left, textvariable=self.filter_free, state='readonly', values=['all', 'free', 'paid'])
-        typ_combo.pack(fill=tk.X, pady=(0, 8))
-        self.filter_free.trace('w', lambda *a: self._refresh_table())
-        ttk.Separator(left, orient=tk.HORIZONTAL).pack(fill=tk.X, pady=5)
-        ttk.Label(left, text='Статистика', font=('', 10, 'bold')).pack(anchor=tk.W, pady=(0, 5))
-        self.lbl_total = ttk.Label(left, text='Всего: 0'); self.lbl_total.pack(anchor=tk.W)
-        self.lbl_ok = ttk.Label(left, text='Работает: 0', foreground='green'); self.lbl_ok.pack(anchor=tk.W)
-        self.lbl_fail = ttk.Label(left, text='Не работает: 0', foreground='red'); self.lbl_fail.pack(anchor=tk.W)
-        self.lbl_untested = ttk.Label(left, text='Не проверено: 0', foreground='gray'); self.lbl_untested.pack(anchor=tk.W)
+        cards = ttk.Frame(wrap)
+        cards.pack(fill=tk.X)
+        self.card_defs = [
+            ("total", "Всего моделей", "fg"),
+            ("ok", "Работает", "ok"),
+            ("fail", "Не работает", "fail"),
+            ("untested", "Не проверено", "untested"),
+        ]
+        self.card_value_lbls = {}
+        self.card_frames = {}
+        self.card_title_lbls = {}
+        for i, (key, title, _color) in enumerate(self.card_defs):
+            card = tk.Frame(cards, bd=0, highlightthickness=1)
+            card.grid(row=0, column=i, padx=8, pady=4, sticky="nsew")
+            cards.grid_columnconfigure(i, weight=1)
+            val = tk.Label(card, text="0", font=("Segoe UI", 30, "bold"))
+            val.pack(anchor="w", padx=16, pady=(14, 0))
+            ttl = tk.Label(card, text=title, font=("Segoe UI", 10))
+            ttl.pack(anchor="w", padx=16, pady=(0, 14))
+            self.card_value_lbls[key] = val
+            self.card_frames[key] = card
+            self.card_title_lbls[key] = ttl
 
-        right = ttk.Frame(mf)
-        right.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
-        pw = ttk.PanedWindow(right, orient=tk.VERTICAL)
-        pw.pack(fill=tk.BOTH, expand=True)
-        top_frame = ttk.Frame(pw)
-        tf = ttk.Frame(top_frame)
+        # Прогресс + быстрые действия
+        prog_box = ttk.LabelFrame(wrap, text="Прогресс проверки", padding=14)
+        prog_box.pack(fill=tk.X, pady=(18, 8))
+        self.dash_progress = ttk.Progressbar(prog_box, mode="determinate")
+        self.dash_progress.pack(fill=tk.X)
+        self.dash_prog_lbl = ttk.Label(prog_box, text="Готов к проверке")
+        self.dash_prog_lbl.pack(anchor="w", pady=(8, 0))
+
+        actions = ttk.LabelFrame(wrap, text="Быстрые действия", padding=14)
+        actions.pack(fill=tk.X, pady=8)
+        ttk.Button(actions, text="📂  Загрузить opencode.jsonc",
+                   command=self._load_opencode_file).pack(side=tk.LEFT, padx=4)
+        ttk.Button(actions, text="📤  Экспорт в opencode.jsonc",
+                   command=self._export_dialog).pack(side=tk.LEFT, padx=4)
+        ttk.Button(actions, text="💾  Экспорт результатов",
+                   command=self._export_results).pack(side=tk.LEFT, padx=4)
+        ttk.Button(actions, text="🔄  Перечитать конфиг",
+                   command=self._reload_config).pack(side=tk.LEFT, padx=4)
+
+        self.dash_hint = ttk.Label(
+            wrap, foreground=self.pal["muted"],
+            text="Совет: двойной клик по модели копирует её ID. Правый клик — контекстное меню.")
+        self.dash_hint.pack(anchor="w", pady=(14, 0))
+
+    # ── Вкладка «Модели» ──
+    def _build_models_tab(self):
+        wrap = ttk.Frame(self.tab_models, padding=10)
+        wrap.pack(fill=tk.BOTH, expand=True)
+
+        bar = ttk.Frame(wrap)
+        bar.pack(fill=tk.X, pady=(0, 8))
+        ttk.Label(bar, text="Провайдер:").pack(side=tk.LEFT)
+        self.provider_combo = ttk.Combobox(bar, textvariable=self.filter_provider,
+                                            state="readonly", values=["all"], width=16)
+        self.provider_combo.pack(side=tk.LEFT, padx=(4, 12))
+        self.provider_combo.bind("<<ComboboxSelected>>", lambda e: self._refresh_table())
+        ttk.Label(bar, text="Статус:").pack(side=tk.LEFT)
+        ttk.Combobox(bar, textvariable=self.filter_status, state="readonly", width=10,
+                     values=["all", "yes", "no", "untested"]).pack(side=tk.LEFT, padx=(4, 12))
+        self.filter_status.trace_add("write", lambda *a: self._refresh_table())
+        ttk.Label(bar, text="Источник:").pack(side=tk.LEFT)
+        ttk.Combobox(bar, textvariable=self.filter_source, state="readonly", width=10,
+                     values=["all", "opencode", "custom"]).pack(side=tk.LEFT, padx=(4, 12))
+        self.filter_source.trace_add("write", lambda *a: self._refresh_table())
+        ttk.Label(bar, text="🔍").pack(side=tk.LEFT)
+        search = ttk.Entry(bar, textvariable=self.search_var, width=22)
+        search.pack(side=tk.LEFT, padx=4)
+        self.search_var.trace_add("write", lambda *a: self._refresh_table())
+        ttk.Button(bar, text="＋ Модель", command=self._add_custom_model).pack(side=tk.RIGHT, padx=2)
+
+        tf = ttk.Frame(wrap)
         tf.pack(fill=tk.BOTH, expand=True)
-        cols = ('provider', 'model', 'id', 'source', 'status', 'response', 'time')
-        self.tree = ttk.Treeview(tf, columns=cols, show='headings', selectmode='extended')
-        self.cols = [('provider', 110, 'Провайдер'), ('model', 200, 'Модель'), ('id', 200, 'ID модели'), ('source', 70, 'Ист.'), ('status', 70, 'Статус'), ('response', 240, 'Ответ'), ('time', 65, 'Время')]
+        cols = ("provider", "model", "id", "source", "status", "response", "time")
+        self.cols = [("provider", 120, "Провайдер"), ("model", 220, "Модель"),
+                     ("id", 200, "ID модели"), ("source", 80, "Источник"),
+                     ("status", 90, "Статус"), ("response", 240, "Ответ"), ("time", 70, "Время")]
+        self.tree = ttk.Treeview(tf, columns=cols, show="headings", selectmode="extended")
         for c, w, h in self.cols:
             self.tree.heading(c, text=h, command=lambda col=c: self._sort_by(col))
             self.tree.column(c, width=w, minwidth=50)
         vsb = ttk.Scrollbar(tf, orient=tk.VERTICAL, command=self.tree.yview)
         hsb = ttk.Scrollbar(tf, orient=tk.HORIZONTAL, command=self.tree.xview)
         self.tree.configure(yscrollcommand=vsb.set, xscrollcommand=hsb.set)
-        self.tree.grid(row=0, column=0, sticky='nsew')
-        vsb.grid(row=0, column=1, sticky='ns')
-        hsb.grid(row=1, column=0, sticky='ew')
-        tf.grid_rowconfigure(0, weight=1); tf.grid_columnconfigure(0, weight=1)
-        self.tree.bind('<Double-1>', self._on_double_click)
-        self.tree.bind('<Button-3>', self._on_right_click)
-        self.progress = ttk.Progressbar(top_frame, mode='determinate')
-        self.progress.pack(fill=tk.X, pady=(3, 0))
-        pw.add(top_frame, weight=3)
-        lf = ttk.LabelFrame(pw, text='Лог')
-        pw.add(lf, weight=1)
-        self.log = tk.Text(lf, height=self.log_height_val.get(), wrap=tk.WORD, state=tk.DISABLED, font=('Consolas', 9))
-        lsb = ttk.Scrollbar(lf, command=self.log.yview)
+        self.tree.grid(row=0, column=0, sticky="nsew")
+        vsb.grid(row=0, column=1, sticky="ns")
+        hsb.grid(row=1, column=0, sticky="ew")
+        tf.grid_rowconfigure(0, weight=1)
+        tf.grid_columnconfigure(0, weight=1)
+        self.tree.bind("<Double-1>", self._on_double_click)
+        self.tree.bind("<Button-3>", self._on_right_click)
+
+    # ── Вкладка «Провайдеры» ──
+    def _build_providers_tab(self):
+        wrap = ttk.Frame(self.tab_providers, padding=10)
+        wrap.pack(fill=tk.BOTH, expand=True)
+        top = ttk.Frame(wrap)
+        top.pack(fill=tk.X, pady=(0, 6))
+        ttk.Label(top, text="Провайдеры, URL и API-ключи",
+                  font=("Segoe UI", 11, "bold")).pack(side=tk.LEFT)
+        ttk.Button(top, text="💾 Сохранить", style="Accent.TButton",
+                   command=self._save_providers_ui).pack(side=tk.RIGHT, padx=2)
+
+        cv = tk.Canvas(wrap, highlightthickness=0)
+        sb = ttk.Scrollbar(wrap, orient=tk.VERTICAL, command=cv.yview)
+        self.prov_frame = ttk.Frame(cv)
+        self.prov_frame.bind("<Configure>", lambda e: cv.configure(scrollregion=cv.bbox("all")))
+        self._prov_window = cv.create_window((0, 0), window=self.prov_frame, anchor="nw")
+        cv.bind("<Configure>", lambda e: cv.itemconfigure(self._prov_window, width=e.width))
+        cv.configure(yscrollcommand=sb.set)
+        cv.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+        sb.pack(side=tk.RIGHT, fill=tk.Y)
+        self._prov_canvas = cv
+        self.prov_entries = {}
+
+    def _render_providers(self):
+        for w in self.prov_frame.winfo_children():
+            w.destroy()
+        self.prov_entries = {}
+        if not self.providers:
+            ttk.Label(self.prov_frame,
+                      text="Нет провайдеров. Загрузите opencode.jsonc на вкладке «Дашборд».",
+                      foreground=self.pal["muted"]).pack(anchor="w", padx=8, pady=12)
+            return
+        for pn in sorted(self.providers.keys()):
+            p = self.providers[pn]
+            box = ttk.LabelFrame(self.prov_frame,
+                                 text="%s  (%d моделей)" % (pn, len(p.get("models", {}))),
+                                 padding=10)
+            box.pack(fill=tk.X, padx=6, pady=6)
+            ttk.Label(box, text="URL:").grid(row=0, column=0, sticky="w")
+            uv = tk.StringVar(value=p.get("base_url", ""))
+            ttk.Entry(box, textvariable=uv, width=70).grid(row=0, column=1, columnspan=3, sticky="ew", padx=6, pady=2)
+
+            ttk.Label(box, text="Ключи:").grid(row=1, column=0, sticky="w")
+            keys = p.get("api_keys", [])
+            kv = tk.StringVar(value=keys[0] if keys else "")
+            combo = ttk.Combobox(box, textvariable=kv, values=[mask_key(k) for k in keys],
+                                 state="readonly", width=40)
+            combo.grid(row=1, column=1, sticky="ew", padx=6, pady=2)
+            # Реальные ключи храним рядом со списком
+            combo._real_keys = list(keys)  # type: ignore
+
+            new_var = tk.StringVar()
+            entry = ttk.Entry(box, textvariable=new_var, width=30, show="*")
+            entry.grid(row=2, column=1, sticky="ew", padx=6, pady=2)
+            show_var = tk.BooleanVar()
+            ttk.Checkbutton(box, text="Показать", variable=show_var,
+                            command=lambda e=entry, v=show_var: e.configure(show="" if v.get() else "*")
+                            ).grid(row=2, column=2, sticky="w")
+
+            def add_key(c=combo, nv=new_var, en=entry):
+                k = nv.get().strip()
+                if k and k not in c._real_keys:
+                    c._real_keys.append(k)
+                    c["values"] = [mask_key(x) for x in c._real_keys]
+                    c.current(len(c._real_keys) - 1)
+                    nv.set("")
+                    en.delete(0, tk.END)
+
+            def del_key(c=combo):
+                idx = c.current()
+                if 0 <= idx < len(c._real_keys):
+                    c._real_keys.pop(idx)
+                    c["values"] = [mask_key(x) for x in c._real_keys]
+                    c.current(0) if c._real_keys else c.set("")
+
+            ttk.Button(box, text="＋", width=3, command=add_key).grid(row=2, column=3, padx=2)
+            ttk.Button(box, text="－", width=3, command=del_key).grid(row=1, column=3, padx=2)
+            ttk.Button(box, text="Проверить ключи",
+                       command=lambda name=pn, c=combo, u=uv: self._test_provider_keys(name, c, u)
+                       ).grid(row=3, column=1, sticky="w", padx=6, pady=(6, 0))
+            box.grid_columnconfigure(1, weight=1)
+            self.prov_entries[pn] = (uv, combo)
+
+    # ── Вкладка «Лог» ──
+    def _build_log_tab(self):
+        wrap = ttk.Frame(self.tab_log, padding=10)
+        wrap.pack(fill=tk.BOTH, expand=True)
+        bar = ttk.Frame(wrap)
+        bar.pack(fill=tk.X, pady=(0, 6))
+        ttk.Button(bar, text="🧹 Очистить", command=self._clear_log).pack(side=tk.LEFT)
+        ttk.Button(bar, text="📁 Логи на диске", command=self._show_log_browser).pack(side=tk.LEFT, padx=6)
+        self.log = tk.Text(wrap, wrap=tk.WORD, state=tk.DISABLED, font=("Consolas", 10), bd=0)
+        lsb = ttk.Scrollbar(wrap, command=self.log.yview)
         self.log.configure(yscrollcommand=lsb.set)
-        self.log.pack(side=tk.LEFT, fill=tk.BOTH, expand=True); lsb.pack(side=tk.RIGHT, fill=tk.Y)
-        
-        # Цвета логов
-        self.log.tag_config('info', foreground='black')
-        self.log.tag_config('success', foreground='green')
-        self.log.tag_config('warn', foreground='orange')
-        self.log.tag_config('error', foreground='red')
-        if self.dark_mode.get():
-            self.log.tag_config('info', foreground='white')
-            self.log.config(bg='#1e1e1e', fg='white', insertbackground='white')
+        self.log.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+        lsb.pack(side=tk.RIGHT, fill=tk.Y)
+
+    # ── Вкладка «Настройки» ──
+    def _build_settings_tab(self):
+        wrap = ttk.Frame(self.tab_settings, padding=18)
+        wrap.pack(fill=tk.BOTH, expand=True)
+
+        net = ttk.LabelFrame(wrap, text="Сеть и проверка", padding=14)
+        net.pack(fill=tk.X, pady=6)
+        ttk.Label(net, text="Таймаут (сек):").grid(row=0, column=0, sticky="w", pady=3)
+        ttk.Spinbox(net, from_=5, to=120, textvariable=self.timeout_val, width=8).grid(row=0, column=1, sticky="w", padx=8)
+        ttk.Label(net, text="Повторов:").grid(row=1, column=0, sticky="w", pady=3)
+        ttk.Spinbox(net, from_=0, to=5, textvariable=self.retries_val, width=8).grid(row=1, column=1, sticky="w", padx=8)
+        ttk.Label(net, text="Задержка (сек):").grid(row=2, column=0, sticky="w", pady=3)
+        ttk.Spinbox(net, from_=0.0, to=5.0, increment=0.1, textvariable=self.delay_val, width=8).grid(row=2, column=1, sticky="w", padx=8)
+
+        sec = ttk.LabelFrame(wrap, text="Безопасность", padding=14)
+        sec.pack(fill=tk.X, pady=6)
+        ttk.Checkbutton(sec, text="Проверять TLS-сертификаты (рекомендуется)",
+                        variable=self.verify_ssl, command=self._on_verify_toggle).pack(anchor="w")
+        ttk.Label(sec, foreground=self.pal["muted"],
+                  text="Отключайте только для localhost / самоподписанных сертификатов. "
+                       "Без проверки ключи можно перехватить.").pack(anchor="w", pady=(2, 0))
+
+        misc = ttk.LabelFrame(wrap, text="Прочее", padding=14)
+        misc.pack(fill=tk.X, pady=6)
+        ttk.Checkbutton(misc, text="Тёмная тема", variable=self.dark_mode,
+                        command=self._toggle_theme).pack(anchor="w")
+        ttk.Checkbutton(misc, text="Авто-сохранение рабочих ключей в opencode.jsonc",
+                        variable=self.auto_save_config, command=self._save_settings).pack(anchor="w")
+
+        ttk.Button(wrap, text="💾 Сохранить настройки", style="Accent.TButton",
+                   command=self._save_settings).pack(anchor="w", pady=10)
+        ttk.Button(wrap, text="ℹ О программе", command=self._about).pack(anchor="w")
 
     def _build_statusbar(self):
-        self.statusbar = ttk.Label(self.root, text='Готов', relief=tk.SUNKEN, anchor=tk.W)
+        self.statusbar = tk.Label(self.root, text="Готов", anchor="w", bd=0, padx=12)
         self.statusbar.pack(side=tk.BOTTOM, fill=tk.X)
 
-    # ── Data ───────────────────────────────────────────────────────
+    # ════════════════════════════════════════════════════════════════
+    #  Тема
+    # ════════════════════════════════════════════════════════════════
+    def _toggle_theme(self):
+        self.pal = DARK if self.dark_mode.get() else LIGHT
+        self._apply_theme()
+        self._refresh_table()
+        self._save_settings()
 
-    def _load_builtin(self):
-        self.model_list = []
+    def _on_verify_toggle(self):
+        if not self.verify_ssl.get():
+            if not messagebox.askyesno(
+                    "Отключить проверку TLS?",
+                    "Без проверки сертификатов ваши API-ключи можно перехватить (MITM).\n\n"
+                    "Отключать только для localhost. Продолжить?"):
+                self.verify_ssl.set(True)
+                return
+        with VALID_KEYS_LOCK:
+            VALID_KEYS_CACHE.clear()
+        self._save_settings()
 
-    def _rebuild_provider_filter(self):
-        names = ['all']
-        for pn in sorted(self.providers.keys()):
-            mc = len(self.providers[pn]['models'])
-            names.append(pn)
-        self.provider_combo['values'] = names
+    def _apply_theme(self):
+        p = self.pal
+        s = self.style
+        s.theme_use("clam")
+        s.configure(".", background=p["bg"], foreground=p["fg"], fieldbackground=p["panel"],
+                    bordercolor=p["border"], troughcolor=p["border"], arrowcolor=p["fg"])
+        s.configure("TFrame", background=p["bg"])
+        s.configure("TLabel", background=p["bg"], foreground=p["fg"])
+        s.configure("TLabelframe", background=p["bg"], foreground=p["fg"], bordercolor=p["border"])
+        s.configure("TLabelframe.Label", background=p["bg"], foreground=p["muted"])
+        s.configure("TButton", background=p["panel"], foreground=p["fg"], bordercolor=p["border"],
+                    focuscolor=p["accent"], padding=6)
+        s.map("TButton", background=[("active", p["sel"])])
+        s.configure("Accent.TButton", background=p["accent"], foreground=p["accent_fg"],
+                    font=("Segoe UI", 9, "bold"), padding=6)
+        s.map("Accent.TButton", background=[("active", p["tab_active"])])
+        s.configure("TEntry", fieldbackground=p["panel"], foreground=p["fg"])
+        s.configure("TSpinbox", fieldbackground=p["panel"], foreground=p["fg"], arrowcolor=p["fg"])
+        s.configure("TCombobox", fieldbackground=p["panel"], foreground=p["fg"], arrowcolor=p["fg"])
+        s.map("TCombobox", fieldbackground=[("readonly", p["panel"])], foreground=[("readonly", p["fg"])])
+        s.configure("TCheckbutton", background=p["bg"], foreground=p["fg"])
+        s.map("TCheckbutton", background=[("active", p["bg"])])
+        # Notebook
+        s.configure("TNotebook", background=p["bg"], bordercolor=p["border"], tabmargins=(4, 6, 4, 0))
+        s.configure("TNotebook.Tab", background=p["panel"], foreground=p["muted"],
+                    padding=(14, 8), font=("Segoe UI", 10))
+        s.map("TNotebook.Tab",
+              background=[("selected", p["accent"])],
+              foreground=[("selected", p["accent_fg"])])
+        # Treeview
+        s.configure("Treeview", background=p["tree_bg"], fieldbackground=p["tree_bg"],
+                    foreground=p["fg"], rowheight=26, borderwidth=0)
+        s.configure("Treeview.Heading", background=p["panel"], foreground=p["fg"],
+                    font=("Segoe UI", 9, "bold"))
+        s.map("Treeview", background=[("selected", p["sel"])], foreground=[("selected", p["sel_fg"])])
+        s.configure("TProgressbar", background=p["accent"], troughcolor=p["border"])
 
-    def _purge_empty_providers(self):
-        for pn in list(self.providers.keys()):
-            if not self.providers[pn].get('models'):
-                del self.providers[pn]
+        # «Сырые» tk-виджеты
+        self.root.configure(bg=p["bg"])
+        self.header.configure(bg=p["panel"])
+        self.title_lbl.configure(bg=p["panel"], fg=p["fg"])
+        self.subtitle_lbl.configure(bg=p["panel"], fg=p["muted"])
+        for w in self.header.winfo_children():
+            if isinstance(w, tk.Frame):
+                w.configure(bg=p["panel"])
+        self.statusbar.configure(bg=p["panel"], fg=p["muted"])
+        self.log.configure(bg=p["log_bg"], fg=p["log_fg"], insertbackground=p["fg"],
+                           selectbackground=p["sel"])
+        self.log.tag_config("info", foreground=p["fg"])
+        self.log.tag_config("success", foreground=p["ok"])
+        self.log.tag_config("warn", foreground=p["warn"])
+        self.log.tag_config("error", foreground=p["fail"])
 
-    def _reset_to_builtin(self):
-        if not messagebox.askyesno('Сброс', 'Удалить все пользовательские модели,\nоставив только встроенный каталог?'):
-            return
-        self.providers = {}; self.results = {}; self.model_list = []
-        self._load_builtin(); self._rebuild_provider_filter(); self._refresh_table()
-        self._save_providers()
-        self._log('Сброшено к встроенному каталогу')
-        self._set_status('Встроенный каталог')
+        # Карточки дашборда
+        color_map = {"fg": p["fg"], "ok": p["ok"], "fail": p["fail"], "untested": p["untested"]}
+        for key, _title, color in self.card_defs:
+            self.card_frames[key].configure(bg=p["card"], highlightbackground=p["border"],
+                                            highlightcolor=p["border"])
+            self.card_value_lbls[key].configure(bg=p["card"], fg=color_map[color])
+            self.card_title_lbls[key].configure(bg=p["card"], fg=p["muted"])
+        if hasattr(self, "dash_hint"):
+            self.dash_hint.configure(foreground=p["muted"])
 
-    def _load_opencode_file(self):
-        p = filedialog.askopenfilename(title='Выберите opencode.jsonc',
-                                       filetypes=[('JSONC', '*.jsonc'), ('JSON', '*.json'), ('All', '*.*')])
-        if not p:
-            return
-        try:
-            cfg = read_jsonc(p)
-            added = 0
-            for pn, pc in cfg.get('provider', {}).items():
-                pd = pc.get('name', pn)
-                o = pc.get('options', {})
-                bu = o.get('baseURL', '').rstrip('/')
-                ak = o.get('apiKey', '')
-                aks = o.get('apiKeys', [])
-                if ak and ak not in aks:
-                    aks = [ak] + aks
-                if pd not in self.providers:
-                    self.providers[pd] = {'base_url': bu, 'api_key': aks[0] if aks else ak, 'api_keys': aks, 'models': {}}
-                else:
-                    if bu:
-                        self.providers[pd]['base_url'] = bu
-                    for k in aks:
-                        if k and k not in self.providers[pd].get('api_keys', []):
-                            self.providers[pd].setdefault('api_keys', []).append(k)
-                    if not self.providers[pd].get('api_keys') and ak:
-                        self.providers[pd]['api_keys'] = [ak]
-                        self.providers[pd]['api_key'] = ak
-                prov = self.providers[pd]
-                for mid, mc in pc.get('models', {}).items():
-                    dup = False
-                    for pv in self.providers.values():
-                        if mid in pv.get('models', {}):
-                            dup = True
-                            break
-                    if dup:
-                        continue
-                    mn = mc.get('name', mid)
-                    if mid not in prov['models']:
-                        prov['models'][mid] = {'name': mn, 'source': 'opencode'}
-                        self.model_list.append((pd, mid, mn, 'opencode', False))
-                        added += 1
-            self._purge_empty_providers()
-            self._rebuild_provider_filter()
-            self._save_providers()
-            self._refresh_table()
-            self._log('Загружен %s: %d новых моделей' % (os.path.basename(p), added))
-            self._set_status('Конфиг загружен')
-        except Exception as e:
-            messagebox.showerror('Ошибка', 'Не удалось загрузить конфиг:\n%s' % e)
-            self._log('Ошибка загрузки %s: %s' % (p, e))
+        # Цвета строк таблицы
+        self.tree.tag_configure("ok", foreground=p["ok"])
+        self.tree.tag_configure("fail", foreground=p["fail"])
+        self.tree.tag_configure("untested", foreground=p["untested"])
+        self.tree.tag_configure("odd", background=p["tree_alt"])
+        self.tree.tag_configure("even", background=p["tree_bg"])
+        if hasattr(self, "prov_frame"):
+            self._render_providers()
 
-    def _add_custom_model(self):
-        dlg = tk.Toplevel(self.root); dlg.title('Добавить пользовательскую модель')
-        dlg.geometry('460x240'); dlg.resizable(False, False)
-        dlg.transient(self.root); dlg.grab_set()
-        f = ttk.Frame(dlg, padding=18); f.pack(fill=tk.BOTH, expand=True)
-        ttk.Label(f, text='\u041f\u0440\u043e\u0432\u0430\u0439\u0434\u0435\u0440 (выберите или введите новый):',
-                  font=('', 9)).grid(row=0, column=0, columnspan=2, sticky=tk.W, pady=(0, 5))
-        pv = tk.StringVar()
-        prov_vals = sorted(self.providers.keys())
-        pc = ttk.Combobox(f, textvariable=pv, values=prov_vals, state='normal')
-        pc.grid(row=1, column=0, columnspan=2, sticky=tk.EW, padx=0, pady=(0, 8))
-        if prov_vals:
-            pc.set(prov_vals[0])
-        ttk.Label(f, text='ID \u043c\u043e\u0434\u0435\u043b\u0438:', font=('', 9)).grid(row=2, column=0, sticky=tk.W, pady=3)
-        mv = tk.StringVar()
-        ttk.Entry(f, textvariable=mv, width=35).grid(row=2, column=1, sticky=tk.EW, padx=(8, 0), pady=3)
-        ttk.Label(f, text='\u0418\u043c\u044f (\u043e\u043f\u0446\u0438\u043e\u043d\u0430\u043b\u044c\u043d\u043e):', font=('', 9)).grid(row=3, column=0, sticky=tk.W, pady=3)
-        nv = tk.StringVar()
-        ttk.Entry(f, textvariable=nv, width=35).grid(row=3, column=1, sticky=tk.EW, padx=(8, 0), pady=3)
-        f.grid_columnconfigure(1, weight=1)
-        def do():
-            pr = pv.get().strip(); mi = mv.get().strip(); nm = nv.get().strip() or mi
-            if not pr or not mi: messagebox.showwarning('Ошибка', 'Провайдер и ID обязательны.'); return
-            if pr not in self.providers:
-                self.providers[pr] = {'base_url': 'https://api.freetheai.xyz/v1', 'api_key': '', 'api_keys': [], 'models': {}}
-            if mi in self.providers[pr]['models']: messagebox.showwarning('Ошибка', 'Модель уже существует.'); return
-            self.providers[pr]['models'][mi] = {'name': nm, 'source': 'custom'}
-            self.model_list.append((pr, mi, nm, 'custom', False))
-            self._rebuild_provider_filter(); self._refresh_table()
-            self._save_providers()
-            self._log('Добавлена модель: %s / %s' % (pr, mi)); dlg.destroy()
-        bf = ttk.Frame(f); bf.grid(row=4, column=0, columnspan=2, pady=(12, 0))
-        ttk.Button(bf, text='Добавить', style='Accent.TButton', command=do).pack(side=tk.LEFT, padx=5)
-        ttk.Button(bf, text='Отмена', command=dlg.destroy).pack(side=tk.LEFT)
+    # ════════════════════════════════════════════════════════════════
+    #  Данные: загрузка / сохранение
+    # ════════════════════════════════════════════════════════════════
+    def _find_opencode_config(self):
+        for path in OPENCODE_CONFIG_CANDIDATES:
+            if path and os.path.isfile(path):
+                return path
+        return None
 
-    def _remove_custom_models(self):
-        n = sum(1 for x in self.model_list if x[3] == 'custom')
-        if n == 0: messagebox.showinfo('Инфо', 'Нет пользовательских моделей.'); return
-        if not messagebox.askyesno('Удалить', 'Удалить все пользовательские модели (%d шт.)?' % n): return
-        self.model_list = [x for x in self.model_list if x[3] != 'custom']
-        for p in self.providers.values():
-            p['models'] = {k: v for k, v in p['models'].items() if v.get('source') != 'custom'}
-        self.providers = {k: v for k, v in self.providers.items() if v['models']}
-        self._rebuild_provider_filter(); self._refresh_table()
-        self._save_providers()
-        self._log('Пользовательские модели удалены')
-
-    def _show_providers_dialog(self):
-        dlg = tk.Toplevel(self.root); dlg.title('Управление провайдерами (ключи / URL)')
-        dlg.geometry('720x520'); dlg.transient(self.root); dlg.grab_set()
-        f = ttk.Frame(dlg, padding=10); f.pack(fill=tk.BOTH, expand=True)
-        ttk.Label(f, text='Настройка API-ключей и URL для каждого провайдера:', font=('', 9, 'bold')).pack(anchor=tk.W)
-        cv = tk.Canvas(f, highlightthickness=0)
-        sb = ttk.Scrollbar(f, orient=tk.VERTICAL, command=cv.yview)
-        sf = ttk.Frame(cv)
-        sf.bind('<Configure>', lambda e: cv.configure(scrollregion=cv.bbox('all')))
-        cv.create_window((0, 0), window=sf, anchor='nw')
-        cv.configure(yscrollcommand=sb.set)
-        cv.pack(side=tk.LEFT, fill=tk.BOTH, expand=True); sb.pack(side=tk.RIGHT, fill=tk.Y)
-        def mw(e): cv.yview_scroll(int(-1*(e.delta/120)), 'units')
-        cv.bind_all('<MouseWheel>', mw)
-        dlg.bind('<Destroy>', lambda e: cv.unbind_all('<MouseWheel>'))
-        entries = {}; row = 0
-        for pn in sorted(self.providers.keys()):
-            p = self.providers[pn]; mc = len(p['models'])
-            # Заголовок провайдера
-            ttk.Label(sf, text=pn, font=('', 9, 'bold')).grid(row=row, column=0, sticky=tk.W, pady=(10, 0))
-            ttk.Label(sf, text='%d моделей' % mc, foreground='gray').grid(row=row, column=1, sticky=tk.W, pady=(10, 0)); row += 1
-            # URL
-            ttk.Label(sf, text='URL:', font=('', 8)).grid(row=row, column=0, sticky=tk.W, padx=(15, 0))
-            uv = tk.StringVar(value=p.get('base_url', ''))
-            ttk.Entry(sf, textvariable=uv, width=58).grid(row=row, column=1, sticky=tk.EW, padx=5, pady=1); row += 1
-            # Ключи — красивый выпадающий список
-            ttk.Label(sf, text='\u041a\u043b\u044e\u0447\u0438:', font=('', 8)).grid(row=row, column=0, sticky=tk.NW, padx=(15, 5), pady=(6, 0))
-            kf = ttk.Frame(sf)
-            kf.grid(row=row, column=1, sticky=tk.EW, padx=5, pady=2)
-            key_list = p.get('api_keys', [p.get('api_key', '')] if p.get('api_key') else [])
-            # Выпадающий список ключей
-            kv = tk.StringVar(value=key_list[0] if key_list else '')
-            key_combo = ttk.Combobox(kf, textvariable=kv, values=key_list, state='readonly', width=55)
-            key_combo.pack(fill=tk.X)
-            key_combo.bind('<<ComboboxSelected>>', lambda e, c=key_combo, l=key_list: None)
-            # Панель управления ключами
-            ctl = ttk.Frame(kf)
-            ctl.pack(fill=tk.X, pady=(3, 0))
-            new_key_var = tk.StringVar()
-            entry_key = ttk.Entry(ctl, textvariable=new_key_var, width=35, show='*')
-            entry_key.pack(side=tk.LEFT, padx=(0, 3))
-            show_kvar = tk.BooleanVar()
-            ttk.Checkbutton(ctl, text='\u041f\u043e\u043a\u0430\u0437\u0430\u0442\u044c', variable=show_kvar,
-                            command=lambda e=entry_key, v=show_kvar: e.configure(show='' if v.get() else '*')).pack(side=tk.LEFT)
-            def add_key(cb=key_combo, ek=entry_key, nkv=new_key_var):
-                k = nkv.get().strip()
-                if k:
-                    vals = list(cb['values']) if cb['values'] else []
-                    if k not in vals:
-                        vals.append(k)
-                        cb['values'] = vals
-                    cb.set(k)
-                    nkv.set('')
-                    ek.delete(0, tk.END)
-            def remove_key(cb=key_combo):
-                cur = cb.get()
-                vals = list(cb['values']) if cb['values'] else []
-                if cur in vals:
-                    vals.remove(cur)
-                    cb['values'] = vals
-                    cb.set(vals[0] if vals else '')
-            ttk.Button(ctl, text='+', width=3, command=add_key).pack(side=tk.LEFT, padx=2)
-            ttk.Button(ctl, text='\u2212', width=3, command=remove_key).pack(side=tk.LEFT)
-            ttk.Button(ctl, text='\u041f\u0440\u043e\u0432\u0435\u0440\u0438\u0442\u044c', width=10,
-                       command=lambda pn=pn, cb=key_combo: self._test_provider_keys(pn, cb)).pack(side=tk.LEFT, padx=5)
-            row += 1
-            entries[pn] = (uv, key_combo)
-        sf.grid_columnconfigure(1, weight=1)
-        def save():
-            for pn, (uv, cb) in entries.items():
-                self.providers[pn]['base_url'] = uv.get().strip()
-                keys = list(cb['values']) if cb['values'] else []
-                self.providers[pn]['api_keys'] = keys
-                self.providers[pn]['api_key'] = cb.get() or (keys[0] if keys else '')
-            self._save_providers()
-            self._log('Настройки провайдеров сохранены'); dlg.destroy()
-        bf = ttk.Frame(f); bf.pack(fill=tk.X, pady=(8, 0))
-        ttk.Button(bf, text='Сохранить', command=save).pack(side=tk.RIGHT, padx=5)
-        ttk.Button(bf, text='Отмена', command=dlg.destroy).pack(side=tk.RIGHT)
-
-    def _test_provider_keys(self, provider_name, key_combo):
-        """Проверяет все ключи провайдера на валидность и отмечает рабочий."""
-        p = self.providers.get(provider_name)
-        if not p or not p.get('models'):
-            self._log('\u041d\u0435\u0442 \u043c\u043e\u0434\u0435\u043b\u0435\u0439 \u0434\u043b\u044f \u043f\u0440\u043e\u0432\u0435\u0440\u043a\u0438 \u043a\u043b\u044e\u0447\u0435\u0439: %s' % provider_name)
-            return
-        keys = list(key_combo['values']) if key_combo['values'] else []
-        if not keys:
-            self._log('\u041d\u0435\u0442 \u043a\u043b\u044e\u0447\u0435\u0439 \u0434\u043b\u044f \u043f\u0440\u043e\u0432\u0435\u0440\u043a\u0438: %s' % provider_name)
-            return
-        base_url = p.get('base_url', '').rstrip('/') + '/chat/completions'
-        model_id = p['models'][0] if isinstance(p['models'][0], str) else p['models'][0].get('model', '')
-        self._log('\u041f\u0440\u043e\u0432\u0435\u0440\u043a\u0430 \u043a\u043b\u044e\u0447\u0435\u0439 %s (\u0447\u0435\u0440\u0435\u0437 %s)...' % (provider_name, model_id))
-        import threading
-        results = {}
-        def test_single(key):
+    def _load_providers(self):
+        # 1) из providers.json (если есть)
+        if os.path.isfile(PROVIDERS_JSON):
             try:
-                body = json.dumps({
-                    'model': model_id,
-                    'messages': [{'role': 'user', 'content': 'say ok'}],
-                    'max_tokens': 5,
-                })
-                headers = {
-                    'Content-Type': 'application/json',
-                    'Authorization': 'Bearer ' + key,
-                    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
-                    'Accept': 'application/json',
-                    'Origin': 'https://opencode.ai',
-                    'Referer': 'https://opencode.ai/',
-                }
-                code, resp_text = http_post(base_url, body, headers, timeout=15)
-                try:
-                    data = json.loads(resp_text)
-                except Exception:
-                    raw = resp_text.strip()[:100]
-                    reason = 'Cloudflare/блокировка' if code == 403 else ('HTTP %d' % code)
-                    results[key] = (False, raw or reason)
-                    return
-                if code == 200:
-                    results[key] = (True, '\u0420\u0430\u0431\u043e\u0442\u0430\u0435\u0442')
-                    return
-                err = data.get('error', {}).get('message', '') or ''
-                desc = ERR_DESC.get(code, '')
-                tag = 'HTTP %d' % code
-                if code == 429:
-                    tag = 'RATE'
-                    if ('limit' in err.lower() or 'quota' in err.lower()) and err:
-                        results[key] = (False, '%s: %s' % (tag, err[:60]))
-                        return
-                results[key] = (False, '%s: %s' % (tag, (desc or err)[:60]))
+                with open(PROVIDERS_JSON, "r", encoding="utf-8") as f:
+                    saved = json.load(f)
+                for pn, p in saved.items():
+                    self.providers[pn] = {
+                        "base_url": p.get("base_url", ""),
+                        "api_key": p.get("api_key", ""),
+                        "api_keys": p.get("api_keys", []),
+                        "models": p.get("models", {}),
+                    }
+                    for mid, mc in p.get("models", {}).items():
+                        self.model_list.append((pn, mid, mc.get("name", mid),
+                                                mc.get("source", "opencode"), mc.get("free", False)))
             except Exception as e:
-                results[key] = (False, '\u041e\u0448\u0438\u0431\u043a\u0430: %s' % str(e)[:60])
-        threads = []
-        for k in keys:
-            t = threading.Thread(target=test_single, args=(k,))
-            t.start(); threads.append(t)
-        for t in threads:
-            t.join(timeout=20)
-        # Выбираем первый рабочий ключ, иначе первый не-429, иначе первый
-        working = [k for k, (ok, _) in results.items() if ok]
-        non_rate = [k for k, (ok, msg) in results.items() if not ok and not msg.startswith('RATE')]
-        chosen = working[0] if working else (non_rate[0] if non_rate else keys[0])
-        key_combo.set(chosen)
-        # Лог результатов
-        for k in keys:
-            ok, msg = results.get(k, (False, '\u043d\u0435\u0442 \u043e\u0442\u0432\u0435\u0442\u0430'))
-            status = '\u2713' if ok else '\u2717'
-            note = ' \u2190 \u0432\u044b\u0431\u0440\u0430\u043d' if k == chosen and ok else ''
-            self._log('%s %s: %s%s' % (status, k[:48], msg, note))
-        if working:
-            self._log('\u041a\u043b\u044e\u0447 \u0432\u044b\u0431\u0440\u0430\u043d: %s' % chosen[:48])
-        else:
-            self._log('\u041d\u0435\u0442 \u0440\u0430\u0431\u043e\u0447\u0438\u0445 \u043a\u043b\u044e\u0447\u0435\u0439, \u0432\u044b\u0431\u0440\u0430\u043d: %s' % chosen[:48])
+                self._log("Ошибка чтения providers.json: %s" % e, "error")
+        # 2) дополняем из opencode-конфига
+        path = self._find_opencode_config()
+        if path:
+            self._merge_opencode_config(path, announce=True)
+        elif not self.providers:
+            self._log("opencode.jsonc не найден — загрузите вручную на вкладке «Дашборд».", "warn")
 
-    def _show_settings(self):
-        dlg = tk.Toplevel(self.root); dlg.title('Настройки'); dlg.geometry('350x180')
-        dlg.transient(self.root); dlg.grab_set()
-        f = ttk.Frame(dlg, padding=15); f.pack(fill=tk.BOTH, expand=True)
-        ttk.Label(f, text='Таймаут (сек):').grid(row=0, column=0, sticky=tk.W, pady=3)
-        ttk.Spinbox(f, from_=5, to=120, textvariable=self.timeout_val, width=8).grid(row=0, column=1, sticky=tk.W, padx=5)
-        ttk.Label(f, text='Повторов:').grid(row=1, column=0, sticky=tk.W, pady=3)
-        ttk.Spinbox(f, from_=0, to=5, textvariable=self.retries_val, width=8).grid(row=1, column=1, sticky=tk.W, padx=5)
-        ttk.Label(f, text='Задержка (сек):').grid(row=2, column=0, sticky=tk.W, pady=3)
-        ttk.Spinbox(f, from_=0.0, to=5.0, increment=0.1, textvariable=self.delay_val, width=8).grid(row=2, column=1, sticky=tk.W, padx=5)
-        def save_set():
-            self._save_settings(); dlg.destroy()
-        ttk.Button(f, text='OK', command=save_set).grid(row=3, column=0, columnspan=2, pady=12)
-
-    # ── Save / Load provider settings ──────────────────────────────
+    def _merge_opencode_config(self, path, announce=False):
+        try:
+            cfg = read_jsonc(path)
+        except Exception as e:
+            self._log("Не удалось прочитать %s: %s" % (os.path.basename(path), e), "error")
+            return 0
+        added = 0
+        for pn, pc in cfg.get("provider", {}).items():
+            opts = pc.get("options", {})
+            base_url = (opts.get("baseURL") or "").rstrip("/")
+            api_keys = list(opts.get("apiKeys", []))
+            api_key = opts.get("apiKey", "")
+            if api_key and api_key not in api_keys:
+                api_keys.insert(0, api_key)
+            disp = pc.get("name", pn)
+            prov = self.providers.setdefault(disp, {"base_url": base_url, "api_key": "",
+                                                    "api_keys": [], "models": {}})
+            if base_url:
+                prov["base_url"] = base_url
+            for k in api_keys:
+                if k and k not in prov["api_keys"]:
+                    prov["api_keys"].append(k)
+            if prov["api_keys"]:
+                prov["api_key"] = prov["api_keys"][0]
+            for mid, mc in pc.get("models", {}).items():
+                if mid in prov["models"]:
+                    continue
+                mn = mc.get("name", mid)
+                is_free = "free" in mid.lower() or "free" in mn.lower()
+                prov["models"][mid] = {"name": mn, "source": "opencode", "free": is_free}
+                self.model_list.append((disp, mid, mn, "opencode", is_free))
+                added += 1
+        if announce:
+            self._log("Загружено из %s: %d моделей" % (os.path.basename(path), added), "success")
+        self._save_providers()
+        return added
 
     def _save_providers(self):
         data = {}
         for pn, p in self.providers.items():
             data[pn] = {
-                'base_url': p.get('base_url', ''),
-                'api_key': p.get('api_key', ''),
-                'api_keys': p.get('api_keys', []),
+                "base_url": p.get("base_url", ""),
+                "api_key": p.get("api_key", ""),
+                "api_keys": p.get("api_keys", []),
+                "models": p.get("models", {}),
             }
         try:
-            with open(PROVIDERS_JSON, 'w', encoding='utf-8') as f:
-                json.dump(data, f, ensure_ascii=False, indent=2)
-        except Exception:
-            pass
-
-    def _load_providers(self):
-        cfg = None
-        try:
-            cfg = read_jsonc(os.path.expanduser('~/.config/opencode/opencode.jsonc'))
-        except Exception:
-            try:
-                cfg = read_jsonc(os.path.expanduser('~/.config/opencode/opencode.json'))
-            except Exception:
-                try:
-                    cfg = read_jsonc(r'C:\Users\msi\.config\opencode\opencode.jsonc')
-                except Exception:
-                    pass
-        if cfg:
-            total = 0
-            for pn, pc in cfg.get('provider', {}).items():
-                opts = pc.get('options', {})
-                base_url = (opts.get('baseURL') or '').rstrip('/')
-                api_keys = opts.get('apiKeys', [])
-                api_key = opts.get('apiKey', '')
-                if not api_keys and api_key:
-                    api_keys = [api_key]
-                if not api_keys:
-                    continue
-                if pn not in self.providers:
-                    self.providers[pn] = {}
-                self.providers[pn] = {
-                    'base_url': base_url,
-                    'api_key': api_keys[0] if api_keys else api_key,
-                    'api_keys': api_keys,
-                    'models': {},
-                }
-                for mid, mc in pc.get('models', {}).items():
-                    mn = mc.get('name', mid)
-                    is_free = 'free' in mid.lower() or 'free' in mn.lower()
-                    self.providers[pn]['models'][mid] = {
-                        'name': mn,
-                        'source': 'opencode',
-                        'free': is_free,
-                    }
-                    self.model_list.append((pn, mid, mn, 'opencode', is_free))
-                    total += 1
-            self._log('Загружено из opencode.jsonc: %d моделей' % total)
-        else:
-            self._log('Не удалось загрузить opencode.jsonc')
+            save_json_secure(PROVIDERS_JSON, data)
+        except Exception as e:
+            self._log("Ошибка сохранения providers.json: %s" % e, "error")
 
     def _save_settings(self):
         data = {
-            'timeout': self.timeout_val.get(),
-            'retries': self.retries_val.get(),
-            'delay': self.delay_val.get(),
-            'dark_mode': self.dark_mode.get(),
-            'geometry': self.geometry_val.get(),
-            'log_height': self.log_height_val.get(),
-            'auto_save_config': self.auto_save_config.get(),
-            'auto_start_ollama': self.auto_start_ollama.get(),
-            'hide_ollama_window': self.hide_ollama_window.get(),
+            "timeout": self.timeout_val.get(),
+            "retries": self.retries_val.get(),
+            "delay": self.delay_val.get(),
+            "dark_mode": self.dark_mode.get(),
+            "verify_ssl": self.verify_ssl.get(),
+            "auto_save_config": self.auto_save_config.get(),
+            "geometry": self.geometry_val.get(),
         }
         try:
-            with open(SETTINGS_JSON, 'w', encoding='utf-8') as f:
+            with open(SETTINGS_JSON, "w", encoding="utf-8") as f:
                 json.dump(data, f, ensure_ascii=False, indent=2)
         except Exception:
             pass
@@ -822,209 +853,262 @@ class AgentCheckerApp:
         if not os.path.isfile(SETTINGS_JSON):
             return
         try:
-            with open(SETTINGS_JSON, 'r', encoding='utf-8') as f:
-                data = json.load(f)
-            for key in ('timeout', 'retries', 'delay', 'dark_mode', 'geometry', 'log_height', 'auto_save_config', 'auto_start_ollama', 'hide_ollama_window'):
-                if key in data:
-                    getattr(self, key + '_val' if key in ('timeout', 'retries', 'delay', 'geometry', 'log_height') else key).set(data[key])
+            with open(SETTINGS_JSON, "r", encoding="utf-8") as f:
+                d = json.load(f)
         except Exception:
-            pass
-
-    def _propagate_keys(self):
-        """Копирует все ключи от провайдера с непустыми ключами на всех остальных
-        с тем же base_url."""
-        source_keys = []
-        source_url = ''
-        for p in self.providers.values():
-            if p.get('api_keys'):
-                source_keys = p['api_keys']
-                source_url = p.get('base_url', '')
-                break
-        if not source_keys:
             return
-        for p in self.providers.values():
-            if not p.get('api_keys') and p.get('base_url') == source_url:
-                p['api_keys'] = list(source_keys)
-                if not p.get('api_key') and source_keys:
-                    p['api_key'] = source_keys[0]
-
-    def _check_server_online(self, pn, bu):
-        try:
-            parsed = urlparse(bu)
-            host = parsed.hostname or 'localhost'
-            port = parsed.port or 11434
-            s = socket.create_connection((host, port), timeout=2)
-            s.close()
-            return True
-        except Exception:
-            return False
-
-    def _ensure_ollama_running(self):
-        import subprocess
-        if not self.auto_start_ollama.get():
-            return
-        if self._check_server_online('Ollama', 'http://localhost:11434'):
-            self._log('Ollama уже запущен')
-            return
-        self._log('Ollama не запущен, запускаю сервер скрыто...')
-        print('[Ollama] сервер не запущен, запускаю сервер скрыто...')
-        try:
-            CREATE_NO_WINDOW = 0x08000000
-            subprocess.Popen([r'C:\Users\msi\AppData\Local\Programs\Ollama\ollama.exe', 'serve'],
-                             creationflags=subprocess.CREATE_BREAKAWAY_FROM_JOB | CREATE_NO_WINDOW)
-        except Exception as e:
-            self._log('Ошибка запуска Ollama: %s' % str(e)[:60])
-            print('[Ollama] ошибка запуска: %s' % str(e)[:60])
-            return
-        for _ in range(30):
-            time.sleep(1)
-            if self._check_server_online('Ollama', 'http://localhost:11434'):
-                self._log('Ollama успешно запущен')
-                print('[Ollama] сервер запущен')
-                return
-        self._log('Ollama не удалось запустить (таймаут 30с)')
-        print('[Ollama] не удалось запустить сервер')
-
-    def _on_close(self):
-        self.geometry_val.set(self.root.geometry())
-        # Попытка сохранить высоту лога (из lauch lauch)
-        try:
-            # Для ttk.PanedWindow сложно получить точный размер sash, 
-            # поэтому сохраняем общую геометрию окна.
-            pass
-        except: pass
-        self._save_settings()
-        self.root.destroy()
-
-    def _auto_validate_keys(self):
-        def _run():
-            for pn, p in self.providers.items():
-                keys = p.get('api_keys', [])
-                if not keys:
-                    continue
-                bu = p.get('base_url', '').rstrip('/')
-                if not bu:
-                    continue
-                cache_key = bu
-                with VALID_KEYS_LOCK:
-                    if cache_key in VALID_KEYS_CACHE:
-                        continue
-                if not self._check_server_online(pn, bu):
-                    if 'localhost' in bu or '127.0.0.1' in bu:
-                        self._log('  %s: сервер не запущен' % pn)
-                        print('[%s] сервер не запущен' % pn)
-                        with VALID_KEYS_LOCK:
-                            VALID_KEYS_CACHE[cache_key] = []
-                        continue
-                self._log('Проверка ключей %s (%s)...' % (pn, _key_fmt(len(keys))))
-                valid = validate_keys(bu, keys, provider_models=p['models'], provider_name=pn, timeout=10)
-                with VALID_KEYS_LOCK:
-                    VALID_KEYS_CACHE[cache_key] = valid
-                if valid:
-                    self._log('  %s: работает %s' % (pn, _key_fmt(len(valid), len(keys))))
-                else:
-                    self._log('  %s: нет рабочих ключей' % pn)
-                self.root.after(0, self._refresh_table)
-                if self.auto_save_config.get():
-                    self._save_to_opencode_config()
-        threading.Thread(target=_run, daemon=True).start()
-
-    def _save_to_opencode_config(self):
-        import shutil
-        cfg_path = r'C:\Users\msi\.config\opencode\opencode.jsonc'
-        if not os.path.isfile(cfg_path):
-            self._log('Конфиг opencode.jsonc не найден')
-            return
-        try:
-            cfg = read_jsonc(cfg_path)
-        except Exception as e:
-            self._log('Ошибка чтения opencode.jsonc: %s' % e)
-            return
-        changed = False
-        for pn, p in self.providers.items():
-            if pn not in cfg.get('provider', {}):
-                continue
-            cache_key = p.get('base_url', '')
-            with VALID_KEYS_LOCK:
-                valid = VALID_KEYS_CACHE.get(cache_key, [])
-            if not valid:
-                continue
-            pc = cfg['provider'].get(pn, {})
-            opts = pc.get('options', {})
-            existing_keys = opts.get('apiKeys', [])
-            need = [k for k in valid if k not in existing_keys]
-            if need:
-                cfg['provider'][pn]['options']['apiKeys'] = valid + [k for k in existing_keys if k not in valid]
-                cfg['provider'][pn]['options']['apiKey'] = valid[0]
-                changed = True
-        if changed:
-            backup = cfg_path + '.bak'
-            if not os.path.isfile(backup):
+        mapping = {
+            "timeout": self.timeout_val, "retries": self.retries_val, "delay": self.delay_val,
+            "dark_mode": self.dark_mode, "verify_ssl": self.verify_ssl,
+            "auto_save_config": self.auto_save_config, "geometry": self.geometry_val,
+        }
+        for key, var in mapping.items():
+            if key in d:
                 try:
-                    shutil.copy2(cfg_path, backup)
-                    self._log('Создан бэкап: opencode.jsonc.bak')
+                    var.set(d[key])
                 except Exception:
                     pass
-            save_jsonc(cfg_path, cfg)
-            self._log('Конфиг opencode.jsonc обновлен валидными ключами')
-        else:
-            self._log('Обновление конфига не потребовалось (ключи уже актуальны)')
+        if d.get("geometry"):
+            try:
+                self.root.geometry(d["geometry"])
+            except Exception:
+                pass
 
-    def _sort_by(self, col):
-        """Сортировка таблицы по клику на заголовок."""
-        items = [(self.tree.set(k, col), k) for k in self.tree.get_children('')]
-        items.sort(key=lambda x: x[0].lower(), reverse=self.sort_rev if self.sort_col == col else False)
-        for idx, (_, k) in enumerate(items):
-            self.tree.move(k, '', idx)
-        if self.sort_col == col:
-            self.sort_rev = not self.sort_rev
-        else:
-            self.sort_col = col
-            self.sort_rev = False
-        arrow = '\u25b2' if self.sort_rev else '\u25bc'
-        for c, _w, h in self.cols:
-            self.tree.heading(c, text=h + (' ' + arrow if c == col else ''))
+    def _reload_config(self):
+        path = self._find_opencode_config()
+        if not path:
+            messagebox.showinfo("Конфиг", "opencode.jsonc не найден в стандартных папках.")
+            return
+        n = self._merge_opencode_config(path, announce=True)
+        self._rebuild_provider_filter()
+        self._refresh_table()
+        self._set_status("Перечитан конфиг: +%d моделей" % n)
 
-    # ── Table operations ──────────────────────────────────────────
+    def _load_opencode_file(self):
+        p = filedialog.askopenfilename(
+            title="Выберите opencode.jsonc",
+            filetypes=[("JSONC", "*.jsonc"), ("JSON", "*.json"), ("Все", "*.*")])
+        if not p:
+            return
+        n = self._merge_opencode_config(p, announce=True)
+        self._rebuild_provider_filter()
+        self._refresh_table()
+        self._set_status("Загружено %d новых моделей" % n)
+
+    def _add_custom_model(self):
+        dlg = tk.Toplevel(self.root)
+        dlg.title("Добавить модель")
+        dlg.geometry("460x230")
+        dlg.transient(self.root)
+        dlg.grab_set()
+        f = ttk.Frame(dlg, padding=16)
+        f.pack(fill=tk.BOTH, expand=True)
+        ttk.Label(f, text="Провайдер (выберите или введите новый):").grid(row=0, column=0, columnspan=2, sticky="w")
+        pv = tk.StringVar()
+        prov_vals = sorted(self.providers.keys())
+        pc = ttk.Combobox(f, textvariable=pv, values=prov_vals)
+        pc.grid(row=1, column=0, columnspan=2, sticky="ew", pady=(0, 8))
+        if prov_vals:
+            pc.set(prov_vals[0])
+        ttk.Label(f, text="ID модели:").grid(row=2, column=0, sticky="w", pady=3)
+        mv = tk.StringVar()
+        ttk.Entry(f, textvariable=mv, width=34).grid(row=2, column=1, sticky="ew", padx=6)
+        ttk.Label(f, text="Имя (опц.):").grid(row=3, column=0, sticky="w", pady=3)
+        nv = tk.StringVar()
+        ttk.Entry(f, textvariable=nv, width=34).grid(row=3, column=1, sticky="ew", padx=6)
+        f.grid_columnconfigure(1, weight=1)
+
+        def do():
+            pr, mid, nm = pv.get().strip(), mv.get().strip(), (nv.get().strip() or mv.get().strip())
+            if not pr or not mid:
+                messagebox.showwarning("Ошибка", "Провайдер и ID обязательны.")
+                return
+            prov = self.providers.setdefault(
+                pr, {"base_url": "https://api.freetheai.xyz/v1", "api_key": "", "api_keys": [], "models": {}})
+            if mid in prov["models"]:
+                messagebox.showwarning("Ошибка", "Такая модель уже есть.")
+                return
+            prov["models"][mid] = {"name": nm, "source": "custom", "free": False}
+            self.model_list.append((pr, mid, nm, "custom", False))
+            self._rebuild_provider_filter()
+            self._refresh_table()
+            self._save_providers()
+            self._log("Добавлена модель: %s / %s" % (pr, mid), "success")
+            dlg.destroy()
+
+        bf = ttk.Frame(f)
+        bf.grid(row=4, column=0, columnspan=2, pady=12)
+        ttk.Button(bf, text="Добавить", style="Accent.TButton", command=do).pack(side=tk.LEFT, padx=5)
+        ttk.Button(bf, text="Отмена", command=dlg.destroy).pack(side=tk.LEFT)
+
+    # ════════════════════════════════════════════════════════════════
+    #  Провайдеры: сохранение из UI + проверка ключей
+    # ════════════════════════════════════════════════════════════════
+    def _save_providers_ui(self):
+        for pn, (uv, combo) in self.prov_entries.items():
+            self.providers[pn]["base_url"] = uv.get().strip()
+            keys = list(getattr(combo, "_real_keys", []))
+            self.providers[pn]["api_keys"] = keys
+            self.providers[pn]["api_key"] = keys[0] if keys else ""
+        with VALID_KEYS_LOCK:
+            VALID_KEYS_CACHE.clear()
+        self._save_providers()
+        self._log("Настройки провайдеров сохранены", "success")
+        self._set_status("Провайдеры сохранены")
+
+    def _test_provider_keys(self, provider_name, combo, url_var):
+        p = self.providers.get(provider_name)
+        if not p or not p.get("models"):
+            self._log("Нет моделей для проверки ключей: %s" % provider_name, "warn")
+            return
+        keys = list(getattr(combo, "_real_keys", []))
+        if not keys:
+            self._log("Нет ключей для проверки: %s" % provider_name, "warn")
+            return
+        base_url = (url_var.get().strip() or p.get("base_url", "")).rstrip("/")
+        model_id = next(iter(p["models"]))  # FIX: models — словарь
+        verify = self.verify_ssl.get()
+        self._log("Проверка ключей %s (через %s)..." % (provider_name, model_id))
+
+        def run():
+            results = {}
+            url = base_url + "/chat/completions"
+            for k in keys:
+                body = {"model": model_id, "messages": [{"role": "user", "content": "say ok"}], "max_tokens": 5}
+                headers = {"Content-Type": "application/json", "Authorization": "Bearer " + k}
+                try:
+                    code, text = http_post(url, body, headers, timeout=15, verify=verify)
+                except Exception as e:
+                    results[k] = (False, "ошибка: %s" % str(e)[:50])
+                    continue
+                if code == 200:
+                    results[k] = (True, "Работает")
+                    continue
+                try:
+                    err = (json.loads(text).get("error", {}) or {}).get("message", "")
+                except Exception:
+                    err = ""
+                results[k] = (False, "HTTP %d: %s" % (code, (ERR_DESC.get(code) or err)[:50]))
+            working = [k for k, (ok, _) in results.items() if ok]
+            for k in keys:
+                ok, msg = results.get(k, (False, "нет ответа"))
+                self.root.after(0, self._log,
+                                "%s %s: %s" % ("✓" if ok else "✗", mask_key(k), msg),
+                                "success" if ok else "error")
+            chosen = working[0] if working else keys[0]
+            idx = keys.index(chosen)
+            self.root.after(0, lambda: combo.current(idx))
+            self.root.after(0, self._log,
+                            ("Ключ выбран: %s" % mask_key(chosen)) if working
+                            else ("Нет рабочих ключей, выбран: %s" % mask_key(chosen)),
+                            "success" if working else "warn")
+
+        threading.Thread(target=run, daemon=True).start()
+
+    def _auto_validate_keys(self):
+        def run():
+            verify = self.verify_ssl.get()
+            for pn, p in list(self.providers.items()):
+                keys = p.get("api_keys", [])
+                bu = p.get("base_url", "").rstrip("/")
+                if not keys or not bu:
+                    continue
+                with VALID_KEYS_LOCK:
+                    if bu in VALID_KEYS_CACHE:
+                        continue
+                self.root.after(0, self._log, "Проверка ключей %s (%s)..." % (pn, key_fmt(len(keys))))
+                valid = validate_keys(bu, keys, provider_models=p["models"], provider_name=pn,
+                                      timeout=10, verify=verify,
+                                      log=lambda m: self.root.after(0, self._log, m))
+                with VALID_KEYS_LOCK:
+                    VALID_KEYS_CACHE[bu] = valid
+                msg = ("  %s: работает %s" % (pn, key_fmt(len(valid), len(keys)))) if valid \
+                    else ("  %s: нет рабочих ключей" % pn)
+                self.root.after(0, self._log, msg, "success" if valid else "warn")
+        threading.Thread(target=run, daemon=True).start()
+
+    # ════════════════════════════════════════════════════════════════
+    #  Таблица
+    # ════════════════════════════════════════════════════════════════
+    def _rebuild_provider_filter(self):
+        names = ["all"] + sorted(self.providers.keys())
+        self.provider_combo["values"] = names
 
     def _refresh_table(self, *_):
         for i in self.tree.get_children():
             self.tree.delete(i)
-        pf = self.filter_provider_s.get(); sf = self.filter_status.get(); fc = self.filter_source.get(); ff = self.filter_free.get()
+        pf = self.filter_provider.get()
+        sf = self.filter_status.get()
+        fc = self.filter_source.get()
+        query = self.search_var.get().strip().lower()
         total = ok = fail = unt = 0
+        row = 0
         for pn, mid, mn, src, fr in self.model_list:
-            if pf != 'all' and pn != pf: continue
-            if fc != 'all' and src != fc: continue
-            if ff == 'free' and not fr: continue
-            if ff == 'paid' and fr: continue
+            if pf != "all" and pn != pf:
+                continue
+            if fc != "all" and src != fc:
+                continue
+            if query and query not in mn.lower() and query not in mid.lower():
+                continue
             r = self.results.get(pn, {}).get(mid)
             if r is None:
-                if sf not in ('all', 'untested'): continue
-                st, resp, el, tg = '\u2014', '', '', ('untested',); unt += 1
-            elif r['ok']:
-                if sf not in ('all', 'yes'): continue
-                st, resp, el, tg = '\u0423\u0421\u041f\u0415\u0425', r['msg'], '%.1fs' % r['elapsed'], ('ok',); ok += 1
+                if sf not in ("all", "untested"):
+                    continue
+                st, resp, el, tag = "— не проверено", "", "", "untested"
+                unt += 1
+            elif r["ok"]:
+                if sf not in ("all", "yes"):
+                    continue
+                st, resp, el, tag = "✓ работает", r["msg"], "%.1fs" % r["elapsed"], "ok"
+                ok += 1
             else:
-                if sf not in ('all', 'no'): continue
-                st, resp, el, tg = '\u041d\u0415\u0423\u0414\u0410\u0427\u0410', r['msg'], '%.1fs' % r['elapsed'], ('fail',); fail += 1
+                if sf not in ("all", "no"):
+                    continue
+                st, resp, el, tag = "✗ ошибка", r["msg"], "%.1fs" % r["elapsed"], "fail"
+                fail += 1
             total += 1
-            disp_name = mn + (' \U0001f193' if fr else '')
-            self.tree.insert('', tk.END, values=(pn, disp_name, mid, src, st, resp, el), tags=tg)
-        self.lbl_total.config(text='Всего: %d' % total)
-        self.lbl_ok.config(text='Работает: %d' % ok)
-        self.lbl_fail.config(text='Не работает: %d' % fail)
-        self.lbl_untested.config(text='Не проверено: %d' % unt)
+            disp = mn + ("  🆓" if fr else "")
+            stripe = "odd" if row % 2 else "even"
+            self.tree.insert("", tk.END, values=(pn, disp, mid, src, st, resp, el), tags=(tag, stripe))
+            row += 1
+        self._update_cards(total, ok, fail, unt)
+
+    def _update_cards(self, total, ok, fail, unt):
+        self.card_value_lbls["total"].config(text=str(total))
+        self.card_value_lbls["ok"].config(text=str(ok))
+        self.card_value_lbls["fail"].config(text=str(fail))
+        self.card_value_lbls["untested"].config(text=str(unt))
+
+    def _sort_by(self, col):
+        items = [(self.tree.set(k, col), k) for k in self.tree.get_children("")]
+        items.sort(key=lambda x: x[0].lower(),
+                   reverse=self.sort_rev if self.sort_col == col else False)
+        for idx, (_, k) in enumerate(items):
+            self.tree.move(k, "", idx)
+        self.sort_rev = (not self.sort_rev) if self.sort_col == col else False
+        self.sort_col = col
+        arrow = " ▲" if self.sort_rev else " ▼"
+        for c, _w, h in self.cols:
+            self.tree.heading(c, text=h + (arrow if c == col else ""))
+
+    def _items_from_sel(self, sel):
+        out = []
+        for iid in sel:
+            v = self.tree.item(iid, "values")
+            mid = v[2]
+            for x in self.model_list:
+                if x[0] == v[0] and x[1] == mid:
+                    out.append(x)
+                    break
+        return out
 
     def _on_double_click(self, e):
         sel = self.tree.selection()
         if sel:
-            v = self.tree.item(sel[0], 'values')
-            raw_name = v[1].replace(' \U0001f193', '')
-            for pn, mid, mn, src, _fr in self.model_list:
-                if pn == v[0] and mn == raw_name:
-                    self.root.clipboard_clear(); self.root.clipboard_append(mid)
-                    self._set_status('Скопировано: %s' % mid)
-                    break
+            mid = self.tree.item(sel[0], "values")[2]
+            self.root.clipboard_clear()
+            self.root.clipboard_append(mid)
+            self._set_status("Скопирован ID: %s" % mid)
 
     def _on_right_click(self, e):
         iid = self.tree.identify_row(e.y)
@@ -1034,752 +1118,370 @@ class AgentCheckerApp:
         if iid not in sel:
             self.tree.selection_set(iid)
             sel = (iid,)
-        v = self.tree.item(sel[0], 'values')
-        raw_name = v[1].replace(' \U0001f193', '')
         menu = tk.Menu(self.root, tearoff=0)
         cnt = len(sel)
-        if cnt == 1:
-            menu.add_command(label='\u041f\u0440\u043e\u0432\u0435\u0440\u0438\u0442\u044c \u00ab' + raw_name[:40] + '\u00bb',
-                             command=lambda: self._run_tests(self._items_from_sel(sel)))
-            menu.add_command(label='\u041a\u043e\u043f\u0438\u0440\u043e\u0432\u0430\u0442\u044c ID \u043c\u043e\u0434\u0435\u043b\u0438',
-                             command=lambda: self._copy_model_id(v, raw_name))
-            resp = v[5]
-            if resp:
-                menu.add_command(label='\u041a\u043e\u043f\u0438\u0440\u043e\u0432\u0430\u0442\u044c \u043e\u0442\u0432\u0435\u0442',
-                                 command=lambda r=resp: self._copy_text(r, '\u041e\u0442\u0432\u0435\u0442 \u0441\u043a\u043e\u043f\u0438\u0440\u043e\u0432\u0430\u043d'))
-        else:
-            menu.add_command(label='\u041f\u0440\u043e\u0432\u0435\u0440\u0438\u0442\u044c %d \u0432\u044b\u0434\u0435\u043b\u0435\u043d\u043d\u044b\u0445' % cnt,
-                             command=lambda: self._run_tests(self._items_from_sel(sel)))
-            menu.add_command(label='\u041a\u043e\u043f\u0438\u0440\u043e\u0432\u0430\u0442\u044c ID %d \u043c\u043e\u0434\u0435\u043b\u0435\u0439' % cnt,
-                             command=lambda: self._copy_ids_from_sel(sel))
-            menu.add_command(label='\u041a\u043e\u043f\u0438\u0440\u043e\u0432\u0430\u0442\u044c \u043e\u0442\u0432\u0435\u0442\u044b %d \u043c\u043e\u0434\u0435\u043b\u0435\u0439' % cnt,
-                             command=lambda: self._copy_responses_from_sel(sel))
+        label = "Проверить выбранное" if cnt == 1 else "Проверить %d моделей" % cnt
+        menu.add_command(label=label, command=lambda: self._run_tests(self._items_from_sel(sel)))
+        menu.add_command(label="Копировать ID", command=lambda: self._copy_ids(sel))
         menu.add_separator()
-        menu.add_command(label='\u041f\u0440\u043e\u0432\u0435\u0440\u0438\u0442\u044c \u0432\u0441\u0435 \u043c\u043e\u0434\u0435\u043b\u0438 \u043f\u0440\u043e\u0432\u0430\u0439\u0434\u0435\u0440\u0430',
+        v = self.tree.item(sel[0], "values")
+        menu.add_command(label="Проверить всё у провайдера «%s»" % v[0],
                          command=lambda: self._run_tests([x for x in self.model_list if x[0] == v[0]]))
         try:
             menu.tk_popup(e.x_root, e.y_root)
         finally:
             menu.grab_release()
 
-    def _items_from_sel(self, sel):
-        out = []
-        for iid in sel:
-            v = self.tree.item(iid, 'values')
-            rn = v[1].replace(' \U0001f193', '')
-            for x in self.model_list:
-                if x[0] == v[0] and x[2] == rn:
-                    out.append(x); break
-        return out
+    def _copy_ids(self, sel):
+        ids = [self.tree.item(iid, "values")[2] for iid in sel]
+        self.root.clipboard_clear()
+        self.root.clipboard_append("\n".join(ids))
+        self._set_status("Скопировано ID: %d" % len(ids))
 
-    def _copy_model_id(self, v, raw_name):
-        for pn, mid, mn, _, _ in self.model_list:
-            if pn == v[0] and mn == raw_name:
-                self.root.clipboard_clear(); self.root.clipboard_append(mid)
-                self._set_status('Скопировано: %s' % mid)
-                break
-
-    def _copy_ids_from_sel(self, sel):
-        ids = []
-        for iid in sel:
-            v = self.tree.item(iid, 'values')
-            rn = v[1].replace(' \U0001f193', '')
-            for pn_, mid_, mn_, _, _ in self.model_list:
-                if pn_ == v[0] and mn_ == rn:
-                    ids.append(mid_); break
-        txt = '\n'.join(ids)
-        self.root.clipboard_clear(); self.root.clipboard_append(txt)
-        self._set_status('\u0421\u043a\u043e\u043f\u0438\u0440\u043e\u0432\u0430\u043d\u043e ID: %d \u043c\u043e\u0434\u0435\u043b\u0435\u0439' % len(ids))
-
-    def _copy_text(self, text, status_msg):
-        self.root.clipboard_clear(); self.root.clipboard_append(text)
-        self._set_status(status_msg)
-
-    def _copy_responses_from_sel(self, sel):
-        lines = []
-        for iid in sel:
-            v = self.tree.item(iid, 'values')
-            lines.append('%s | %s' % (v[1].replace(' \U0001f193', ''), v[5]))
-        txt = '\n'.join(lines)
-        self.root.clipboard_clear(); self.root.clipboard_append(txt)
-        self._set_status('\u0421\u043a\u043e\u043f\u0438\u0440\u043e\u0432\u0430\u043d\u043e \u043e\u0442\u0432\u0435\u0442\u043e\u0432: %d' % len(lines))
-
-    # ── Theme ──────────────────────────────────────────────────────
-
-    def _toggle_theme(self):
-        self._apply_theme()
-        self._refresh_table()
-        self._save_settings()
-
-    def _apply_theme(self):
-        dark = self.dark_mode.get()
-        style = ttk.Style()
-        if dark:
-            bg, fg, selbg, selfg = '#1e1e1e', '#e0e0e0', '#264f78', '#ffffff'
-            entry_bg, entry_fg = '#2d2d2d', '#e0e0e0'
-            tree_bg, tree_fg = '#252526', '#e0e0e0'
-            text_bg, text_fg = '#1e1e1e', '#e0e0e0'
-            select_bg = '#264f78'
-            style.theme_use('clam')
-            style.configure('.', background=bg, foreground=fg, fieldbackground=entry_bg,
-                            selectbackground=selbg, selectforeground=selfg,
-                            troughcolor='#3c3c3c', arrowcolor='#e0e0e0')
-            style.configure('TLabel', background=bg, foreground=fg)
-            style.configure('TFrame', background=bg)
-            style.configure('TLabelframe', background=bg, foreground=fg)
-            style.configure('TLabelframe.Label', background=bg, foreground=fg)
-            style.configure('TButton', background='#3c3c3c', foreground=fg, bordercolor='#555')
-            style.map('TButton', background=[('active', '#505050')])
-            style.configure('Accent.TButton', font=('', 9, 'bold'), background='#0e639c', foreground='#ffffff')
-            style.map('Accent.TButton', background=[('active', '#1177bb')])
-            style.configure('TEntry', fieldbackground=entry_bg, foreground=entry_fg)
-            style.configure('TSpinbox', fieldbackground=entry_bg, foreground=entry_fg)
-            style.configure('TCombobox', fieldbackground=entry_bg, foreground=entry_fg, arrowcolor='#e0e0e0')
-            style.map('TCombobox', fieldbackground=[('readonly', entry_bg)], foreground=[('readonly', entry_fg)])
-            style.configure('Treeview', background=tree_bg, foreground=tree_fg, fieldbackground=tree_bg)
-            style.map('Treeview', background=[('selected', select_bg)], foreground=[('selected', '#ffffff')])
-            style.configure('Vertical.TScrollbar', background='#3c3c3c', troughcolor='#1e1e1e', arrowcolor='#e0e0e0')
-            style.configure('Horizontal.TScrollbar', background='#3c3c3c', troughcolor='#1e1e1e', arrowcolor='#e0e0e0')
-            style.configure('TProgressbar', background='#0e639c', troughcolor='#3c3c3c')
-            style.configure('TSeparator', background='#3c3c3c')
-            self.root.configure(bg=bg)
-            self.log.configure(bg=text_bg, fg=text_fg, insertbackground=fg, selectbackground=selbg)
-            self.statusbar.configure(background=bg, foreground=fg)
-            self.root.option_add('*Menu.background', '#2d2d2d')
-            self.root.option_add('*Menu.foreground', '#e0e0e0')
-            self.root.option_add('*Menu.activeBackground', '#264f78')
-            self.root.option_add('*Menu.activeForeground', '#ffffff')
-        else:
-            style.theme_use('vista' if 'vista' in style.theme_names() else 'clam')
-            style.configure('TCombobox', padding=3, arrowsize=14)
-            style.configure('Accent.TButton', font=('', 9, 'bold'))
-            style.configure('Filter.TCombobox', arrowcolor='#555')
-            self.root.configure(bg='SystemButtonFace')
-            self.log.configure(bg='#ffffff', fg='#000000', insertbackground='#000000', selectbackground='#000080')
-            self.statusbar.configure(background='SystemButtonFace', foreground='SystemWindowText')
-            self.root.option_add('*Menu.background', 'SystemButtonFace')
-            self.root.option_add('*Menu.foreground', 'SystemWindowText')
-            self.root.option_add('*Menu.activeBackground', 'SystemHighlight')
-            self.root.option_add('*Menu.activeForeground', 'SystemHighlightText')
-        self.lbl_ok.config(foreground='#4ec94e' if dark else 'green')
-        self.lbl_fail.config(foreground='#f44747' if dark else 'red')
-        self.lbl_untested.config(foreground='#888888' if dark else 'gray')
-        self.tree.tag_configure('ok', foreground='#4ec94e' if dark else 'green')
-        self.tree.tag_configure('fail', foreground='#f44747' if dark else 'red')
-        self.tree.tag_configure('untested', foreground='#888888' if dark else 'gray')
-
-    # ── Testing ────────────────────────────────────────────────────
-
+    # ════════════════════════════════════════════════════════════════
+    #  Запуск проверок
+    # ════════════════════════════════════════════════════════════════
     def _start_all(self):
-        pf = self.filter_provider_s.get()
-        sf = self.filter_status.get()
-        fc = self.filter_source.get()
-        ff = self.filter_free.get()
+        pf, sf, fc = self.filter_provider.get(), self.filter_status.get(), self.filter_source.get()
+        query = self.search_var.get().strip().lower()
         items = []
         for x in self.model_list:
             pn, mid, mn, src, fr = x
-            if pf != 'all' and pn != pf: continue
-            if fc != 'all' and src != fc: continue
-            if ff == 'free' and not fr: continue
-            if ff == 'paid' and fr: continue
+            if pf != "all" and pn != pf:
+                continue
+            if fc != "all" and src != fc:
+                continue
+            if query and query not in mn.lower() and query not in mid.lower():
+                continue
             r = self.results.get(pn, {}).get(mid)
-            if r is None:
-                if sf not in ('all', 'untested'): continue
-            elif r['ok']:
-                if sf not in ('all', 'yes'): continue
-            else:
-                if sf not in ('all', 'no'): continue
+            if r is None and sf not in ("all", "untested"):
+                continue
+            if r is not None and r["ok"] and sf not in ("all", "yes"):
+                continue
+            if r is not None and not r["ok"] and sf not in ("all", "no"):
+                continue
             items.append(x)
         self._run_tests(items)
 
     def _start_selected(self):
         sel = self.tree.selection()
-        if not sel: messagebox.showinfo('Инфо', 'Выберите модели в таблице.'); return
-        items = []
-        for iid in sel:
-            v = self.tree.item(iid, 'values')
-            raw_name = v[1].replace(' \U0001f193', '')
-            for pn, mid, mn, src, _fr in self.model_list:
-                if pn == v[0] and mn == raw_name:
-                    items.append((pn, mid, mn, src, _fr)); break
-        self._run_tests(items)
+        if not sel:
+            messagebox.showinfo("Инфо", "Выберите модели на вкладке «Модели».")
+            self.nb.select(self.tab_models)
+            return
+        self._run_tests(self._items_from_sel(sel))
 
     def _run_tests(self, items):
-        if self.running or not items: return
-        self.running = True; self.cancel_flag = False
-        self.btn_all.config(state=tk.DISABLED); self.btn_sel.config(state=tk.DISABLED)
+        if self.running or not items:
+            return
+        self.running = True
+        self.cancel_flag = False
+        self.btn_all.config(state=tk.DISABLED)
+        self.btn_sel.config(state=tk.DISABLED)
         self.btn_stop.config(state=tk.NORMAL)
-        self.progress['maximum'] = len(items); self.progress['value'] = 0
+        self.dash_progress["maximum"] = len(items)
+        self.dash_progress["value"] = 0
+        self.dash_prog_lbl.config(text="Проверка %d моделей..." % len(items))
         threading.Thread(target=self._worker, args=(items,), daemon=True).start()
 
     def _stop(self):
-        if self.running: self.cancel_flag = True; self._log('Остановка...'); self._set_status('Остановка...')
+        if self.running:
+            self.cancel_flag = True
+            self._log("Остановка...", "warn")
+            self._set_status("Остановка...")
 
     def _worker(self, items):
-        to = self.timeout_val.get(); rt = self.retries_val.get(); dl = self.delay_val.get()
+        to, rt, dl = self.timeout_val.get(), self.retries_val.get(), self.delay_val.get()
+        verify = self.verify_ssl.get()
         batch_ok = 0
-        for i, (pn, mid, mn, _, _) in enumerate(items):
-            if self.cancel_flag: break
+        for i, (pn, mid, mn, _src, _fr) in enumerate(items):
+            if self.cancel_flag:
+                break
             p = self.providers.get(pn)
-            if not p: continue
-            keys = p.get('api_keys', [p['api_key']] if p.get('api_key') else [])
-            if not keys:
-                self._log('  \u041d\u0435\u0442 \u043a\u043b\u044e\u0447\u0435\u0439 \u0434\u043b\u044f %s' % pn)
-                self.results.setdefault(pn, {})[mid] = {'ok': False, 'msg': '\u041d\u0435\u0442 API \u043a\u043b\u044e\u0447\u0435\u0439', 'elapsed': 0}
+            if not p:
                 continue
-            self._log('  \u041a\u043b\u044e\u0447\u0435\u0439: %d, \u043f\u0440\u043e\u0431\u0443\u044e %s...' % (len(keys), pn))
-            print('[WORK] %s / %s: keys=%d, url=%s' % (pn, mid, len(keys), p.get('base_url', '?')))
-            ok_flag, msg, el = test_model(p['base_url'], keys, mid, timeout=to, retries=rt)
-            self.results.setdefault(pn, {})[mid] = {'ok': ok_flag, 'msg': msg, 'elapsed': el}
-            if ok_flag: batch_ok += 1
-            self._log('  %s (%.1fs) %s' % ('\u0423\u0421\u041f\u0415\u0425' if ok_flag else '\u041d\u0415\u0423\u0414\u0410\u0427\u0410', el, msg))
+            keys = p.get("api_keys", [])
+            if not keys:
+                self.results.setdefault(pn, {})[mid] = {"ok": False, "msg": "Нет API-ключей", "elapsed": 0}
+                self.root.after(0, self._log, "  Нет ключей для %s" % pn, "warn")
+                continue
+            ok, msg, el = test_model(p["base_url"], keys, mid, timeout=to, retries=rt,
+                                     verify=verify, log=lambda m: self.root.after(0, self._log, m))
+            self.results.setdefault(pn, {})[mid] = {"ok": ok, "msg": msg, "elapsed": el}
+            if ok:
+                batch_ok += 1
+            self.root.after(0, self._log, "  %s %s (%.1fs) — %s" %
+                            ("✓" if ok else "✗", mn, el, msg), "success" if ok else "error")
             self.root.after(0, self._refresh_table)
-            self.root.after(0, lambda v=i+1: self.progress.configure(value=v))
-            if i < len(items)-1 and not self.cancel_flag: time.sleep(dl)
+            self.root.after(0, lambda v=i + 1: self.dash_progress.configure(value=v))
+            if i < len(items) - 1 and not self.cancel_flag:
+                time.sleep(dl)
         self.root.after(0, lambda: self._on_done(batch_ok))
 
     def _on_done(self, batch_ok=0):
         self.running = False
-        self.btn_all.config(state=tk.NORMAL); self.btn_sel.config(state=tk.NORMAL); self.btn_stop.config(state=tk.DISABLED)
-        self._set_status('Готово')
-        ok = fail = 0
-        for pr in self.results.values():
-            for r in pr.values():
-                if r['ok']: ok += 1; continue
-                fail += 1
-        self._log('Завершено: %d УСПЕХ, %d НЕУДАЧА' % (ok, fail))
-        if batch_ok > 0:
-            def ask_save():
-                if messagebox.askyesno('Сохранить конфиг',
-                                       'Обнаружено %d работающих моделей.\n\nСохранить конфигурацию в opencode.jsonc\nтолько с работающими моделями?' % batch_ok):
-                    self._export_dialog(preselect_ok_only=True)
-            self.root.after(100, ask_save)
+        self.btn_all.config(state=tk.NORMAL)
+        self.btn_sel.config(state=tk.NORMAL)
+        self.btn_stop.config(state=tk.DISABLED)
+        ok = sum(1 for pr in self.results.values() for r in pr.values() if r["ok"])
+        fail = sum(1 for pr in self.results.values() for r in pr.values() if not r["ok"])
+        self.dash_prog_lbl.config(text="Завершено: %d работает, %d ошибок" % (ok, fail))
+        self._set_status("Готово")
+        self._log("Завершено: %d ✓ / %d ✗" % (ok, fail), "success" if ok else "info")
+        if batch_ok > 0 and messagebox.askyesno(
+                "Сохранить конфиг",
+                "Найдено %d работающих моделей.\nЭкспортировать рабочие модели в opencode.jsonc?" % batch_ok):
+            self._export_dialog(preselect_ok_only=True)
 
-    # ── Export to opencode.jsonc ──────────────────────────────────
-
+    # ════════════════════════════════════════════════════════════════
+    #  Экспорт
+    # ════════════════════════════════════════════════════════════════
     def _export_dialog(self, preselect_ok_only=False):
-        dlg = tk.Toplevel(self.root); dlg.title('\u042d\u043a\u0441\u043f\u043e\u0440\u0442 \u0432 opencode.jsonc')
-        dlg.geometry('720x650'); dlg.transient(self.root); dlg.grab_set()
-        f = ttk.Frame(dlg, padding=10); f.pack(fill=tk.BOTH, expand=True)
+        if not self.model_list:
+            messagebox.showinfo("Экспорт", "Нет моделей для экспорта.")
+            return
+        dlg = tk.Toplevel(self.root)
+        dlg.title("Экспорт в opencode.jsonc")
+        dlg.geometry("680x560")
+        dlg.transient(self.root)
+        dlg.grab_set()
+        f = ttk.Frame(dlg, padding=12)
+        f.pack(fill=tk.BOTH, expand=True)
 
-        # Путь
-        pf = ttk.Frame(f); pf.pack(fill=tk.X, pady=(0, 5))
-        ttk.Label(pf, text='\u041f\u0443\u0442\u044c:').pack(side=tk.LEFT)
-        path_v = tk.StringVar(value=os.path.join(SCRIPT_DIR, 'opencode.jsonc'))
-        ttk.Entry(pf, textvariable=path_v, width=55).pack(side=tk.LEFT, padx=5, fill=tk.X, expand=True)
-        ttk.Button(pf, text='\u041e\u0431\u0437\u043e\u0440', command=lambda: path_v.set(
-            filedialog.asksaveasfilename(title='\u0421\u043e\u0445\u0440\u0430\u043d\u0438\u0442\u044c \u043a\u043e\u043d\u0444\u0438\u0433',
-                                         defaultextension='.jsonc',
-                                         filetypes=[('JSONC', '*.jsonc'), ('JSON', '*.json'), ('All', '*.*')],
-                                         initialfile=os.path.basename(path_v.get()),
-                                         initialdir=os.path.dirname(path_v.get())) or path_v.get())
-                  ).pack(side=tk.LEFT)
-        # Бэкап
+        pf = ttk.Frame(f)
+        pf.pack(fill=tk.X, pady=(0, 6))
+        ttk.Label(pf, text="Путь:").pack(side=tk.LEFT)
+        path_v = tk.StringVar(value=os.path.join(SCRIPT_DIR, "opencode.jsonc"))
+        ttk.Entry(pf, textvariable=path_v).pack(side=tk.LEFT, fill=tk.X, expand=True, padx=6)
+        ttk.Button(pf, text="Обзор", command=lambda: path_v.set(
+            filedialog.asksaveasfilename(defaultextension=".jsonc",
+                                         filetypes=[("JSONC", "*.jsonc"), ("JSON", "*.json")],
+                                         initialfile="opencode.jsonc") or path_v.get())).pack(side=tk.LEFT)
         bkup_v = tk.BooleanVar(value=True)
-        ttk.Checkbutton(f, text='\u0421\u043e\u0437\u0434\u0430\u0442\u044c \u0431\u044d\u043a\u0430\u043f \u043e\u0440\u0438\u0433\u0438\u043d\u0430\u043b\u0430 \u0441 \u0434\u0430\u0442\u043e\u0439', variable=bkup_v).pack(anchor=tk.W)
+        ttk.Checkbutton(f, text="Создать бэкап с датой", variable=bkup_v).pack(anchor="w")
 
-        # Treeview с чекбоксами
-        ttk.Label(f, text='\u041c\u043e\u0434\u0435\u043b\u0438 (\u043e\u0442\u043c\u0435\u0442\u044c\u0442\u0435 \u043d\u0443\u0436\u043d\u044b\u0435, \u0438\u0437\u043c\u0435\u043d\u0438\u0442\u0435 \u043f\u043e\u0440\u044f\u0434\u043e\u043a):', font=('', 9, 'bold')).pack(anchor=tk.W, pady=(5, 2))
-        tvf = ttk.Frame(f); tvf.pack(fill=tk.BOTH, expand=True)
-        tv = ttk.Treeview(tvf, columns=('chk', 'name', 'info'), show='tree', selectmode='browse', height=14)
-        tv.heading('#0', text='')
-        tv.column('#0', width=0, stretch=False)
-        tv.column('chk', width=30, anchor=tk.CENTER)
-        tv.column('name', width=300)
-        tv.column('info', width=120)
-        v_sb = ttk.Scrollbar(tvf, orient=tk.VERTICAL, command=tv.yview)
-        tv.configure(yscrollcommand=v_sb.set)
-        tv.pack(side=tk.LEFT, fill=tk.BOTH, expand=True); v_sb.pack(side=tk.RIGHT, fill=tk.Y)
-        # Кнопки реордеринга
-        rbf = ttk.Frame(f); rbf.pack(fill=tk.X, pady=3)
-        def move_up():
-            sel = tv.selection()
-            if not sel: return
-            iid = sel[0]
-            parent = tv.parent(iid)
-            siblings = tv.get_children(parent)
-            idx = siblings.index(iid)
-            if idx > 0:
-                tv.move(iid, parent, idx - 1)
-                tv.selection_set(iid)
-                tv.focus(iid)
-        def move_down():
-            sel = tv.selection()
-            if not sel: return
-            iid = sel[0]
-            parent = tv.parent(iid)
-            siblings = tv.get_children(parent)
-            idx = siblings.index(iid)
-            if idx < len(siblings) - 1:
-                tv.move(iid, parent, idx + 1)
-                tv.selection_set(iid)
-                tv.focus(iid)
-        def move_top():
-            sel = tv.selection()
-            if not sel: return
-            iid = sel[0]
-            parent = tv.parent(iid)
-            tv.move(iid, parent, 0)
-            tv.selection_set(iid); tv.focus(iid)
-        def move_bottom():
-            sel = tv.selection()
-            if not sel: return
-            iid = sel[0]
-            parent = tv.parent(iid)
-            tv.move(iid, parent, len(tv.get_children(parent)))
-            tv.selection_set(iid); tv.focus(iid)
-        ttk.Label(rbf, text='\u041f\u043e\u0440\u044f\u0434\u043e\u043a:').pack(side=tk.LEFT, padx=(0, 5))
-        ttk.Button(rbf, text='\u25b2 \u0412\u0432\u0435\u0440\u0445', width=10, command=move_up).pack(side=tk.LEFT, padx=1)
-        ttk.Button(rbf, text='\u25bc \u0412\u043d\u0438\u0437', width=10, command=move_down).pack(side=tk.LEFT, padx=1)
-        ttk.Button(rbf, text='\u2b06 \u0412 \u043d\u0430\u0447\u0430\u043b\u043e', width=12, command=move_top).pack(side=tk.LEFT, padx=1)
-        ttk.Button(rbf, text='\u2b07 \u0412 \u043a\u043e\u043d\u0435\u0446', width=12, command=move_bottom).pack(side=tk.LEFT, padx=1)
+        ttk.Label(f, text="Отметьте модели для экспорта:",
+                  font=("Segoe UI", 9, "bold")).pack(anchor="w", pady=(6, 2))
+        tvf = ttk.Frame(f)
+        tvf.pack(fill=tk.BOTH, expand=True)
+        tv = ttk.Treeview(tvf, columns=("chk", "name", "info"), show="tree", height=14)
+        tv.column("#0", width=0, stretch=False)
+        tv.column("chk", width=34, anchor="center")
+        tv.column("name", width=360)
+        tv.column("info", width=120)
+        sb = ttk.Scrollbar(tvf, orient=tk.VERTICAL, command=tv.yview)
+        tv.configure(yscrollcommand=sb.set)
+        tv.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+        sb.pack(side=tk.RIGHT, fill=tk.Y)
 
-        # Заполнение дерева
-        chk_state = {}  # iid -> bool
-        prov_nodes = {}  # provider_name -> iid
-        seen_provs = []
+        chk = {}  # iid -> bool
         prov_models = {}
         for pn, mid, mn, src, fr in self.model_list:
-            if pn not in prov_models:
-                prov_models[pn] = []; seen_provs.append(pn)
-            prov_models[pn].append((mid, mn, src, fr))
-        for pn in seen_provs:
-            r = self.results.get(pn, {})
-            piid = tv.insert('', tk.END, values=('', pn, ''), tags=('provider',))
-            prov_nodes[pn] = piid
-            chk_state[piid] = True
-            tv.set(piid, 'chk', '\u2611')
-            # Определяем, есть ли у моделей префикс [GROUP]
-            raw = prov_models[pn]
-            has_prefix = any(mn.startswith('[') for _, mn, _, _ in raw)
-            if has_prefix:
-                subgroups = {}
-                for mid, mn, src, fr in raw:
-                    close = mn.index(']')
-                    grp = mn[1:close]
-                    clean = mn[close+1:].strip()
-                    subgroups.setdefault(grp, []).append((mid, clean, src, fr))
-                for grp_name in sorted(subgroups.keys(), key=lambda x: ('z' if any(m[3] for m in subgroups[x]) else 'a') + x):
-                    giid = tv.insert(piid, tk.END, values=('', grp_name, ''), tags=('subgroup',))
-                    chk_state[giid] = True
-                    tv.set(giid, 'chk', '\u2611')
-                    for mid, clean_name, src, fr in subgroups[grp_name]:
-                        res = r.get(mid)
-                        if res is None:
-                            info = '\u2014'
-                        elif res['ok']:
-                            info = '\u0423\u0421\u041f\u0415\u0425'
-                        else:
-                            info = '\u041d\u0415\u0423\u0414\u0410\u0427\u0410'
-                        miid = tv.insert(giid, tk.END, values=('', clean_name, info), tags=('model',))
-                        chk_state[miid] = True
-                        tv.set(miid, 'chk', '\u2611')
-                    tv.item(giid, open=True)
-            else:
-                # Плоские модели (без префикса) — сразу под провайдера
-                for mid, mn, src, fr in raw:
-                    res = r.get(mid)
-                    if res is None:
-                        info = '\u2014'
-                    elif res['ok']:
-                        info = '\u0423\u0421\u041f\u0415\u0425'
-                    else:
-                        info = '\u041d\u0415\u0423\u0414\u0410\u0427\u0410'
-                    miid = tv.insert(piid, tk.END, values=('', mn, info), tags=('model',))
-                    chk_state[miid] = True
-                    tv.set(miid, 'chk', '\u2611')
-            tv.item(piid, open=True)
+            prov_models.setdefault(pn, []).append((mid, mn, src, fr))
+        node_meta = {}  # model iid -> (provider, mid, mn)
+        for pn in prov_models:
+            piid = tv.insert("", tk.END, values=("☑", pn, ""), open=True)
+            chk[piid] = True
+            for mid, mn, src, fr in prov_models[pn]:
+                r = self.results.get(pn, {}).get(mid)
+                info = "—" if r is None else ("✓" if r["ok"] else "✗")
+                checked = True if not preselect_ok_only else (r is not None and r["ok"])
+                miid = tv.insert(piid, tk.END, values=("☑" if checked else "☐", mn, info))
+                chk[miid] = checked
+                node_meta[miid] = (pn, mid, mn)
 
-        # Переключение чекбоксов (3 уровня: провайдер → подгруппа → модель)
-        tv.tag_configure('dim', foreground='#888888')
-        def _update_vis(iid):
-            tags = list(tv.item(iid, 'tags'))
-            if chk_state.get(iid, False):
-                tags = [t for t in tags if t != 'dim']
-            elif 'dim' not in tags:
-                tags.append('dim')
-            tv.item(iid, tags=tuple(tags))
-        def _model_count(iid):
-            """Рекурсивно считает сколько моделей-листьев отмечено из скольких."""
-            kids = tv.get_children(iid)
-            if not kids:
-                return (1 if chk_state.get(iid, False) else 0, 1)
-            ok, total = 0, 0
-            for k in kids:
-                c, t = _model_count(k)
-                ok += c; total += t
-            return ok, total
-        def _set_tree_state(iid, checked):
-            """Устанавливает состояние на iid и всех его потомках."""
-            chk_state[iid] = checked
-            tv.set(iid, 'chk', '\u2611' if checked else '\u2610')
-            _update_vis(iid)
-            for k in tv.get_children(iid):
-                _set_tree_state(k, checked)
-        def _update_up(iid):
-            """Пересчитывает и обновляет родителя iid на основе моделей-листьев."""
-            parent = tv.parent(iid)
-            if parent:
-                ok, total = _model_count(parent)
-                if ok == 0:
-                    tv.set(parent, 'chk', '\u2610'); chk_state[parent] = False
-                elif ok == total:
-                    tv.set(parent, 'chk', '\u2611'); chk_state[parent] = True
-                else:
-                    tv.set(parent, 'chk', '\u2612'); chk_state[parent] = True
-                _update_vis(parent)
-                _update_up(parent)
-        def toggle_check(iid):
-            cur = tv.set(iid, 'chk')
-            checked = (cur != '\u2611')
-            _set_tree_state(iid, checked)
-            _update_up(iid)
-        def on_tree_click(e):
+        def toggle(iid):
+            new = not chk.get(iid, False)
+            chk[iid] = new
+            tv.set(iid, "chk", "☑" if new else "☐")
+            for c in tv.get_children(iid):
+                chk[c] = new
+                tv.set(c, "chk", "☑" if new else "☐")
+
+        def on_click(e):
             iid = tv.identify_row(e.y)
-            if not iid: return
-            col = tv.identify_column(e.x)
-            if col in ('#0', '#1'):
-                toggle_check(iid)
-                return 'break'
-        tv.bind('<Button-1>', on_tree_click, '+')
+            if iid and tv.identify_column(e.x) in ("#0", "#1"):
+                toggle(iid)
+                return "break"
+        tv.bind("<Button-1>", on_click, "+")
 
-        # Выбор / снятие
-        bf = ttk.Frame(f); bf.pack(fill=tk.X, pady=3)
-        def _all_models():
-            """Генератор всех (iid, info) моделей-листьев (2 или 3 уровня)."""
-            for piid in tv.get_children():
-                kids = tv.get_children(piid)
-                if not kids: continue
-                # 2 уровня: сразу модели
-                if tv.item(kids[0], 'tags')[0] != 'subgroup':
-                    for miid in kids:
-                        yield miid, tv.set(miid, 'info')
-                else:
-                    # 3 уровня: провайдер → подгруппа → модель
-                    for giid in kids:
-                        for miid in tv.get_children(giid):
-                            yield miid, tv.set(miid, 'info')
-        def mark_valid():
-            for miid, info in _all_models():
-                checked = (info == '\u0423\u0421\u041f\u0415\u0425')
-                chk_state[miid] = checked
-                tv.set(miid, 'chk', '\u2611' if checked else '\u2610')
-                _update_vis(miid)
-            for piid in tv.get_children():
-                _update_up(piid)
-        def uncheck_all():
-            for piid in tv.get_children():
-                for ciid in tv.get_children(piid):
-                    chk_state[ciid] = False
-                    tv.set(ciid, 'chk', '\u2610')
-                    _update_vis(ciid)
-                    # Если есть вложенные модели (3 уровня) — снять и их
-                    if tv.get_children(ciid):
-                        for miid in tv.get_children(ciid):
-                            chk_state[miid] = False
-                            tv.set(miid, 'chk', '\u2610')
-                            _update_vis(miid)
-                chk_state[piid] = False
-                tv.set(piid, 'chk', '\u2610')
-                _update_vis(piid)
-        ttk.Button(bf, text='\u2713 \u0412\u044b\u0431\u0440\u0430\u0442\u044c \u0440\u0430\u0431\u043e\u0447\u0438\u0435', command=mark_valid).pack(side=tk.LEFT, padx=2)
-        ttk.Button(bf, text='\u2610 \u0421\u043d\u044f\u0442\u044c \u0432\u0441\u0435', command=uncheck_all).pack(side=tk.LEFT, padx=2)
-        if preselect_ok_only:
-            mark_valid()
+        bf = ttk.Frame(f)
+        bf.pack(fill=tk.X, pady=8)
 
-        # Ключи для провайдеров
-        ttk.Label(f, text='\u041a\u043b\u044e\u0447\u0438 \u043f\u0440\u043e\u0432\u0430\u0439\u0434\u0435\u0440\u043e\u0432 (\u0438\u0437\u043c\u0435\u043d\u0438\u0442\u0435 \u043f\u0440\u0438 \u043d\u0435\u043e\u0431\u0445\u043e\u0434\u0438\u043c\u043e\u0441\u0442\u0438):', font=('', 9, 'bold')).pack(anchor=tk.W, pady=(8, 2))
-        kf = ttk.Frame(f); kf.pack(fill=tk.X)
-        key_vars = {}  # provider_name -> StringVar
-        key_entries = {}  # provider_name -> Entry
-        kff = ttk.Frame(kf); kff.pack(fill=tk.X, pady=2)
-        kff.columnconfigure(1, weight=1)
-        for i, pn in enumerate(seen_provs):
-            keys = self.providers.get(pn, {}).get('api_keys', [])
-            key_str = keys[0] if keys else ''
-            kv = tk.StringVar(value=key_str)
-            key_vars[pn] = kv
-            ttk.Label(kff, text=pn + ':', width=12, anchor=tk.E, font=('', 8)).grid(row=i, column=0, sticky=tk.W, padx=(0, 4), pady=1)
-            ke = ttk.Entry(kff, textvariable=kv, width=50, show='*')
-            ke.grid(row=i, column=1, sticky=tk.EW, padx=1, pady=1)
-            key_entries[pn] = ke
-            def toggle_show(pn=pn, ke=ke):
-                if ke.cget('show') == '*':
-                    ke.configure(show='')
-                else:
-                    ke.configure(show='*')
-            ttk.Button(kff, text='\u041f\u043e\u043a\u0430\u0437\u0430\u0442\u044c', width=8, command=toggle_show).grid(row=i, column=2, padx=2, pady=1)
-
-        # Кнопки сохранения
-        sbf = ttk.Frame(f); sbf.pack(fill=tk.X, pady=(10, 0))
         def do_save():
-            p = path_v.get().strip()
-            if not p:
-                messagebox.showerror('\u041e\u0448\u0438\u0431\u043a\u0430', '\u0423\u043a\u0430\u0436\u0438\u0442\u0435 \u043f\u0443\u0442\u044c \u0434\u043b\u044f \u0441\u043e\u0445\u0440\u0430\u043d\u0435\u043d\u0438\u044f')
+            path = path_v.get().strip()
+            if not path:
+                messagebox.showerror("Ошибка", "Укажите путь.")
                 return
-            # Бэкап
-            if bkup_v.get() and os.path.isfile(p):
-                from datetime import datetime
-                ts = datetime.now().strftime('%Y%m%d_%H%M%S')
-                bak = p + '.bak_' + ts
+            if bkup_v.get() and os.path.isfile(path):
+                import shutil
+                ts = datetime.now().strftime("%Y%m%d_%H%M%S")
                 try:
-                    import shutil
-                    shutil.copy2(p, bak)
-                except Exception as e:
-                    if not messagebox.askyesno('\u0411\u044d\u043a\u0430\u043f', '\u041d\u0435 \u0443\u0434\u0430\u043b\u043e\u0441\u044c \u0441\u043e\u0437\u0434\u0430\u0442\u044c \u0431\u044d\u043a\u0430\u043f:\n%s\n\n\u041f\u0440\u043e\u0434\u043e\u043b\u0436\u0438\u0442\u044c?' % e):
-                        return
-            # Сбор данных из дерева (2 или 3 уровня)
-            provider_order = []
-            models_by_prov = {}
-            keys_by_prov = {}
-            for piid in tv.get_children():
-                pn = tv.item(piid, 'values')[1]
-                if not chk_state.get(piid, False):
+                    shutil.copy2(path, path + ".bak_" + ts)
+                except Exception:
+                    pass
+            provider_block = {}
+            for miid, (pn, mid, mn) in node_meta.items():
+                if not chk.get(miid):
                     continue
-                provider_order.append(pn)
-                models_by_prov[pn] = []
-                kids = tv.get_children(piid)
-                if not kids: continue
-                is_nested = tv.item(kids[0], 'tags')[0] == 'subgroup'
-                if is_nested:
-                    for giid in kids:
-                        if not chk_state.get(giid, False):
-                            continue
-                        grp_name = tv.item(giid, 'values')[1]
-                        for miid in tv.get_children(giid):
-                            if not chk_state.get(miid, False):
-                                continue
-                            clean_name = tv.item(miid, 'values')[1]
-                            full_name = '[%s] %s' % (grp_name, clean_name)
-                            mid = full_name
-                            src = 'opencode'
-                            for x in self.model_list:
-                                if x[0] == pn and x[2] == full_name:
-                                    mid = x[1]; src = x[3]; break
-                            models_by_prov[pn].append((mid, full_name, src))
-                else:
-                    for miid in kids:
-                        if not chk_state.get(miid, False):
-                            continue
-                        mn = tv.item(miid, 'values')[1]
-                        mid = mn
-                        src = 'opencode'
-                        for x in self.model_list:
-                            if x[0] == pn and x[2] == mn:
-                                mid = x[1]; src = x[3]; break
-                        models_by_prov[pn].append((mid, mn, src))
-                keys_by_prov[pn] = key_vars[pn].get().strip()
-                keys_by_prov[pn] = key_vars[pn].get().strip()
-            # Построение JSONC
-            lines = ['{']
-            lines.append('  "provider": {')
-            for idx, pn in enumerate(provider_order):
-                lines.append('    "%s": {' % pn)
-                lines.append('      "name": "%s",' % pn)
-                lines.append('      "options": {')
-                bu = self.providers.get(pn, {}).get('base_url', '')
+                pb = provider_block.setdefault(pn, {"name": pn, "options": {}, "models": {}})
+                bu = self.providers.get(pn, {}).get("base_url", "")
+                keys = self.providers.get(pn, {}).get("api_keys", [])
                 if bu:
-                    lines.append('        "baseURL": "%s",' % bu)
-                k = keys_by_prov.get(pn, '')
-                if k:
-                    lines.append('        "apiKey": "%s"' % k)
-                lines.append('      },')
-                lines.append('      "models": {')
-                for midx, (mid, mn, src) in enumerate(models_by_prov[pn]):
-                    comma = ',' if midx < len(models_by_prov[pn]) - 1 else ''
-                    lines.append('        "%s": { "name": "%s" }%s' % (mid, mn, comma))
-                lines.append('      }')
-                comma = ',' if idx < len(provider_order) - 1 else ''
-                lines.append('    }%s' % comma)
-            lines.append('  }')
-            lines.append('}')
+                    pb["options"]["baseURL"] = bu
+                if keys:
+                    pb["options"]["apiKey"] = keys[0]
+                pb["models"][mid] = {"name": mn}
+            if not provider_block:
+                messagebox.showwarning("Экспорт", "Не выбрано ни одной модели.")
+                return
             try:
-                with open(p, 'w', encoding='utf-8') as f:
-                    f.write('\n'.join(lines) + '\n')
-                self._log('\u042d\u043a\u0441\u043f\u043e\u0440\u0442\u0438\u0440\u043e\u0432\u0430\u043d\u043e: %s' % p)
-                self._set_status('\u042d\u043a\u0441\u043f\u043e\u0440\u0442\u0438\u0440\u043e\u0432\u0430\u043d\u043e: %s' % os.path.basename(p))
+                with open(path, "w", encoding="utf-8") as fp:
+                    json.dump({"provider": provider_block}, fp, ensure_ascii=False, indent=2)
+                self._log("Экспортировано в %s" % path, "success")
+                self._set_status("Экспортировано: %s" % os.path.basename(path))
                 dlg.destroy()
             except Exception as e:
-                messagebox.showerror('\u041e\u0448\u0438\u0431\u043a\u0430', '\u041d\u0435 \u0443\u0434\u0430\u043b\u043e\u0441\u044c \u0441\u043e\u0445\u0440\u0430\u043d\u0438\u0442\u044c:\n%s' % e)
-        ttk.Button(sbf, text='\U0001f4be \u0421\u043e\u0445\u0440\u0430\u043d\u0438\u0442\u044c', style='Accent.TButton', command=do_save).pack(side=tk.LEFT, padx=2)
-        ttk.Button(sbf, text='\u041e\u0442\u043c\u0435\u043d\u0430', command=dlg.destroy).pack(side=tk.LEFT, padx=2)
-        # Очистка при закрытии
-        dlg.bind('<Destroy>', lambda e: None)
+                messagebox.showerror("Ошибка", "Не удалось сохранить:\n%s" % e)
 
-    # ── Export ─────────────────────────────────────────────────────
+        ttk.Button(bf, text="💾 Сохранить", style="Accent.TButton", command=do_save).pack(side=tk.LEFT, padx=2)
+        ttk.Button(bf, text="Отмена", command=dlg.destroy).pack(side=tk.LEFT, padx=2)
 
     def _export_results(self):
-        p = filedialog.asksaveasfilename(title='Экспорт результатов', defaultextension='.json', filetypes=[('JSON', '*.json'), ('CSV', '*.csv'), ('All', '*.*')])
-        if not p: return
+        if not self.results:
+            messagebox.showinfo("Экспорт", "Нет результатов — сначала запустите проверку.")
+            return
+        p = filedialog.asksaveasfilename(defaultextension=".json",
+                                         filetypes=[("JSON", "*.json"), ("CSV", "*.csv")])
+        if not p:
+            return
         try:
-            if p.endswith('.csv'): self._export_csv(p)
-            else: self._export_json(p)
-            self._log('Результаты экспортированы: %s' % p); self._set_status('Экспортировано: %s' % os.path.basename(p))
-        except Exception as e: messagebox.showerror('Ошибка', 'Не удалось экспортировать:\n%s' % e)
+            if p.lower().endswith(".csv"):
+                self._export_csv(p)
+            else:
+                with open(p, "w", encoding="utf-8") as f:
+                    json.dump(self.results, f, ensure_ascii=False, indent=2)
+            self._log("Результаты экспортированы: %s" % p, "success")
+            self._set_status("Экспортировано: %s" % os.path.basename(p))
+        except Exception as e:
+            messagebox.showerror("Ошибка", "Не удалось экспортировать:\n%s" % e)
 
-    def _export_json(self, p):
-        with open(p, 'w', encoding='utf-8') as f:
-            json.dump(self.results, f, ensure_ascii=False, indent=2)
-
-    def _export_csv(self, p):
-        with open(p, 'w', encoding='utf-8-sig') as f:
-            f.write('Provider,Model,Source,Status,Response,Time\n')
+    def _export_csv(self, path):
+        import csv
+        with open(path, "w", encoding="utf-8-sig", newline="") as f:
+            w = csv.writer(f)
+            w.writerow(["Provider", "Model", "Source", "Status", "Response", "Time"])
             for pn, mid, mn, src, _fr in self.model_list:
                 r = self.results.get(pn, {}).get(mid)
                 if r is None:
-                    f.write('"%s","%s","%s",-.,\n' % (pn, mn, src))
-                elif r['ok']:
-                    f.write('"%s","%s","%s",OK,"%s",%.1f\n' % (pn, mn, src, r['msg'].replace('"', '""'), r['elapsed']))
+                    w.writerow([pn, mn, src, "untested", "", ""])
                 else:
-                    f.write('"%s","%s","%s",FAIL,"%s",%.1f\n' % (pn, mn, src, r['msg'].replace('"', '""'), r['elapsed']))
+                    w.writerow([pn, mn, src, "OK" if r["ok"] else "FAIL", r["msg"], "%.1f" % r["elapsed"]])
 
-    # ── Misc ───────────────────────────────────────────────────────
-
+    # ════════════════════════════════════════════════════════════════
+    #  Лог
+    # ════════════════════════════════════════════════════════════════
     def _init_log_file(self):
         try:
-            if not os.path.isdir(LOGS_DIR):
-                os.makedirs(LOGS_DIR)
-            log_name = time.strftime('%Y-%m-%d') + '.log'
-            self.log_file = open(os.path.join(LOGS_DIR, log_name), 'a', encoding='utf-8')
+            os.makedirs(LOGS_DIR, exist_ok=True)
+            self.log_file = open(os.path.join(LOGS_DIR, time.strftime("%Y-%m-%d") + ".log"),
+                                 "a", encoding="utf-8")
         except Exception:
             self.log_file = None
 
-    def _log(self, msg):
+    def _log(self, msg, tag=None):
+        if tag is None:
+            low = msg.lower()
+            if any(w in low for w in ("ошибка", "error", "✗", "не работает", "неверн", "403", "401")):
+                tag = "error"
+            elif any(w in low for w in ("работает", "успех", "✓", "success", "200", "сохранен")):
+                tag = "success"
+            elif any(w in low for w in ("warn", "timeout", "429", "лимит", "остановка")):
+                tag = "warn"
+            else:
+                tag = "info"
         self.log.config(state=tk.NORMAL)
-        
-        # Определение цвета
-        tag = 'info'
-        m_low = msg.lower()
-        if any(word in m_low for word in ('ошибка', 'error', 'неудача', '403', '401', 'fail')):
-            tag = 'error'
-        elif any(word in m_low for word in ('успешно', 'валиден', 'работает', 'success', '200')):
-            tag = 'success'
-        elif any(word in m_low for word in ('предупреждение', 'warn', 'timeout', '429')):
-            tag = 'warn'
-        
-        self.log.insert(tk.END, msg + '\n', tagS=tag)
+        self.log.insert(tk.END, msg + "\n", tag)   # FIX: позиционный тег вместо tagS=
         self.log.see(tk.END)
         self.log.config(state=tk.DISABLED)
-        
         if self.log_file:
             try:
-                self.log_file.write('[%s] %s\n' % (time.strftime('%H:%M:%S'), msg))
+                self.log_file.write("[%s] %s\n" % (time.strftime("%H:%M:%S"), msg))
                 self.log_file.flush()
             except Exception:
                 pass
 
-    def _set_status(self, text):
-        self.statusbar.config(text=text)
+    def _clear_log(self):
+        self.log.config(state=tk.NORMAL)
+        self.log.delete("1.0", tk.END)
+        self.log.config(state=tk.DISABLED)
 
     def _show_log_browser(self):
         if not os.path.isdir(LOGS_DIR):
-            messagebox.showinfo('Логи', 'Нет файлов логов')
+            messagebox.showinfo("Логи", "Нет файлов логов.")
             return
-        logs = sorted([f for f in os.listdir(LOGS_DIR) if f.endswith('.log')], reverse=True)
+        logs = sorted((f for f in os.listdir(LOGS_DIR) if f.endswith(".log")), reverse=True)
         if not logs:
-            messagebox.showinfo('Логи', 'Нет файлов логов')
+            messagebox.showinfo("Логи", "Нет файлов логов.")
             return
         dlg = tk.Toplevel(self.root)
-        dlg.title('Просмотр логов')
-        dlg.geometry('700x500')
+        dlg.title("Логи на диске")
+        dlg.geometry("720x500")
         dlg.transient(self.root)
-        f = ttk.Frame(dlg, padding=5)
+        f = ttk.Frame(dlg, padding=6)
         f.pack(fill=tk.BOTH, expand=True)
-        left = ttk.Frame(f)
-        left.pack(side=tk.LEFT, fill=tk.Y, padx=(0, 5))
-        ttk.Label(left, text='Файлы:').pack()
-        lb = tk.Listbox(left, width=30, height=20)
-        lb.pack(fill=tk.BOTH, expand=True)
-        for log in logs:
-            lb.insert(tk.END, log)
-        right = ttk.Frame(f)
-        right.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
-        txt = tk.Text(right, wrap=tk.WORD)
-        txt.pack(fill=tk.BOTH, expand=True)
-        vsb = ttk.Scrollbar(right, orient=tk.VERTICAL, command=txt.yview)
-        txt.configure(yscrollcommand=vsb.set)
-        vsb.pack(side=tk.RIGHT, fill=tk.Y)
-        def load_log():
+        lb = tk.Listbox(f, width=26)
+        lb.pack(side=tk.LEFT, fill=tk.Y)
+        for lg in logs:
+            lb.insert(tk.END, lg)
+        txt = tk.Text(f, wrap=tk.WORD)
+        txt.pack(side=tk.LEFT, fill=tk.BOTH, expand=True, padx=(6, 0))
+
+        def load(_=None):
             sel = lb.curselection()
             if not sel:
                 return
-            log_name = lb.get(sel[0])
-            txt.delete('1.0', tk.END)
+            txt.delete("1.0", tk.END)
             try:
-                with open(os.path.join(LOGS_DIR, log_name), 'r', encoding='utf-8') as lf:
+                with open(os.path.join(LOGS_DIR, lb.get(sel[0])), "r", encoding="utf-8") as lf:
                     txt.insert(tk.END, lf.read())
             except Exception as e:
-                txt.insert(tk.END, 'Ошибка загрузки: %s' % e)
-        lb.bind('<<ListboxSelect>>', lambda e: load_log())
-        if logs:
-            lb.selection_set(0)
-            load_log()
+                txt.insert(tk.END, "Ошибка: %s" % e)
+        lb.bind("<<ListboxSelect>>", load)
+        lb.selection_set(0)
+        load()
+
+    # ════════════════════════════════════════════════════════════════
+    #  Прочее
+    # ════════════════════════════════════════════════════════════════
+    def _set_status(self, text):
+        self.statusbar.config(text=text)
 
     def _about(self):
-        messagebox.showinfo('О программе', 'AgentChecker v2.0\n\nПроверка доступности AI-моделей\nиз конфигурации opencode.\n\nPython: %s\nHTTP: %s' % (sys.version.split()[0], _HTTP))
+        backend = "requests" if _HAS_REQUESTS else "urllib"
+        messagebox.showinfo(
+            "О программе",
+            "AgentChecker %s\n\nПроверка доступности AI-моделей из конфигурации OpenCode.\n\n"
+            "Python: %s\nHTTP-backend: %s\nTLS-проверка: %s" %
+            (APP_VERSION, sys.version.split()[0], backend,
+             "включена" if self.verify_ssl.get() else "ОТКЛЮЧЕНА"))
 
+    def _on_close(self):
+        self.geometry_val.set(self.root.geometry())
+        self._save_settings()
+        if self.log_file:
+            try:
+                self.log_file.close()
+            except Exception:
+                pass
+        self.root.destroy()
 
-# ── Entry ──────────────────────────────────────────────────────────
-
-def _hide_ollama_window():
-    """Сворачивает окна Ollama в трей при запуске, следит за новыми окнами 10 секунд."""
-    import ctypes, time, threading
-    user32 = ctypes.windll.user32
-    kernel32 = ctypes.windll.kernel32
-    psapi = ctypes.windll.psapi
-    GetWindowText = user32.GetWindowTextW
-    GetWindowTextLength = user32.GetWindowTextLengthW
-    EnumWindows = user32.EnumWindows
-    GetWindowThreadProcessId = user32.GetWindowThreadProcessId
-    EnumWindowsProc = ctypes.WINFUNCTYPE(ctypes.c_bool, ctypes.c_int, ctypes.c_int)
-    PROCESS_QUERY_INFORMATION = 0x0400
-    PROCESS_VM_READ = 0x0010
-
-    def _hide_or_minimize(hwnd, pid):
-        """ollama.exe — SW_HIDE, ollama app.exe — SW_MINIMIZE."""
-        proc = kernel32.OpenProcess(PROCESS_QUERY_INFORMATION | PROCESS_VM_READ, False, pid)
-        if proc:
-            buf = ctypes.create_unicode_buffer(260)
-            psapi.GetModuleBaseNameW(proc, None, buf, 260)
-            kernel32.CloseHandle(proc)
-            pname = buf.value.lower()
-        else:
-            pname = ''
-        if 'ollama.exe' == pname or pname.endswith('ollama.exe'):
-            user32.ShowWindowAsync(hwnd, 0)  # SW_HIDE
-        else:
-            user32.ShowWindowAsync(hwnd, 6)  # SW_MINIMIZE
-
-    def _find_and_hide():
-        found = []
-        def callback(hwnd, _):
-            length = GetWindowTextLength(hwnd) + 1
-            buf = ctypes.create_unicode_buffer(length)
-            GetWindowText(hwnd, buf, length)
-            title = buf.value.lower()
-            if 'ollama' in title or 'olama' in title:
-                pid = ctypes.c_ulong()
-                GetWindowThreadProcessId(hwnd, ctypes.byref(pid))
-                found.append((hwnd, pid.value))
-            return True
-        EnumWindows(EnumWindowsProc(callback), 0)
-        for hwnd, pid in found:
-            _hide_or_minimize(hwnd, pid)
-        return bool(found)
-
-    # Первичная проверка
-    _find_and_hide()
-    # Фоновая проверка новых окон 10 секунд
-    def _watcher():
-        for _ in range(20):
-            time.sleep(0.5)
-            _find_and_hide()
-    threading.Thread(target=_watcher, daemon=True).start()
 
 def main():
     root = tk.Tk()
     AgentCheckerApp(root)
     root.mainloop()
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     main()

@@ -1,0 +1,6 @@
+__pycache__/
+*.pyc
+providers.json
+settings.json
+logs/
+opencode.jsonc.bak_*
