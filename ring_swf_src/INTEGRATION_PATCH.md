@@ -54,9 +54,13 @@ with:
                                                 _pick_ring_clr(id, isAlly),
                                                 mody.markerReload_x, mody.markerReload_y)
                         if ring is not None:
-                            # optional: drive spin speed from the existing config value
+                            # Map the existing "seconds-per-frame" speed slider to the SWF's
+                            # per-frame rotation fraction, preserving the original cadence
+                            # (markerRing_frames per full turn @ 30 fps). Smaller slider = faster.
                             try:
-                                ring.movie.animSpeed = float(mody.markerRing_anim_speed)
+                                _frames = float(getattr(mody, 'markerRing_frames', 39)) or 39.0
+                                _sec = max(0.001, float(mody.markerRing_anim_speed))
+                                ring.movie.animSpeed = 1.0 / (_sec * _frames * 30.0)
                             except Exception:
                                 pass
                             ring.visible = True
@@ -94,10 +98,18 @@ Find (≈ the marker-recolour block):
 
 ---
 
-## 4. `animateReloadRing` is now dead
+## 4. Remove the second `animateReloadRing` scheduler (in `setnewReloadTime`)
 
-Nothing calls it after edit #2. Leave it (harmless) or delete it. If you keep it,
-it never runs because the scheduling callback was removed.
+There is a second place that schedules the PNG frame loop. Delete it:
+
+```python
+                # DELETE these two lines in setnewReloadTime():
+                if not was_reloading:
+                    BigWorld.callback(mody.markerRing_anim_speed, (lambda vid=id: animateReloadRing(vid)))
+```
+
+After this, `animateReloadRing` is never called (it cycled `.textureName`, which
+`GUI.Flash` doesn't have). Leave the function body or delete it — it's dead.
 
 ---
 
