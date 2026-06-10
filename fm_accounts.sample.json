@@ -1,9 +1,0 @@
-[
-  {
-    "name": "My Account",
-    "email": "user@example.com",
-    "password": "",
-    "cookie": "session=...; token=...",
-    "api_key": "fm-..."
-  }
-]
