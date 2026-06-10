@@ -1,0 +1,29 @@
+<ZJ_ContourLook>
+    <!-- Версия XML файла -->
+    <versionMod>CL Trial 033</versionMod>
+
+    <!-- Вкл. мода по умолчанию -->
+    <modEnable>True</modEnable>
+    <!-- Клавиша переключения режимов мода -->
+    <toggleKey>KEY_NUMPAD1</toggleKey>
+    <!-- Клавиша принудительного включения контуров -->
+    <altKey>KEY_LALT</altKey>
+
+    <!-- Показывать контуры рентгена только в снайперском режиме -->
+    <sniperOnly>False</sniperOnly>
+    <!-- Отключеие рентгена далее дистанции... в метрах -->
+    <distanceFar>1000</distanceFar>
+    <!-- Отключеие рентгена ближе дистанции... в метрах -->
+    <distanceClose>0</distanceClose>
+    <!-- Маркировать контуром открытые цели -->
+    <freeAttackMarker>True</freeAttackMarker>
+    <!-- Цвет контура рентгена противника (RGBA, диапозон 0-255) -->
+    <enemyRentClr>28 198 217 130</enemyRentClr>
+    <!-- Цвет контура противника в прицеле (RGBA, диапозон 0-255) -->
+    <enemyHighClr>240 12 12 230</enemyHighClr>
+    <!-- Цвет контура союзника в прицеле (RGBA, диапозон 0-255) -->
+    <allyHighClr>00 255 45 230</allyHighClr>
+    <!-- Цвет контура открытой цели (RGBA, диапозон 0-255) -->
+    <attackClr>242 0 218 255</attackClr>
+
+</ZJ_ContourLook>
