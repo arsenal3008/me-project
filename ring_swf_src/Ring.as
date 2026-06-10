@@ -45,8 +45,20 @@ package {
             try {
                 stage.scaleMode = StageScaleMode.NO_SCALE;
                 stage.align = StageAlign.TOP_LEFT;
+                stage.stageFocusRect = false;
             } catch (err:*) {}
+            // Keyboard-safe: a purely decorative overlay must never grab mouse,
+            // tab or keyboard focus, otherwise Scaleform routes WASD/keys to it
+            // and the game loses input. Make the whole subtree non-interactive.
+            this.mouseEnabled = false;
+            this.mouseChildren = false;
+            this.tabEnabled = false;
+            this.tabChildren = false;
+            this.focusRect = false;
             _gfx = new Sprite();
+            _gfx.mouseEnabled = false;
+            _gfx.mouseChildren = false;
+            _gfx.tabEnabled = false;
             addChild(_gfx);
             _registerBridge();
             addEventListener(Event.ENTER_FRAME, _onFrame);
