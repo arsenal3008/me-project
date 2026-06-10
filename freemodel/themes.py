@@ -285,6 +285,60 @@ def get_palette(name):
     return THEMES.get(name, THEMES[DEFAULT_THEME])
 
 
+def readable_on(hex_color):
+    """Возвращает контрастный цвет текста (#11111b/#ffffff) для данного фона."""
+    try:
+        r = int(hex_color[1:3], 16)
+        g = int(hex_color[3:5], 16)
+        b = int(hex_color[5:7], 16)
+    except (ValueError, IndexError, TypeError):
+        return "#ffffff"
+    return "#11111b" if (0.299 * r + 0.587 * g + 0.114 * b) > 150 else "#ffffff"
+
+
+def style_scrollbar(sb, palette):
+    """Тёмная палитра для классического tk.Scrollbar (ttk-скроллбары темятся сами)."""
+    try:
+        sb.configure(background=palette["surface"], troughcolor=palette["bg"],
+                     activebackground=palette["accent"], borderwidth=0,
+                     highlightthickness=0)
+    except tk.TclError:
+        pass
+
+
+def style_text(widget, palette):
+    """Применяет тёмную палитру к классическому tk.Text / ScrolledText."""
+    c = palette
+    try:
+        widget.configure(background=c["input_bg"], foreground=c["input_fg"],
+                         insertbackground=c["fg"],
+                         selectbackground=c["tree_sel_bg"],
+                         selectforeground=c["tree_sel_fg"],
+                         highlightthickness=1, highlightbackground=c["border"],
+                         highlightcolor=c["accent"], borderwidth=0)
+    except tk.TclError:
+        pass
+    vbar = getattr(widget, "vbar", None)  # внутренний скроллбар ScrolledText
+    if vbar is not None:
+        style_scrollbar(vbar, c)
+
+
+def style_canvas(widget, palette):
+    """Тёмный фон для tk.Canvas (область прокрутки в диалогах)."""
+    try:
+        widget.configure(background=palette["bg"], highlightthickness=0)
+    except tk.TclError:
+        pass
+
+
+def style_toplevel(win, palette):
+    """Тёмный фон для tk.Toplevel/диалога."""
+    try:
+        win.configure(bg=palette["bg"])
+    except tk.TclError:
+        pass
+
+
 def apply_theme(name="midnight", root=None):
     """Применяет ttk стили согласно палитре. Возвращает словарь цветов."""
     c = get_palette(name)

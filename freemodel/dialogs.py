@@ -6,6 +6,7 @@ from datetime import datetime, timezone
 from tkinter import messagebox, scrolledtext, ttk
 
 from . import browser_login
+from . import themes as themes_mod
 from .account import FreeModelAccount
 from .widgets import ProgressDialog, ResizableDialog
 
@@ -131,6 +132,7 @@ class AddAccountDialog(ResizableDialog):
                        "(Application → Cookies):",
                   wraplength=520).pack(anchor=tk.W, pady=(0, 4))
         cookie_txt = scrolledtext.ScrolledText(tab_c, height=6)
+        themes_mod.style_text(cookie_txt, self.palette)
         cookie_txt.pack(fill=tk.BOTH, expand=True, pady=(0, 6))
         ttk.Label(tab_c, text="API-ключ (опц.):").pack(anchor=tk.W)
         af2, av2 = _pw_entry(tab_c); af2.pack(fill=tk.X)
@@ -216,6 +218,7 @@ class EditAccountDialog(ResizableDialog):
         outer.pack(fill=tk.BOTH, expand=True)
 
         canvas = tk.Canvas(outer, highlightthickness=0)
+        themes_mod.style_canvas(canvas, self.palette)
         sb = ttk.Scrollbar(outer, orient=tk.VERTICAL, command=canvas.yview)
         frame = ttk.Frame(canvas)
         frame.bind("<Configure>",
@@ -250,6 +253,7 @@ class EditAccountDialog(ResizableDialog):
         ttk.Button(head, text="🌐 Войти через браузер",
                    command=self._do_browser_login).pack(side=tk.RIGHT)
         self.cookie_txt = scrolledtext.ScrolledText(frame, height=5)
+        themes_mod.style_text(self.cookie_txt, self.palette)
         self.cookie_txt.insert("1.0", acc.cookie)
         self.cookie_txt.pack(fill=tk.X, pady=(2, 8))
 

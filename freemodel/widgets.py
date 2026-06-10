@@ -4,6 +4,7 @@ import tkinter as tk
 from tkinter import ttk
 
 from . import settings as settings_mod
+from . import themes as themes_mod
 
 
 # ─── ToolTip ──────────────────────────────────────────────────────────────────
@@ -82,7 +83,9 @@ class Toast:
     """Всплывающее уведомление в правом нижнем углу."""
 
     @staticmethod
-    def show(root, message, duration=3000, fg="#ffffff", bg="#333333"):
+    def show(root, message, duration=3000, fg=None, bg="#333333"):
+        if fg is None:
+            fg = themes_mod.readable_on(bg)
         try:
             top = tk.Toplevel(root)
             top.wm_overrideredirect(True)
@@ -148,6 +151,12 @@ class ResizableDialog(tk.Toplevel):
         self.settings = settings or {}
         self.save_cb = save_cb
         self.title(title)
+
+        # Тёмная палитра для самого окна (ttk-виджеты темятся глобально, а вот
+        # фон Toplevel и классические tk-виджеты нужно красить вручную).
+        self.palette = themes_mod.get_palette(
+            self.settings.get("theme", themes_mod.DEFAULT_THEME))
+        themes_mod.style_toplevel(self, self.palette)
 
         try:
             sw = self.winfo_screenwidth()
@@ -237,6 +246,7 @@ class ProgressDialog(ResizableDialog):
         sb = ttk.Scrollbar(log_frame, orient=tk.VERTICAL,
                            command=self.log.yview)
         self.log.configure(yscrollcommand=sb.set)
+        themes_mod.style_text(self.log, self.palette)
         self.log.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
         sb.pack(side=tk.RIGHT, fill=tk.Y)
         self.log.config(state=tk.DISABLED)
