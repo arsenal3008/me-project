@@ -16,7 +16,7 @@
 
 import sys, types, marshal, os, gc
 
-HINTS = ('ContourLook', 'mod_ZJ', 'ZJ_', 'Contour')   # edit if needed
+HINTS = ('contourlook', 'mod_zj', 'zj_', 'contour')   # matched case-INSENSITIVELY
 
 def _dir():
     cands = []
@@ -40,6 +40,8 @@ _REP = os.path.join(_DIR, 'pjorion_dump_report.txt')
 
 def _hint(s):
     if not s: return False
+    try: s = s.lower()
+    except Exception: return False
     for h in HINTS:
         if h in s: return True
     return False
