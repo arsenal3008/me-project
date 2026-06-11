@@ -1,0 +1,7 @@
+# curBlack(argc=1) varnames=('self',)
+   0 LOAD_GLOBAL            bool
+   3 LOAD_FAST              self
+   6 LOAD_ATTR              isBlack
+   9 CALL_FUNCTION          0
+  12 CALL_FUNCTION          1
+  15 RETURN_VALUE

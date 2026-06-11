@@ -1,0 +1,26 @@
+# new_targetBlur(argc=3) varnames=('self', 'prevEntity', 'old_targetBlur', 'vehicle')
+   0 LOAD_FAST              old_targetBlur
+   3 LOAD_FAST              self
+   6 LOAD_FAST              prevEntity
+   9 CALL_FUNCTION          2
+  12 POP_TOP
+  13 LOAD_DEREF             mody
+  16 LOAD_ATTR              modEnable
+  19 POP_JUMP_IF_FALSE      to 63
+  22 SETUP_LOOP             to 63
+  25 LOAD_GLOBAL            BigWorld
+  28 LOAD_ATTR              entities
+  31 LOAD_ATTR              values
+  34 CALL_FUNCTION          0
+  37 GET_ITER
+  38 FOR_ITER               to 62
+  41 STORE_FAST             vehicle
+  44 LOAD_GLOBAL            isinstance
+  47 LOAD_FAST              vehicle
+  50 LOAD_DEREF             Vehicle
+  53 CALL_FUNCTION          2
+  56 POP_JUMP_IF_FALSE      to 38
+  59 JUMP_ABSOLUTE          to 38
+  62 POP_BLOCK
+  63 LOAD_CONST             None
+  66 RETURN_VALUE

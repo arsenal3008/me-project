@@ -1,0 +1,45 @@
+# colorConvert(argc=1) varnames=('color', 'n', 'c')
+   0 LOAD_DEREF             Math
+   3 LOAD_ATTR              Vector4
+   6 LOAD_FAST              color
+   9 CALL_FUNCTION          1
+  12 STORE_FAST             color
+  15 LOAD_CONST             0
+  18 STORE_FAST             n
+  21 SETUP_LOOP             to 112
+  24 LOAD_FAST              color
+  27 GET_ITER
+  28 FOR_ITER               to 111
+  31 STORE_FAST             c
+  34 LOAD_FAST              c
+  37 LOAD_CONST             0
+  40 COMPARE_OP             0
+  43 POP_JUMP_IF_FALSE      to 87
+  46 LOAD_CONST             0
+  49 LOAD_FAST              color
+  52 LOAD_FAST              n
+  55 STORE_SUBSCR
+  56 LOAD_FAST              color
+  59 LOAD_FAST              n
+  62 BINARY_SUBSCR
+  63 LOAD_CONST             255.0
+  66 BINARY_DIVIDE
+  67 LOAD_FAST              color
+  70 LOAD_FAST              n
+  73 STORE_SUBSCR
+  74 LOAD_FAST              n
+  77 LOAD_CONST             1
+  80 INPLACE_ADD
+  81 STORE_FAST             n
+  84 JUMP_ABSOLUTE          to 28
+  87 LOAD_FAST              c
+  90 LOAD_CONST             255
+  93 COMPARE_OP             4
+  96 POP_JUMP_IF_FALSE      to 105
+  99 LOAD_CONST             255
+ 102 JUMP_ABSOLUTE          to 49
+ 105 LOAD_FAST              c
+ 108 JUMP_ABSOLUTE          to 49
+ 111 POP_BLOCK
+ 112 LOAD_FAST              color
+ 115 RETURN_VALUE

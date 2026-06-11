@@ -1,0 +1,60 @@
+# run(argc=3) varnames=('self', 'stat', 'date', 'thread')
+   0 LOAD_FAST              stat
+   3 LOAD_CONST             'serv'
+   6 COMPARE_OP             2
+   9 POP_JUMP_IF_FALSE      to 50
+  12 LOAD_DEREF             Thread
+  15 LOAD_CONST             'target'
+  18 LOAD_FAST              self
+  21 LOAD_ATTR              query
+  24 LOAD_CONST             'name'
+  27 LOAD_CONST             'ServerCheck'
+  30 CALL_FUNCTION          512
+  33 STORE_FAST             thread
+  36 LOAD_FAST              thread
+  39 LOAD_ATTR              start
+  42 CALL_FUNCTION          0
+  45 POP_TOP
+  46 LOAD_CONST             None
+  49 RETURN_VALUE
+  50 LOAD_CONST             '0'
+  53 LOAD_GLOBAL            True
+  56 LOAD_FAST              date
+  59 LOAD_FAST              stat
+  62 LOAD_ATTR              lower
+  65 CALL_FUNCTION          0
+  68 LOAD_CONST             'full'
+  71 COMPARE_OP             2
+  74 POP_JUMP_IF_FALSE      to 167
+  77 LOAD_GLOBAL            PACK_VER
+  80 LOAD_FAST              stat
+  83 LOAD_ATTR              lower
+  86 CALL_FUNCTION          0
+  89 LOAD_CONST             'test'
+  92 COMPARE_OP             2
+  95 POP_JUMP_IF_FALSE      to 113
+  98 LOAD_CONST             '3'
+ 101 BUILD_TUPLE            5
+ 104 LOAD_DEREF             mody
+ 107 STORE_ATTR             SERVER_RES
+ 110 JUMP_ABSOLUTE          to 46
+ 113 LOAD_FAST              stat
+ 116 LOAD_ATTR              lower
+ 119 CALL_FUNCTION          0
+ 122 LOAD_CONST             'trial'
+ 125 COMPARE_OP             2
+ 128 POP_JUMP_IF_FALSE      to 137
+ 131 LOAD_CONST             '2'
+ 134 JUMP_ABSOLUTE          to 101
+ 137 LOAD_FAST              stat
+ 140 LOAD_ATTR              lower
+ 143 CALL_FUNCTION          0
+ 146 LOAD_CONST             'full'
+ 149 COMPARE_OP             2
+ 152 POP_JUMP_IF_FALSE      to 161
+ 155 LOAD_CONST             '1'
+ 158 JUMP_ABSOLUTE          to 101
+ 161 LOAD_CONST             '0'
+ 164 JUMP_ABSOLUTE          to 101
+ 167 LOAD_CONST             '0'
+ 170 JUMP_ABSOLUTE          to 80

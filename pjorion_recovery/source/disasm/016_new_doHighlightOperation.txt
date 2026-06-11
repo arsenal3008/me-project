@@ -1,0 +1,69 @@
+# new_doHighlightOperation(argc=3) varnames=('self', 'status', 'args', 'vehicle', 'adgclr')
+   0 LOAD_DEREF             mody
+   3 LOAD_ATTR              modEnable
+   6 UNARY_NOT
+   7 POP_JUMP_IF_TRUE       to 40
+  10 LOAD_GLOBAL            BigWorld
+  13 LOAD_ATTR              target
+  16 CALL_FUNCTION          0
+  19 POP_JUMP_IF_FALSE      to 60
+  22 LOAD_GLOBAL            BigWorld
+  25 LOAD_ATTR              target
+  28 CALL_FUNCTION          0
+  31 LOAD_ATTR              isAlive
+  34 CALL_FUNCTION          0
+  37 POP_JUMP_IF_FALSE      to 60
+  40 LOAD_DEREF             old_doHighlightOperation
+  43 LOAD_FAST              self
+  46 LOAD_FAST              status
+  49 LOAD_FAST              args
+  52 CALL_FUNCTION          3
+  55 POP_TOP
+  56 LOAD_CONST             None
+  59 RETURN_VALUE
+  60 LOAD_FAST              self
+  63 LOAD_ATTR              _Highlighter__vehicle
+  66 STORE_FAST             vehicle
+  69 LOAD_FAST              status
+  72 LOAD_FAST              self
+  75 LOAD_ATTR              HIGHLIGHT_ON
+  78 BINARY_AND
+  79 POP_JUMP_IF_FALSE      to 172
+  82 LOAD_GLOBAL            getattr
+  85 LOAD_FAST              vehicle
+  88 LOAD_CONST             'zj_adgclr'
+  91 LOAD_CONST             None
+  94 CALL_FUNCTION          3
+  97 STORE_FAST             adgclr
+ 100 LOAD_FAST              adgclr
+ 103 LOAD_CONST             None
+ 106 COMPARE_OP             9
+ 109 POP_JUMP_IF_FALSE      to 130
+ 112 LOAD_FAST              adgclr
+ 115 LOAD_GLOBAL            False
+ 118 LOAD_CONST             0
+ 121 LOAD_GLOBAL            False
+ 124 BUILD_TUPLE            4
+ 127 STORE_FAST             args
+ 130 LOAD_GLOBAL            BigWorld
+ 133 LOAD_ATTR              addEdgeDetectEntity
+ 136 LOAD_FAST              vehicle
+ 139 LOAD_FAST              self
+ 142 LOAD_ATTR              _Highlighter__collisions
+ 145 LOAD_FAST              args
+ 148 CALL_FUNCTION_VAR      2
+ 151 POP_TOP
+ 152 LOAD_FAST              self
+ 155 LOAD_ATTR              _Highlighter__updateHighlightComponent
+ 158 LOAD_FAST              status
+ 161 LOAD_FAST              args
+ 164 CALL_FUNCTION          2
+ 167 POP_TOP
+ 168 LOAD_CONST             None
+ 171 RETURN_VALUE
+ 172 LOAD_GLOBAL            BigWorld
+ 175 LOAD_ATTR              delEdgeDetectEntity
+ 178 LOAD_FAST              vehicle
+ 181 CALL_FUNCTION          1
+ 184 POP_TOP
+ 185 JUMP_ABSOLUTE          to 152

@@ -1,0 +1,7 @@
+# new_startVisual(argc=2) varnames=('self', 'old_func')
+   0 LOAD_FAST              old_func
+   3 LOAD_FAST              self
+   6 CALL_FUNCTION          1
+   9 POP_TOP
+  10 LOAD_CONST             None
+  13 RETURN_VALUE

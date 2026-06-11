@@ -1,0 +1,59 @@
+# new_doHighlightOperation(argc=4) varnames=('self', 'vehicle', 'status', 'args', 'adgclr')
+   0 LOAD_DEREF             mody
+   3 LOAD_ATTR              modEnable
+   6 UNARY_NOT
+   7 POP_JUMP_IF_TRUE       to 40
+  10 LOAD_GLOBAL            BigWorld
+  13 LOAD_ATTR              target
+  16 CALL_FUNCTION          0
+  19 POP_JUMP_IF_FALSE      to 63
+  22 LOAD_GLOBAL            BigWorld
+  25 LOAD_ATTR              target
+  28 CALL_FUNCTION          0
+  31 LOAD_ATTR              isAlive
+  34 CALL_FUNCTION          0
+  37 POP_JUMP_IF_FALSE      to 63
+  40 LOAD_DEREF             old_doHighlightOperation
+  43 LOAD_FAST              self
+  46 LOAD_FAST              vehicle
+  49 LOAD_FAST              status
+  52 LOAD_FAST              args
+  55 CALL_FUNCTION          4
+  58 POP_TOP
+  59 LOAD_CONST             None
+  62 RETURN_VALUE
+  63 LOAD_FAST              status
+  66 LOAD_FAST              self
+  69 LOAD_ATTR              HIGHLIGHT_ON
+  72 BINARY_AND
+  73 POP_JUMP_IF_FALSE      to 89
+  76 LOAD_GLOBAL            BigWorld
+  79 LOAD_ATTR              wgDelEdgeDetectEntity
+  82 LOAD_FAST              vehicle
+  85 CALL_FUNCTION          1
+  88 POP_TOP
+  89 LOAD_GLOBAL            getattr
+  92 LOAD_FAST              vehicle
+  95 LOAD_CONST             'zj_adgclr'
+  98 LOAD_CONST             None
+ 101 CALL_FUNCTION          3
+ 104 STORE_FAST             adgclr
+ 107 LOAD_FAST              adgclr
+ 110 LOAD_CONST             None
+ 113 COMPARE_OP             9
+ 116 POP_JUMP_IF_FALSE      to 137
+ 119 LOAD_FAST              adgclr
+ 122 LOAD_GLOBAL            False
+ 125 LOAD_CONST             0
+ 128 LOAD_GLOBAL            False
+ 131 BUILD_TUPLE            4
+ 134 STORE_FAST             args
+ 137 LOAD_FAST              self
+ 140 LOAD_ATTR              _Highlighter__updateHighlightComponent
+ 143 LOAD_FAST              vehicle
+ 146 LOAD_FAST              status
+ 149 LOAD_FAST              args
+ 152 CALL_FUNCTION          3
+ 155 POP_TOP
+ 156 LOAD_CONST             None
+ 159 RETURN_VALUE

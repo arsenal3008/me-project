@@ -1,0 +1,45 @@
+# getID(argc=1) varnames=('self', 'dbID', 'player', 'arena', 'vehID')
+   0 LOAD_CONST             0L
+   3 STORE_FAST             dbID
+   6 LOAD_GLOBAL            BigWorld
+   9 LOAD_ATTR              player
+  12 CALL_FUNCTION          0
+  15 STORE_FAST             player
+  18 LOAD_GLOBAL            getattr
+  21 LOAD_FAST              player
+  24 LOAD_CONST             'arena'
+  27 LOAD_CONST             None
+  30 CALL_FUNCTION          3
+  33 STORE_FAST             arena
+  36 LOAD_FAST              arena
+  39 LOAD_CONST             None
+  42 COMPARE_OP             9
+  45 POP_JUMP_IF_FALSE      to 114
+  48 LOAD_GLOBAL            getattr
+  51 LOAD_FAST              player
+  54 LOAD_CONST             'playerVehicleID'
+  57 LOAD_CONST             None
+  60 CALL_FUNCTION          3
+  63 STORE_FAST             vehID
+  66 LOAD_FAST              vehID
+  69 LOAD_CONST             None
+  72 COMPARE_OP             9
+  75 POP_JUMP_IF_FALSE      to 110
+  78 LOAD_FAST              vehID
+  81 LOAD_FAST              arena
+  84 LOAD_ATTR              vehicles
+  87 COMPARE_OP             6
+  90 POP_JUMP_IF_FALSE      to 110
+  93 LOAD_FAST              arena
+  96 LOAD_ATTR              vehicles
+  99 LOAD_FAST              vehID
+ 102 BINARY_SUBSCR
+ 103 LOAD_CONST             'accountDBID'
+ 106 BINARY_SUBSCR
+ 107 STORE_FAST             dbID
+ 110 LOAD_FAST              dbID
+ 113 RETURN_VALUE
+ 114 LOAD_FAST              player
+ 117 LOAD_ATTR              databaseID
+ 120 STORE_FAST             dbID
+ 123 JUMP_ABSOLUTE          to 110

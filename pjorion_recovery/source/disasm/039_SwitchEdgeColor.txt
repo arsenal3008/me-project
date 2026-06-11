@@ -1,0 +1,55 @@
+# SwitchEdgeColor(argc=1) varnames=('mody', 'EdgeDetectColorController', 'colorsSet', 'i', 'c')
+   0 LOAD_CONST             -1
+   3 LOAD_CONST             ('EdgeDetectColorController',)
+   6 IMPORT_NAME            helpers
+   9 IMPORT_FROM            EdgeDetectColorController
+  12 STORE_FAST             EdgeDetectColorController
+  15 POP_TOP
+  16 LOAD_FAST              mody
+  19 LOAD_ATTR              modEnable
+  22 POP_JUMP_IF_FALSE      to 132
+  25 LOAD_FAST              mody
+  28 LOAD_ATTR              enemyRentClr
+  31 LOAD_FAST              mody
+  34 LOAD_ATTR              enemyHighClr
+  37 LOAD_FAST              mody
+  40 LOAD_ATTR              allyHighClr
+  43 LOAD_FAST              mody
+  46 LOAD_ATTR              attackClr
+  49 BUILD_TUPLE            4
+  52 STORE_FAST             colorsSet
+  55 LOAD_CONST             0
+  58 STORE_FAST             i
+  61 SETUP_LOOP             to 128
+  64 LOAD_FAST              colorsSet
+  67 GET_ITER
+  68 FOR_ITER               to 127
+  71 STORE_FAST             c
+  74 LOAD_GLOBAL            IS_LESTA
+  77 POP_JUMP_IF_FALSE      to 109
+  80 LOAD_GLOBAL            BigWorld
+  83 LOAD_ATTR              setEdgeDetectEdgeColor
+  86 LOAD_FAST              i
+  89 LOAD_FAST              c
+  92 CALL_FUNCTION          2
+  95 POP_TOP
+  96 LOAD_FAST              i
+  99 LOAD_CONST             1
+ 102 INPLACE_ADD
+ 103 STORE_FAST             i
+ 106 JUMP_ABSOLUTE          to 68
+ 109 LOAD_GLOBAL            BigWorld
+ 112 LOAD_ATTR              wgSetEdgeDetectEdgeColor
+ 115 LOAD_FAST              i
+ 118 LOAD_FAST              c
+ 121 CALL_FUNCTION          2
+ 124 JUMP_ABSOLUTE          to 95
+ 127 POP_BLOCK
+ 128 LOAD_CONST             None
+ 131 RETURN_VALUE
+ 132 LOAD_FAST              EdgeDetectColorController
+ 135 LOAD_ATTR              g_instance
+ 138 LOAD_ATTR              updateColors
+ 141 CALL_FUNCTION          0
+ 144 POP_TOP
+ 145 JUMP_ABSOLUTE          to 128

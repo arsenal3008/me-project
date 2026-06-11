@@ -1,0 +1,18 @@
+# defaultConf(argc=1) varnames=('mody',)
+   0 LOAD_GLOBAL            True
+   3 LOAD_FAST              mody
+   6 STORE_ATTR             modEnable
+   9 LOAD_GLOBAL            True
+  12 LOAD_FAST              mody
+  15 STORE_ATTR             onLineActivated
+  18 LOAD_GLOBAL            False
+  21 JUMP_IF_FALSE_OR_POP   to 30
+  24 LOAD_DEREF             isFull
+  27 CALL_FUNCTION          0
+  30 LOAD_FAST              mody
+  33 STORE_ATTR             interactivSettings
+  36 LOAD_GLOBAL            False
+  39 LOAD_FAST              mody
+  42 STORE_ATTR             sniperOnly
+  45 LOAD_CONST             None
+  48 RETURN_VALUE

@@ -1,0 +1,93 @@
+# query(argc=1) varnames=('self', 'ID', 'k', 'q_hash', 'param', 'err')
+   0 LOAD_FAST              self
+   3 LOAD_ATTR              getID
+   6 CALL_FUNCTION          0
+   9 STORE_FAST             ID
+  12 LOAD_DEREF             random
+  15 LOAD_ATTR              randint
+  18 LOAD_CONST             3
+  21 LOAD_FAST              ID
+  24 LOAD_CONST             4
+  27 BINARY_DIVIDE
+  28 CALL_FUNCTION          2
+  31 STORE_FAST             k
+  34 LOAD_FAST              self
+  37 LOAD_ATTR              getHash
+  40 LOAD_CONST             'zjID%s'
+  43 LOAD_FAST              ID
+  46 BINARY_MODULO
+  47 CALL_FUNCTION          1
+  50 STORE_FAST             q_hash
+  53 LOAD_DEREF             urlencode
+  56 BUILD_MAP              7
+  59 LOAD_FAST              q_hash
+  62 LOAD_CONST             'q'
+  65 STORE_MAP
+  66 LOAD_CONST             '%s'
+  69 LOAD_DEREF             mody
+  72 LOAD_ATTR              SERVER_RES
+  75 LOAD_CONST             2
+  78 BINARY_SUBSCR
+  79 BINARY_MODULO
+  80 LOAD_CONST             'date'
+  83 STORE_MAP
+  84 LOAD_CONST             '%s'
+  87 LOAD_FAST              ID
+  90 LOAD_FAST              k
+  93 BINARY_MODULO
+  94 BINARY_MODULO
+  95 LOAD_CONST             'stok'
+  98 STORE_MAP
+  99 LOAD_CONST             '%s'
+ 102 LOAD_FAST              ID
+ 105 LOAD_FAST              k
+ 108 BINARY_DIVIDE
+ 109 BINARY_MODULO
+ 110 LOAD_CONST             'hash'
+ 113 STORE_MAP
+ 114 LOAD_CONST             '%s'
+ 117 LOAD_FAST              k
+ 120 BINARY_MODULO
+ 121 LOAD_CONST             'trial'
+ 124 STORE_MAP
+ 125 LOAD_CONST             '%s'
+ 128 LOAD_DEREF             mody
+ 131 LOAD_ATTR              SERVER_RES
+ 134 LOAD_CONST             4
+ 137 BINARY_SUBSCR
+ 138 BINARY_MODULO
+ 139 LOAD_CONST             'type'
+ 142 STORE_MAP
+ 143 LOAD_CONST             '%s'
+ 146 LOAD_DEREF             AUTH_REALM
+ 149 LOAD_ATTR              lower
+ 152 CALL_FUNCTION          0
+ 155 BINARY_MODULO
+ 156 LOAD_CONST             'srv'
+ 159 STORE_MAP
+ 160 CALL_FUNCTION          1
+ 163 STORE_FAST             param
+ 166 SETUP_EXCEPT           to 200
+ 169 LOAD_DEREF             urlopen
+ 172 LOAD_CONST             'url'
+ 175 LOAD_CONST             'http://zorrojan.s09.wh1.su/zj/'
+ 178 LOAD_CONST             'data'
+ 181 LOAD_FAST              param
+ 184 LOAD_CONST             'timeout'
+ 187 LOAD_CONST             30
+ 190 CALL_FUNCTION          768
+ 193 LOAD_ATTR              read
+ 196 CALL_FUNCTION          0
+ 199 RETURN_VALUE
+ 200 DUP_TOP
+ 201 LOAD_GLOBAL            Exception
+ 204 COMPARE_OP             10
+ 207 POP_JUMP_IF_FALSE      to 219
+ 210 POP_TOP
+ 211 STORE_FAST             err
+ 214 POP_TOP
+ 215 LOAD_CONST             None
+ 218 RETURN_VALUE
+ 219 END_FINALLY
+ 220 LOAD_CONST             None
+ 223 RETURN_VALUE

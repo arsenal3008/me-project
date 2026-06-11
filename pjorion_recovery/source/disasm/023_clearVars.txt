@@ -1,0 +1,7 @@
+# clearVars(argc=1) varnames=('mody',)
+   0 LOAD_FAST              mody
+   3 LOAD_ATTR              startVars
+   6 CALL_FUNCTION          0
+   9 POP_TOP
+  10 LOAD_CONST             None
+  13 RETURN_VALUE

@@ -1,0 +1,9 @@
+# getHard(argc=1) varnames=('self',)
+   0 LOAD_GLOBAL            vary
+   3 LOAD_ATTR              HKey
+   6 POP_JUMP_IF_FALSE      to 16
+   9 LOAD_GLOBAL            vary
+  12 LOAD_ATTR              HKey
+  15 RETURN_VALUE
+  16 LOAD_CONST             None
+  19 RETURN_VALUE

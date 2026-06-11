@@ -1,0 +1,27 @@
+# addEdge(argc=1) varnames=('vehicle',)
+   0 LOAD_DEREF             mody
+   3 LOAD_ATTR              modEnable
+   6 POP_JUMP_IF_FALSE      to 68
+   9 LOAD_GLOBAL            isinstance
+  12 LOAD_FAST              vehicle
+  15 LOAD_DEREF             Vehicle
+  18 CALL_FUNCTION          2
+  21 POP_JUMP_IF_FALSE      to 68
+  24 LOAD_FAST              vehicle
+  27 LOAD_ATTR              isStarted
+  30 POP_JUMP_IF_FALSE      to 68
+  33 LOAD_FAST              vehicle
+  36 LOAD_ATTR              isAlive
+  39 CALL_FUNCTION          0
+  42 POP_JUMP_IF_FALSE      to 68
+  45 LOAD_DEREF             removeEdge
+  48 LOAD_FAST              vehicle
+  51 LOAD_GLOBAL            False
+  54 CALL_FUNCTION          2
+  57 POP_TOP
+  58 LOAD_FAST              vehicle
+  61 LOAD_ATTR              drawEdge
+  64 CALL_FUNCTION          0
+  67 POP_TOP
+  68 LOAD_CONST             None
+  71 RETURN_VALUE

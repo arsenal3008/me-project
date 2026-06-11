@@ -1,0 +1,31 @@
+# removeEdge(argc=2) varnames=('vehicle', 'force')
+   0 LOAD_GLOBAL            isinstance
+   3 LOAD_FAST              vehicle
+   6 LOAD_DEREF             Vehicle
+   9 CALL_FUNCTION          2
+  12 POP_JUMP_IF_FALSE      to 80
+  15 LOAD_FAST              vehicle
+  18 LOAD_ATTR              isStarted
+  21 POP_JUMP_IF_FALSE      to 80
+  24 LOAD_FAST              vehicle
+  27 LOAD_ATTR              isAlive
+  30 CALL_FUNCTION          0
+  33 UNARY_NOT
+  34 POP_JUMP_IF_TRUE       to 55
+  37 LOAD_GLOBAL            BigWorld
+  40 LOAD_ATTR              target
+  43 CALL_FUNCTION          0
+  46 LOAD_FAST              vehicle
+  49 COMPARE_OP             3
+  52 POP_JUMP_IF_FALSE      to 70
+  55 LOAD_FAST              force
+  58 POP_JUMP_IF_FALSE      to 70
+  61 LOAD_CONST             None
+  64 LOAD_FAST              vehicle
+  67 STORE_ATTR             zj_adgclr
+  70 LOAD_FAST              vehicle
+  73 LOAD_ATTR              removeEdge
+  76 CALL_FUNCTION          0
+  79 POP_TOP
+  80 LOAD_CONST             None
+  83 RETURN_VALUE

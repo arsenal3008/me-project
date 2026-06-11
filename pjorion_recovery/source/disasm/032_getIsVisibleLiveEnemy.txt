@@ -1,0 +1,14 @@
+# getIsVisibleLiveEnemy(argc=1) varnames=('id',)
+   0 LOAD_DEREF             getIsVisible
+   3 LOAD_FAST              id
+   6 CALL_FUNCTION          1
+   9 JUMP_IF_FALSE_OR_POP   to 34
+  12 LOAD_DEREF             getIsLive
+  15 LOAD_FAST              id
+  18 CALL_FUNCTION          1
+  21 JUMP_IF_FALSE_OR_POP   to 34
+  24 LOAD_DEREF             getIsVisible
+  27 LOAD_FAST              id
+  30 CALL_FUNCTION          1
+  33 UNARY_NOT
+  34 RETURN_VALUE

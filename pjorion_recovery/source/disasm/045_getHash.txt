@@ -1,0 +1,16 @@
+# getHash(argc=2) varnames=('self', 'txt', 'm')
+   0 LOAD_DEREF             hashlib
+   3 LOAD_ATTR              md5
+   6 CALL_FUNCTION          0
+   9 STORE_FAST             m
+  12 LOAD_FAST              m
+  15 LOAD_ATTR              update
+  18 LOAD_GLOBAL            str
+  21 LOAD_FAST              txt
+  24 CALL_FUNCTION          1
+  27 CALL_FUNCTION          1
+  30 POP_TOP
+  31 LOAD_FAST              m
+  34 LOAD_ATTR              hexdigest
+  37 CALL_FUNCTION          0
+  40 RETURN_VALUE

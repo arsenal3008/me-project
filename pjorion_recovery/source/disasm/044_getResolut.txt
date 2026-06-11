@@ -1,0 +1,21 @@
+# getResolut(argc=0) varnames=('arenaType',)
+   0 LOAD_GLOBAL            getattr
+   3 LOAD_GLOBAL            BigWorld
+   6 LOAD_ATTR              player
+   9 CALL_FUNCTION          0
+  12 LOAD_CONST             'arenaGuiType'
+  15 LOAD_CONST             None
+  18 CALL_FUNCTION          3
+  21 STORE_FAST             arenaType
+  24 LOAD_FAST              arenaType
+  27 LOAD_CONST             None
+  30 COMPARE_OP             9
+  33 POP_JUMP_IF_FALSE      to 52
+  36 LOAD_FAST              arenaType
+  39 LOAD_CONST             400
+  42 COMPARE_OP             2
+  45 POP_JUMP_IF_FALSE      to 52
+  48 LOAD_GLOBAL            False
+  51 RETURN_VALUE
+  52 LOAD_GLOBAL            True
+  55 RETURN_VALUE

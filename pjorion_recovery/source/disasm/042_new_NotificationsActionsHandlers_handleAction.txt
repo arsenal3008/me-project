@@ -1,0 +1,40 @@
+# new_NotificationsActionsHandlers_handleAction(argc=5) varnames=('self', 'model', 'typeID', 'entityID', 'actionName')
+   0 LOAD_FAST              actionName
+   3 LOAD_ATTR              lower
+   6 CALL_FUNCTION          0
+   9 LOAD_ATTR              find
+  12 LOAD_CONST             'http://'
+  15 CALL_FUNCTION          1
+  18 POP_JUMP_IF_TRUE       to 48
+  21 LOAD_FAST              actionName
+  24 LOAD_ATTR              lower
+  27 CALL_FUNCTION          0
+  30 LOAD_ATTR              find
+  33 LOAD_CONST             'https://'
+  36 CALL_FUNCTION          1
+  39 LOAD_CONST             None
+  42 COMPARE_OP             8
+  45 POP_JUMP_IF_FALSE      to 70
+  48 LOAD_DEREF             old_NotificationsActionsHandlers_handleAction
+  51 LOAD_FAST              self
+  54 LOAD_FAST              model
+  57 LOAD_FAST              typeID
+  60 LOAD_FAST              entityID
+  63 LOAD_FAST              actionName
+  66 CALL_FUNCTION          5
+  69 RETURN_VALUE
+  70 LOAD_CONST             'xfw'
+  73 LOAD_DEREF             modules
+  76 COMPARE_OP             7
+  79 POP_JUMP_IF_FALSE      to 107
+  82 LOAD_DEREF             g_eventBus
+  85 LOAD_ATTR              handleEvent
+  88 LOAD_DEREF             OpenLinkEvent
+  91 LOAD_DEREF             OpenLinkEvent
+  94 LOAD_ATTR              SPECIFIED
+  97 LOAD_FAST              actionName
+ 100 CALL_FUNCTION          2
+ 103 CALL_FUNCTION          1
+ 106 POP_TOP
+ 107 LOAD_CONST             None
+ 110 RETURN_VALUE

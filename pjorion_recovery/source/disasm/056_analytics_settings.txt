@@ -1,0 +1,67 @@
+# analytics_settings(argc=2) varnames=('self', 'stat', 'hn', 'param')
+   0 LOAD_FAST              self
+   3 LOAD_ATTR              getHash
+   6 LOAD_CONST             'zjAH%s-%s'
+   9 LOAD_GLOBAL            BigWorld
+  12 LOAD_ATTR              player
+  15 CALL_FUNCTION          0
+  18 LOAD_ATTR              databaseID
+  21 LOAD_GLOBAL            BigWorld
+  24 LOAD_ATTR              player
+  27 CALL_FUNCTION          0
+  30 LOAD_ATTR              name
+  33 BUILD_TUPLE            2
+  36 BINARY_MODULO
+  37 CALL_FUNCTION          1
+  40 STORE_FAST             hn
+  43 LOAD_DEREF             urlencode
+  46 BUILD_MAP              7
+  49 LOAD_CONST             1
+  52 LOAD_CONST             'v'
+  55 STORE_MAP
+  56 LOAD_CONST             'screenview'
+  59 LOAD_CONST             't'
+  62 STORE_MAP
+  63 LOAD_CONST             '%s'
+  66 LOAD_FAST              self
+  69 LOAD_ATTR              mod_version
+  72 BINARY_MODULO
+  73 LOAD_CONST             '_'
+  76 BINARY_ADD
+  77 LOAD_FAST              stat
+  80 BINARY_ADD
+  81 LOAD_CONST             'av'
+  84 STORE_MAP
+  85 LOAD_CONST             '%s'
+  88 LOAD_FAST              self
+  91 LOAD_ATTR              mod_description
+  94 BINARY_MODULO
+  95 LOAD_CONST             'an'
+  98 STORE_MAP
+  99 LOAD_CONST             '%s'
+ 102 LOAD_FAST              hn
+ 105 BINARY_MODULO
+ 106 LOAD_CONST             'cd'
+ 109 STORE_MAP
+ 110 LOAD_CONST             '%s'
+ 113 LOAD_FAST              self
+ 116 LOAD_ATTR              mod_id_analytics
+ 119 BINARY_MODULO
+ 120 LOAD_CONST             'tid'
+ 123 STORE_MAP
+ 124 LOAD_CONST             '%s'
+ 127 LOAD_FAST              hn
+ 130 BINARY_MODULO
+ 131 LOAD_CONST             'cid'
+ 134 STORE_MAP
+ 135 CALL_FUNCTION          1
+ 138 STORE_FAST             param
+ 141 LOAD_DEREF             urlopen
+ 144 LOAD_CONST             'url'
+ 147 LOAD_CONST             'http://www.google-analytics.com/collect?'
+ 150 LOAD_CONST             'data'
+ 153 LOAD_FAST              param
+ 156 CALL_FUNCTION          512
+ 159 LOAD_ATTR              read
+ 162 CALL_FUNCTION          0
+ 165 RETURN_VALUE

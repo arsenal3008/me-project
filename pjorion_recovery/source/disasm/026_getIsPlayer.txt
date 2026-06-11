@@ -1,0 +1,11 @@
+# getIsPlayer(argc=1) varnames=('id',)
+   0 LOAD_DEREF             getBattleOn
+   3 CALL_FUNCTION          0
+   6 JUMP_IF_FALSE_OR_POP   to 27
+   9 LOAD_GLOBAL            BigWorld
+  12 LOAD_ATTR              player
+  15 CALL_FUNCTION          0
+  18 LOAD_ATTR              playerVehicleID
+  21 LOAD_FAST              id
+  24 COMPARE_OP             2
+  27 RETURN_VALUE

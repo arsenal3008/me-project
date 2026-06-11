@@ -1,0 +1,8 @@
+# campHash(argc=3) varnames=('self', 'txt', 'h')
+   0 LOAD_FAST              self
+   3 LOAD_ATTR              getHash
+   6 LOAD_FAST              txt
+   9 CALL_FUNCTION          1
+  12 LOAD_FAST              h
+  15 COMPARE_OP             2
+  18 RETURN_VALUE

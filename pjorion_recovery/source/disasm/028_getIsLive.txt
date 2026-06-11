@@ -1,0 +1,21 @@
+# getIsLive(argc=1) varnames=('id',)
+   0 SETUP_EXCEPT           to 41
+   3 LOAD_DEREF             getBattleOn
+   6 CALL_FUNCTION          0
+   9 JUMP_IF_FALSE_OR_POP   to 40
+  12 LOAD_GLOBAL            BigWorld
+  15 LOAD_ATTR              player
+  18 CALL_FUNCTION          0
+  21 LOAD_ATTR              arena
+  24 LOAD_ATTR              vehicles
+  27 LOAD_ATTR              get
+  30 LOAD_FAST              id
+  33 CALL_FUNCTION          1
+  36 LOAD_CONST             'isAlive'
+  39 BINARY_SUBSCR
+  40 RETURN_VALUE
+  41 POP_TOP
+  42 POP_TOP
+  43 POP_TOP
+  44 LOAD_CONST             None
+  47 RETURN_VALUE

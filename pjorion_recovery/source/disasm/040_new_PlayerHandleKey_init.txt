@@ -1,0 +1,181 @@
+# new_PlayerHandleKey_init(argc=4) varnames=('self', 'isDown', 'key', 'mods')
+   0 LOAD_DEREF             mody
+   3 LOAD_ATTR              GLOBAL_ENABLE
+   6 POP_JUMP_IF_FALSE      to 357
+   9 LOAD_DEREF             getResolut
+  12 CALL_FUNCTION          0
+  15 POP_JUMP_IF_FALSE      to 357
+  18 LOAD_FAST              key
+  21 LOAD_CONST             0
+  24 COMPARE_OP             3
+  27 POP_JUMP_IF_FALSE      to 357
+  30 LOAD_DEREF             mody
+  33 LOAD_ATTR              autoLoadConf
+  36 UNARY_NOT
+  37 POP_JUMP_IF_FALSE      to 156
+  40 LOAD_FAST              key
+  43 LOAD_GLOBAL            getattr
+  46 LOAD_DEREF             Keys
+  49 LOAD_DEREF             mody
+  52 LOAD_ATTR              toggleKey
+  55 LOAD_CONST             None
+  58 CALL_FUNCTION          3
+  61 COMPARE_OP             2
+  64 POP_JUMP_IF_FALSE      to 156
+  67 LOAD_FAST              isDown
+  70 POP_JUMP_IF_FALSE      to 156
+  73 LOAD_FAST              mods
+  76 LOAD_CONST             2
+  79 COMPARE_OP             2
+  82 POP_JUMP_IF_FALSE      to 156
+  85 LOAD_DEREF             mody
+  88 LOAD_ATTR              interactivSettings
+  91 POP_JUMP_IF_FALSE      to 156
+  94 LOAD_DEREF             mody
+  97 LOAD_ATTR              loadConf
+ 100 CALL_FUNCTION          0
+ 103 POP_TOP
+ 104 LOAD_DEREF             methodcaller
+ 107 LOAD_CONST             'as_showGreenMessageS'
+ 110 LOAD_CONST             ''
+ 113 LOAD_GLOBAL            APPLICATION
+ 116 LOAD_CONST             ' '
+ 119 BINARY_ADD
+ 120 LOAD_DEREF             mody
+ 123 LOAD_ATTR              TEXT_MESSAGE_ConfLoad
+ 126 BINARY_ADD
+ 127 CALL_FUNCTION          3
+ 130 LOAD_DEREF             PlayerAvatar
+ 133 LOAD_ATTR              selfMsg
+ 136 CALL_FUNCTION          1
+ 139 POP_TOP
+ 140 LOAD_DEREF             mody
+ 143 LOAD_ATTR              autoLoadConf
+ 146 POP_JUMP_IF_FALSE      to 156
+ 149 LOAD_DEREF             LoadConfLoop
+ 152 CALL_FUNCTION          0
+ 155 POP_TOP
+ 156 LOAD_FAST              key
+ 159 LOAD_GLOBAL            getattr
+ 162 LOAD_DEREF             Keys
+ 165 LOAD_DEREF             mody
+ 168 LOAD_ATTR              altKey
+ 171 LOAD_CONST             None
+ 174 CALL_FUNCTION          3
+ 177 COMPARE_OP             2
+ 180 POP_JUMP_IF_FALSE      to 198
+ 183 LOAD_FAST              isDown
+ 186 POP_JUMP_IF_FALSE      to 198
+ 189 LOAD_GLOBAL            True
+ 192 LOAD_DEREF             mody
+ 195 STORE_ATTR             altFlag
+ 198 LOAD_FAST              key
+ 201 LOAD_GLOBAL            getattr
+ 204 LOAD_DEREF             Keys
+ 207 LOAD_DEREF             mody
+ 210 LOAD_ATTR              altKey
+ 213 LOAD_CONST             None
+ 216 CALL_FUNCTION          3
+ 219 COMPARE_OP             2
+ 222 POP_JUMP_IF_FALSE      to 241
+ 225 LOAD_FAST              isDown
+ 228 UNARY_NOT
+ 229 POP_JUMP_IF_FALSE      to 241
+ 232 LOAD_GLOBAL            False
+ 235 LOAD_DEREF             mody
+ 238 STORE_ATTR             altFlag
+ 241 LOAD_FAST              key
+ 244 LOAD_GLOBAL            getattr
+ 247 LOAD_DEREF             Keys
+ 250 LOAD_DEREF             mody
+ 253 LOAD_ATTR              toggleKey
+ 256 LOAD_CONST             None
+ 259 CALL_FUNCTION          3
+ 262 COMPARE_OP             2
+ 265 POP_JUMP_IF_FALSE      to 357
+ 268 LOAD_FAST              isDown
+ 271 POP_JUMP_IF_FALSE      to 357
+ 274 LOAD_FAST              mods
+ 277 LOAD_CONST             2
+ 280 COMPARE_OP             3
+ 283 POP_JUMP_IF_FALSE      to 357
+ 286 LOAD_DEREF             mody
+ 289 LOAD_ATTR              modEnable
+ 292 POP_JUMP_IF_TRUE       to 376
+ 295 LOAD_GLOBAL            True
+ 298 LOAD_DEREF             mody
+ 301 STORE_ATTR             modEnable
+ 304 LOAD_DEREF             methodcaller
+ 307 LOAD_CONST             'as_showGoldMessageS'
+ 310 LOAD_CONST             ''
+ 313 LOAD_GLOBAL            APPLICATION
+ 316 LOAD_CONST             ' '
+ 319 BINARY_ADD
+ 320 LOAD_DEREF             mody
+ 323 LOAD_ATTR              TEXT_MESSAGE_On
+ 326 BINARY_ADD
+ 327 CALL_FUNCTION          3
+ 330 LOAD_DEREF             PlayerAvatar
+ 333 LOAD_ATTR              selfMsg
+ 336 CALL_FUNCTION          1
+ 339 POP_TOP
+ 340 LOAD_DEREF             mody
+ 343 LOAD_ATTR              SwitchEdgeColor
+ 346 CALL_FUNCTION          0
+ 349 POP_TOP
+ 350 LOAD_DEREF             DrawControl
+ 353 CALL_FUNCTION          0
+ 356 POP_TOP
+ 357 LOAD_DEREF             pre_PlayerHandleKey_init
+ 360 LOAD_FAST              self
+ 363 LOAD_FAST              isDown
+ 366 LOAD_FAST              key
+ 369 LOAD_FAST              mods
+ 372 CALL_FUNCTION          4
+ 375 RETURN_VALUE
+ 376 LOAD_DEREF             mody
+ 379 LOAD_ATTR              sniperOnly
+ 382 POP_JUMP_IF_TRUE       to 433
+ 385 LOAD_GLOBAL            True
+ 388 LOAD_DEREF             mody
+ 391 STORE_ATTR             sniperOnly
+ 394 LOAD_DEREF             methodcaller
+ 397 LOAD_CONST             'as_showGoldMessageS'
+ 400 LOAD_CONST             ''
+ 403 LOAD_GLOBAL            APPLICATION
+ 406 LOAD_CONST             ' '
+ 409 BINARY_ADD
+ 410 LOAD_DEREF             mody
+ 413 LOAD_ATTR              TEXT_MESSAGE_OnSniper
+ 416 BINARY_ADD
+ 417 CALL_FUNCTION          3
+ 420 LOAD_DEREF             PlayerAvatar
+ 423 LOAD_ATTR              selfMsg
+ 426 CALL_FUNCTION          1
+ 429 POP_TOP
+ 430 JUMP_ABSOLUTE          to 357
+ 433 LOAD_GLOBAL            False
+ 436 LOAD_DEREF             mody
+ 439 STORE_ATTR             sniperOnly
+ 442 LOAD_GLOBAL            False
+ 445 LOAD_DEREF             mody
+ 448 STORE_ATTR             modEnable
+ 451 LOAD_DEREF             methodcaller
+ 454 LOAD_CONST             'as_showRedMessageS'
+ 457 LOAD_CONST             ''
+ 460 LOAD_GLOBAL            APPLICATION
+ 463 LOAD_CONST             ' '
+ 466 BINARY_ADD
+ 467 LOAD_DEREF             mody
+ 470 LOAD_ATTR              TEXT_MESSAGE_Off
+ 473 BINARY_ADD
+ 474 CALL_FUNCTION          3
+ 477 LOAD_DEREF             PlayerAvatar
+ 480 LOAD_ATTR              selfMsg
+ 483 CALL_FUNCTION          1
+ 486 POP_TOP
+ 487 LOAD_DEREF             mody
+ 490 LOAD_ATTR              SwitchEdgeColor
+ 493 CALL_FUNCTION          0
+ 496 POP_TOP
+ 497 JUMP_ABSOLUTE          to 357

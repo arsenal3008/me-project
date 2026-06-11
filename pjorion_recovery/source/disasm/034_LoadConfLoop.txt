@@ -1,0 +1,60 @@
+# LoadConfLoop(argc=0) varnames=('file_xml', 'tick', 'file_time')
+   0 LOAD_DEREF             mody
+   3 LOAD_ATTR              PATH_MODS
+   6 LOAD_DEREF             mody
+   9 LOAD_ATTR              FILE_xml
+  12 BINARY_ADD
+  13 STORE_FAST             file_xml
+  16 LOAD_CONST             2
+  19 STORE_FAST             tick
+  22 SETUP_EXCEPT           to 145
+  25 LOAD_GLOBAL            os
+  28 LOAD_ATTR              path
+  31 LOAD_ATTR              getmtime
+  34 LOAD_FAST              file_xml
+  37 CALL_FUNCTION          1
+  40 STORE_FAST             file_time
+  43 LOAD_GLOBAL            time
+  46 LOAD_ATTR              time
+  49 CALL_FUNCTION          0
+  52 LOAD_FAST              file_time
+  55 BINARY_SUBTRACT
+  56 LOAD_FAST              tick
+  59 LOAD_CONST             1.0
+  62 BINARY_ADD
+  63 COMPARE_OP             0
+  66 POP_JUMP_IF_FALSE      to 115
+  69 LOAD_DEREF             methodcaller
+  72 LOAD_CONST             'as_showGreenMessageS'
+  75 LOAD_CONST             ''
+  78 LOAD_GLOBAL            APPLICATION
+  81 LOAD_CONST             ' '
+  84 BINARY_ADD
+  85 LOAD_DEREF             mody
+  88 LOAD_ATTR              TEXT_MESSAGE_ConfLoad
+  91 BINARY_ADD
+  92 CALL_FUNCTION          3
+  95 LOAD_DEREF             PlayerAvatar
+  98 LOAD_ATTR              selfMsg
+ 101 CALL_FUNCTION          1
+ 104 POP_TOP
+ 105 LOAD_DEREF             mody
+ 108 LOAD_ATTR              loadConf
+ 111 CALL_FUNCTION          0
+ 114 POP_TOP
+ 115 POP_BLOCK
+ 116 LOAD_DEREF             mody
+ 119 LOAD_ATTR              autoLoadConf
+ 122 POP_JUMP_IF_FALSE      to 141
+ 125 LOAD_GLOBAL            BigWorld
+ 128 LOAD_ATTR              callback
+ 131 LOAD_FAST              tick
+ 134 LOAD_DEREF             LoadConfLoop
+ 137 CALL_FUNCTION          2
+ 140 POP_TOP
+ 141 LOAD_CONST             None
+ 144 RETURN_VALUE
+ 145 POP_TOP
+ 146 POP_TOP
+ 147 POP_TOP
+ 148 JUMP_ABSOLUTE          to 116

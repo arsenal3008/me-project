@@ -1,0 +1,44 @@
+# getDateTime(argc=1) varnames=('self', 'data')
+   0 LOAD_FAST              self
+   3 LOAD_ATTR              hasLicense
+   6 CALL_FUNCTION          0
+   9 POP_JUMP_IF_FALSE      to 109
+  12 LOAD_FAST              self
+  15 LOAD_ATTR              getData
+  18 CALL_FUNCTION          0
+  21 STORE_FAST             data
+  24 LOAD_GLOBAL            datetime
+  27 LOAD_GLOBAL            int
+  30 LOAD_FAST              data
+  33 LOAD_CONST             1
+  36 BINARY_SUBSCR
+  37 LOAD_ATTR              split
+  40 LOAD_CONST             '.'
+  43 CALL_FUNCTION          1
+  46 LOAD_CONST             2
+  49 BINARY_SUBSCR
+  50 CALL_FUNCTION          1
+  53 LOAD_GLOBAL            int
+  56 LOAD_FAST              data
+  59 LOAD_CONST             1
+  62 BINARY_SUBSCR
+  63 LOAD_ATTR              split
+  66 LOAD_CONST             '.'
+  69 CALL_FUNCTION          1
+  72 LOAD_CONST             1
+  75 BINARY_SUBSCR
+  76 CALL_FUNCTION          1
+  79 LOAD_GLOBAL            int
+  82 LOAD_FAST              data
+  85 LOAD_CONST             1
+  88 BINARY_SUBSCR
+  89 LOAD_ATTR              split
+  92 LOAD_CONST             '.'
+  95 CALL_FUNCTION          1
+  98 LOAD_CONST             0
+ 101 BINARY_SUBSCR
+ 102 CALL_FUNCTION          1
+ 105 CALL_FUNCTION          3
+ 108 RETURN_VALUE
+ 109 LOAD_CONST             None
+ 112 RETURN_VALUE

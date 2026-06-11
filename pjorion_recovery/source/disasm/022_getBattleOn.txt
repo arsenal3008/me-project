@@ -1,0 +1,8 @@
+# getBattleOn(argc=0) varnames=()
+   0 LOAD_GLOBAL            hasattr
+   3 LOAD_GLOBAL            BigWorld
+   6 LOAD_ATTR              player
+   9 CALL_FUNCTION          0
+  12 LOAD_CONST             'arena'
+  15 CALL_FUNCTION          2
+  18 RETURN_VALUE

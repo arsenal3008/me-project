@@ -1,0 +1,7 @@
+# hasLicense(argc=1) varnames=('self',)
+   0 LOAD_FAST              self
+   3 LOAD_ATTR              getData
+   6 CALL_FUNCTION          0
+   9 LOAD_CONST             None
+  12 COMPARE_OP             9
+  15 RETURN_VALUE

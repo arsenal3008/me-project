@@ -1,0 +1,43 @@
+# isBlack(argc=1) varnames=('self', 'id', 'h')
+   0 SETUP_LOOP             to 54
+   3 LOAD_FAST              self
+   6 LOAD_ATTR              black_list
+   9 GET_ITER
+  10 FOR_ITER               to 53
+  13 STORE_FAST             id
+  16 LOAD_FAST              self
+  19 LOAD_ATTR              campHash
+  22 LOAD_FAST              self
+  25 LOAD_ATTR              getID
+  28 CALL_FUNCTION          0
+  31 LOAD_FAST              self
+  34 LOAD_ATTR              getHash
+  37 LOAD_FAST              id
+  40 CALL_FUNCTION          1
+  43 CALL_FUNCTION          2
+  46 POP_JUMP_IF_FALSE      to 10
+  49 LOAD_GLOBAL            True
+  52 RETURN_VALUE
+  53 POP_BLOCK
+  54 SETUP_LOOP             to 108
+  57 LOAD_FAST              self
+  60 LOAD_ATTR              black_hard
+  63 GET_ITER
+  64 FOR_ITER               to 107
+  67 STORE_FAST             h
+  70 LOAD_FAST              self
+  73 LOAD_ATTR              campHash
+  76 LOAD_FAST              self
+  79 LOAD_ATTR              getID
+  82 CALL_FUNCTION          0
+  85 LOAD_FAST              self
+  88 LOAD_ATTR              getHash
+  91 LOAD_FAST              id
+  94 CALL_FUNCTION          1
+  97 CALL_FUNCTION          2
+ 100 POP_JUMP_IF_FALSE      to 64
+ 103 LOAD_GLOBAL            True
+ 106 RETURN_VALUE
+ 107 POP_BLOCK
+ 108 LOAD_CONST             None
+ 111 RETURN_VALUE

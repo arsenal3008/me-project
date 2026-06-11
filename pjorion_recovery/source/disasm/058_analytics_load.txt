@@ -1,0 +1,19 @@
+# analytics_load(argc=1) varnames=('self', 'thread')
+   0 LOAD_DEREF             Thread
+   3 LOAD_CONST             'target'
+   6 LOAD_FAST              self
+   9 LOAD_ATTR              analytics_settings
+  12 LOAD_CONST             'args'
+  15 LOAD_FAST              self
+  18 LOAD_ATTR              stat
+  21 BUILD_TUPLE            1
+  24 LOAD_CONST             'name'
+  27 LOAD_CONST             'Analytics'
+  30 CALL_FUNCTION          768
+  33 STORE_FAST             thread
+  36 LOAD_FAST              thread
+  39 LOAD_ATTR              start
+  42 CALL_FUNCTION          0
+  45 POP_TOP
+  46 LOAD_CONST             None
+  49 RETURN_VALUE

@@ -1,0 +1,5 @@
+# isFull(argc=0) varnames=()
+   0 LOAD_GLOBAL            STATUS
+   3 LOAD_CONST             'Trial'
+   6 COMPARE_OP             3
+   9 RETURN_VALUE

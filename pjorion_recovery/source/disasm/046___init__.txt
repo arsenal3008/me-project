@@ -1,0 +1,140 @@
+# __init__(argc=1) varnames=('mody', 'patchFile')
+   0 LOAD_GLOBAL            ResMgr
+   3 LOAD_ATTR              openSection
+   6 LOAD_CONST             '../paths.xml'
+   9 CALL_FUNCTION          1
+  12 STORE_FAST             patchFile
+  15 LOAD_CONST             '.'
+  18 LOAD_FAST              patchFile
+  21 LOAD_CONST             'Paths'
+  24 BINARY_SUBSCR
+  25 LOAD_ATTR              values
+  28 CALL_FUNCTION          0
+  31 LOAD_CONST             0
+  34 BINARY_SUBSCR
+  35 LOAD_ATTR              asString
+  38 BINARY_ADD
+  39 LOAD_CONST             '/'
+  42 BINARY_ADD
+  43 LOAD_FAST              mody
+  46 STORE_ATTR             PATH_MODS
+  49 LOAD_CONST             'scripts/client/gui/mods/ZJ_Mods/'
+  52 LOAD_FAST              mody
+  55 STORE_ATTR             PATH
+  58 LOAD_FAST              mody
+  61 LOAD_ATTR              PATH
+  64 LOAD_CONST             'objects/'
+  67 BINARY_ADD
+  68 LOAD_FAST              mody
+  71 STORE_ATTR             PATH_objects
+  74 LOAD_FAST              mody
+  77 LOAD_ATTR              PATH
+  80 LOAD_CONST             'xml/'
+  83 BINARY_ADD
+  84 LOAD_FAST              mody
+  87 STORE_ATTR             PATH_xml
+  90 LOAD_FAST              mody
+  93 LOAD_ATTR              PATH_xml
+  96 LOAD_CONST             'ZJ_ContourLook.xml'
+  99 BINARY_ADD
+ 100 LOAD_FAST              mody
+ 103 STORE_ATTR             FILE_xml
+ 106 LOAD_FAST              mody
+ 109 LOAD_ATTR              PATH_MODS
+ 112 LOAD_FAST              mody
+ 115 LOAD_ATTR              PATH
+ 118 BINARY_ADD
+ 119 LOAD_FAST              mody
+ 122 STORE_ATTR             PATH_lic
+ 125 LOAD_FAST              mody
+ 128 LOAD_ATTR              PATH_lic
+ 131 LOAD_CONST             'ZJ_mods.lic'
+ 134 BINARY_ADD
+ 135 LOAD_FAST              mody
+ 138 STORE_ATTR             FILE_lic
+ 141 LOAD_GLOBAL            URL_LINK
+ 144 LOAD_CONST             '<font color="#fde350"> v'
+ 147 BINARY_ADD
+ 148 LOAD_GLOBAL            VERSION
+ 151 BINARY_ADD
+ 152 LOAD_CONST             ' build '
+ 155 BINARY_ADD
+ 156 LOAD_GLOBAL            BUILD
+ 159 BINARY_ADD
+ 160 LOAD_CONST             '</font><br>'
+ 163 BINARY_ADD
+ 164 LOAD_FAST              mody
+ 167 STORE_ATTR             LOGIN_TEXT_MESSAGE
+ 170 LOAD_CONST             ''
+ 173 LOAD_FAST              mody
+ 176 STORE_ATTR             loadConfStat_massage
+ 179 LOAD_CONST             None
+ 182 LOAD_FAST              mody
+ 185 STORE_ATTR             SM_TYPE
+ 188 LOAD_GLOBAL            True
+ 191 LOAD_FAST              mody
+ 194 STORE_ATTR             IS_LOGIN
+ 197 LOAD_GLOBAL            True
+ 200 LOAD_FAST              mody
+ 203 STORE_ATTR             GLOBAL_ENABLE
+ 206 LOAD_GLOBAL            False
+ 209 LOAD_FAST              mody
+ 212 STORE_ATTR             GLOBAL_ENABLE_TEMP
+ 215 LOAD_CONST             None
+ 218 LOAD_FAST              mody
+ 221 STORE_ATTR             SERVER_RES
+ 224 LOAD_CONST             None
+ 227 LOAD_FAST              mody
+ 230 STORE_ATTR             CURRENT_DATE
+ 233 LOAD_FAST              mody
+ 236 LOAD_ATTR              checkAndMessage
+ 239 CALL_FUNCTION          0
+ 242 POP_TOP
+ 243 LOAD_FAST              mody
+ 246 LOAD_ATTR              l0100l1l001l10011l0l0
+ 249 LOAD_CONST             'cmp'
+ 252 LOAD_GLOBAL            VERSION
+ 255 CALL_FUNCTION          2
+ 258 POP_JUMP_IF_FALSE      to 338
+ 261 LOAD_FAST              mody
+ 264 LOAD_ATTR              l0100l1l001l10011l0l0
+ 267 LOAD_CONST             'lng'
+ 270 CALL_FUNCTION          1
+ 273 LOAD_CONST             'RU'
+ 276 COMPARE_OP             2
+ 279 POP_JUMP_IF_FALSE      to 342
+ 282 LOAD_CONST             '\xd0\xb2\xd0\xba\xd0\xbb.'
+ 285 LOAD_FAST              mody
+ 288 STORE_ATTR             TEXT_MESSAGE_On
+ 291 LOAD_CONST             '\xd0\xb2\xd1\x8b\xd0\xba\xd0\xbb.'
+ 294 LOAD_FAST              mody
+ 297 STORE_ATTR             TEXT_MESSAGE_Off
+ 300 LOAD_CONST             '\xd0\xb2\xd0\xba\xd0\xbb. \xd0\xb4\xd0\xbb\xd1\x8f \xd1\x81\xd0\xbd\xd0\xb0\xd0\xb9\xd0\xbf\xd0\xb5\xd1\x81\xd0\xba\xd0\xbe\xd0\xb3\xd0\xbe \xd1\x82\xd0\xbe\xd0\xbb\xd1\x8c\xd0\xba\xd0\xbe'
+ 303 LOAD_FAST              mody
+ 306 STORE_ATTR             TEXT_MESSAGE_OnSniper
+ 309 LOAD_CONST             '\xd0\x9a\xd0\xbe\xd0\xbd\xd1\x84\xd0\xb8\xd0\xb3\xd1\x83\xd1\x80\xd0\xb0\xd1\x86\xd0\xb8\xd1\x8f \xd0\xbf\xd0\xb5\xd1\x80\xd0\xb5\xd0\xb7\xd0\xb0\xd0\xb3\xd1\x80\xd1\x83\xd0\xb6\xd0\xb5\xd0\xbd\xd0\xb0'
+ 312 LOAD_FAST              mody
+ 315 STORE_ATTR             TEXT_MESSAGE_ConfLoad
+ 318 LOAD_FAST              mody
+ 321 LOAD_ATTR              confModule
+ 324 CALL_FUNCTION          0
+ 327 POP_TOP
+ 328 LOAD_FAST              mody
+ 331 LOAD_ATTR              workModule
+ 334 CALL_FUNCTION          0
+ 337 POP_TOP
+ 338 LOAD_CONST             None
+ 341 RETURN_VALUE
+ 342 LOAD_CONST             'ON'
+ 345 LOAD_FAST              mody
+ 348 STORE_ATTR             TEXT_MESSAGE_On
+ 351 LOAD_CONST             'OFF'
+ 354 LOAD_FAST              mody
+ 357 STORE_ATTR             TEXT_MESSAGE_Off
+ 360 LOAD_CONST             'for sniper only'
+ 363 LOAD_FAST              mody
+ 366 STORE_ATTR             TEXT_MESSAGE_OnSniper
+ 369 LOAD_CONST             'Configuration reloaded'
+ 372 LOAD_FAST              mody
+ 375 STORE_ATTR             TEXT_MESSAGE_ConfLoad
+ 378 JUMP_ABSOLUTE          to 318

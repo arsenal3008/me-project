@@ -1,0 +1,122 @@
+# l0100l1l001l10011l0l0(argc=3) varnames=('self', 'type', 'curVer', 'getFullClientVersion', 'AUTH_REALM', 'vClient', 'vClientInt')
+   0 LOAD_CONST             -1
+   3 LOAD_CONST             ('getFullClientVersion',)
+   6 IMPORT_NAME            helpers
+   9 IMPORT_FROM            getFullClientVersion
+  12 STORE_FAST             getFullClientVersion
+  15 POP_TOP
+  16 LOAD_CONST             -1
+  19 LOAD_CONST             ('AUTH_REALM',)
+  22 IMPORT_NAME            constants
+  25 IMPORT_FROM            AUTH_REALM
+  28 STORE_FAST             AUTH_REALM
+  31 POP_TOP
+  32 LOAD_FAST              getFullClientVersion
+  35 CALL_FUNCTION          0
+  38 LOAD_ATTR              split
+  41 LOAD_CONST             'v.'
+  44 CALL_FUNCTION          1
+  47 LOAD_CONST             1
+  50 BINARY_SUBSCR
+  51 LOAD_ATTR              split
+  54 LOAD_CONST             ' '
+  57 CALL_FUNCTION          1
+  60 LOAD_CONST             0
+  63 BINARY_SUBSCR
+  64 STORE_FAST             vClient
+  67 LOAD_GLOBAL            int
+  70 LOAD_FAST              vClient
+  73 LOAD_ATTR              split
+  76 LOAD_CONST             '.'
+  79 CALL_FUNCTION          1
+  82 LOAD_CONST             0
+  85 BINARY_SUBSCR
+  86 CALL_FUNCTION          1
+  89 LOAD_CONST             10000
+  92 BINARY_MULTIPLY
+  93 LOAD_GLOBAL            int
+  96 LOAD_FAST              vClient
+  99 LOAD_ATTR              split
+ 102 LOAD_CONST             '.'
+ 105 CALL_FUNCTION          1
+ 108 LOAD_CONST             1
+ 111 BINARY_SUBSCR
+ 112 CALL_FUNCTION          1
+ 115 LOAD_CONST             100
+ 118 BINARY_MULTIPLY
+ 119 BINARY_ADD
+ 120 LOAD_GLOBAL            int
+ 123 LOAD_FAST              vClient
+ 126 LOAD_ATTR              split
+ 129 LOAD_CONST             '.'
+ 132 CALL_FUNCTION          1
+ 135 LOAD_CONST             2
+ 138 BINARY_SUBSCR
+ 139 CALL_FUNCTION          1
+ 142 LOAD_CONST             1
+ 145 BINARY_MULTIPLY
+ 146 BINARY_ADD
+ 147 STORE_FAST             vClientInt
+ 150 LOAD_FAST              type
+ 153 LOAD_CONST             'cmp'
+ 156 COMPARE_OP             2
+ 159 POP_JUMP_IF_FALSE      to 261
+ 162 LOAD_FAST              curVer
+ 165 LOAD_CONST             None
+ 168 COMPARE_OP             9
+ 171 POP_JUMP_IF_FALSE      to 261
+ 174 LOAD_FAST              vClientInt
+ 177 LOAD_GLOBAL            int
+ 180 LOAD_FAST              curVer
+ 183 LOAD_ATTR              split
+ 186 LOAD_CONST             '.'
+ 189 CALL_FUNCTION          1
+ 192 LOAD_CONST             0
+ 195 BINARY_SUBSCR
+ 196 CALL_FUNCTION          1
+ 199 LOAD_CONST             10000
+ 202 BINARY_MULTIPLY
+ 203 LOAD_GLOBAL            int
+ 206 LOAD_FAST              curVer
+ 209 LOAD_ATTR              split
+ 212 LOAD_CONST             '.'
+ 215 CALL_FUNCTION          1
+ 218 LOAD_CONST             1
+ 221 BINARY_SUBSCR
+ 222 CALL_FUNCTION          1
+ 225 LOAD_CONST             100
+ 228 BINARY_MULTIPLY
+ 229 BINARY_ADD
+ 230 LOAD_GLOBAL            int
+ 233 LOAD_FAST              curVer
+ 236 LOAD_ATTR              split
+ 239 LOAD_CONST             '.'
+ 242 CALL_FUNCTION          1
+ 245 LOAD_CONST             2
+ 248 BINARY_SUBSCR
+ 249 CALL_FUNCTION          1
+ 252 LOAD_CONST             1
+ 255 BINARY_MULTIPLY
+ 256 BINARY_ADD
+ 257 COMPARE_OP             1
+ 260 RETURN_VALUE
+ 261 LOAD_FAST              type
+ 264 LOAD_CONST             'lng'
+ 267 COMPARE_OP             2
+ 270 POP_JUMP_IF_FALSE      to 277
+ 273 LOAD_FAST              AUTH_REALM
+ 276 RETURN_VALUE
+ 277 LOAD_FAST              type
+ 280 LOAD_CONST             'str'
+ 283 COMPARE_OP             2
+ 286 POP_JUMP_IF_FALSE      to 293
+ 289 LOAD_FAST              vClient
+ 292 RETURN_VALUE
+ 293 LOAD_FAST              type
+ 296 LOAD_CONST             'int'
+ 299 COMPARE_OP             2
+ 302 POP_JUMP_IF_FALSE      to 309
+ 305 LOAD_FAST              vClientInt
+ 308 RETURN_VALUE
+ 309 LOAD_CONST             None
+ 312 RETURN_VALUE

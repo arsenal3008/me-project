@@ -1,0 +1,46 @@
+# status(argc=1) varnames=('self', 'data', 'stat')
+   0 LOAD_FAST              self
+   3 LOAD_ATTR              hasLicense
+   6 CALL_FUNCTION          0
+   9 POP_JUMP_IF_FALSE      to 119
+  12 LOAD_FAST              self
+  15 LOAD_ATTR              getData
+  18 CALL_FUNCTION          0
+  21 STORE_FAST             data
+  24 LOAD_FAST              data
+  27 LOAD_CONST             2
+  30 BINARY_SUBSCR
+  31 STORE_FAST             stat
+  34 LOAD_FAST              self
+  37 LOAD_ATTR              getDateTime
+  40 CALL_FUNCTION          0
+  43 LOAD_FAST              self
+  46 LOAD_ATTR              datetime
+  49 COMPARE_OP             4
+  52 POP_JUMP_IF_FALSE      to 119
+  55 LOAD_FAST              stat
+  58 LOAD_CONST             '0'
+  61 COMPARE_OP             2
+  64 POP_JUMP_IF_FALSE      to 71
+  67 LOAD_CONST             'Demo'
+  70 RETURN_VALUE
+  71 LOAD_FAST              stat
+  74 LOAD_CONST             '1'
+  77 COMPARE_OP             2
+  80 POP_JUMP_IF_FALSE      to 87
+  83 LOAD_CONST             'Full'
+  86 RETURN_VALUE
+  87 LOAD_FAST              stat
+  90 LOAD_CONST             '2'
+  93 COMPARE_OP             2
+  96 POP_JUMP_IF_FALSE      to 103
+  99 LOAD_CONST             'Trial'
+ 102 RETURN_VALUE
+ 103 LOAD_FAST              stat
+ 106 LOAD_CONST             '3'
+ 109 COMPARE_OP             2
+ 112 POP_JUMP_IF_FALSE      to 119
+ 115 LOAD_CONST             'Test'
+ 118 RETURN_VALUE
+ 119 LOAD_CONST             None
+ 122 RETURN_VALUE

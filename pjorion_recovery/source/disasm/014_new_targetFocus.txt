@@ -1,0 +1,48 @@
+# new_targetFocus(argc=3) varnames=('self', 'entity', 'old_targetFocus', 'vehicle')
+   0 LOAD_DEREF             mody
+   3 LOAD_ATTR              modEnable
+   6 POP_JUMP_IF_FALSE      to 114
+   9 LOAD_GLOBAL            isinstance
+  12 LOAD_FAST              entity
+  15 LOAD_DEREF             Vehicle
+  18 CALL_FUNCTION          2
+  21 POP_JUMP_IF_FALSE      to 114
+  24 LOAD_FAST              entity
+  27 LOAD_ATTR              isAlive
+  30 CALL_FUNCTION          0
+  33 POP_JUMP_IF_FALSE      to 114
+  36 SETUP_LOOP             to 114
+  39 LOAD_GLOBAL            BigWorld
+  42 LOAD_ATTR              entities
+  45 LOAD_ATTR              values
+  48 CALL_FUNCTION          0
+  51 GET_ITER
+  52 FOR_ITER               to 113
+  55 STORE_FAST             vehicle
+  58 LOAD_GLOBAL            isinstance
+  61 LOAD_FAST              vehicle
+  64 LOAD_DEREF             Vehicle
+  67 CALL_FUNCTION          2
+  70 POP_JUMP_IF_FALSE      to 52
+  73 LOAD_GLOBAL            BigWorld
+  76 LOAD_ATTR              target
+  79 CALL_FUNCTION          0
+  82 LOAD_FAST              vehicle
+  85 COMPARE_OP             2
+  88 POP_JUMP_IF_FALSE      to 100
+  91 LOAD_CONST             None
+  94 LOAD_FAST              vehicle
+  97 STORE_ATTR             zj_adgclr
+ 100 LOAD_DEREF             removeEdge
+ 103 LOAD_FAST              vehicle
+ 106 CALL_FUNCTION          1
+ 109 POP_TOP
+ 110 JUMP_ABSOLUTE          to 52
+ 113 POP_BLOCK
+ 114 LOAD_FAST              old_targetFocus
+ 117 LOAD_FAST              self
+ 120 LOAD_FAST              entity
+ 123 CALL_FUNCTION          2
+ 126 POP_TOP
+ 127 LOAD_CONST             None
+ 130 RETURN_VALUE

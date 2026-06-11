@@ -1,0 +1,15 @@
+# run(argc=1) varnames=('self', 'thread')
+   0 LOAD_DEREF             Thread
+   3 LOAD_CONST             'target'
+   6 LOAD_FAST              self
+   9 LOAD_ATTR              query
+  12 LOAD_CONST             'name'
+  15 LOAD_CONST             'MyServerGO'
+  18 CALL_FUNCTION          512
+  21 STORE_FAST             thread
+  24 LOAD_FAST              thread
+  27 LOAD_ATTR              start
+  30 CALL_FUNCTION          0
+  33 POP_TOP
+  34 LOAD_CONST             None
+  37 RETURN_VALUE

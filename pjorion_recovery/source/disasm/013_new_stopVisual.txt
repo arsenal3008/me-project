@@ -1,0 +1,12 @@
+# new_stopVisual(argc=3) varnames=('self', 'vehicle', 'old_func')
+   0 LOAD_DEREF             removeEdge
+   3 LOAD_FAST              vehicle
+   6 CALL_FUNCTION          1
+   9 POP_TOP
+  10 LOAD_FAST              old_func
+  13 LOAD_FAST              self
+  16 LOAD_FAST              vehicle
+  19 CALL_FUNCTION          2
+  22 POP_TOP
+  23 LOAD_CONST             None
+  26 RETURN_VALUE

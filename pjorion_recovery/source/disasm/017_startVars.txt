@@ -1,0 +1,9 @@
+# startVars(argc=1) varnames=('mody',)
+   0 LOAD_CONST             0.1
+   3 LOAD_FAST              mody
+   6 STORE_ATTR             tick
+   9 LOAD_GLOBAL            False
+  12 LOAD_FAST              mody
+  15 STORE_ATTR             altFlag
+  18 LOAD_CONST             None
+  21 RETURN_VALUE

@@ -1,0 +1,117 @@
+# GetVehicleViewAngle(argc=3) varnames=('vehicle', 'viewAngle', 'enable', 'player', 'dir', 'start', 'vehiclePos', 'vehicleDesc', 'toVehicleDist', 'camVehiclePos', 'camVehicleDst', 'sizeXRay', 'minToVehicleDist', 'scanXRay')
+   0 LOAD_FAST              enable
+   3 POP_JUMP_IF_TRUE       to 10
+   6 LOAD_GLOBAL            True
+   9 RETURN_VALUE
+  10 SETUP_EXCEPT           to 291
+  13 LOAD_GLOBAL            BigWorld
+  16 LOAD_ATTR              player
+  19 CALL_FUNCTION          0
+  22 STORE_FAST             player
+  25 LOAD_DEREF             cameras
+  28 LOAD_ATTR              getWorldRayAndPoint
+  31 LOAD_GLOBAL            BigWorld
+  34 LOAD_ATTR              player
+  37 CALL_FUNCTION          0
+  40 LOAD_ATTR              guiSessionProvider
+  43 LOAD_ATTR              shared
+  46 LOAD_ATTR              crosshair
+  49 LOAD_ATTR              getOffset
+  52 CALL_FUNCTION          0
+  55 CALL_FUNCTION_VAR      0
+  58 UNPACK_SEQUENCE        2
+  61 STORE_FAST             dir
+  64 STORE_FAST             start
+  67 LOAD_FAST              dir
+  70 LOAD_ATTR              normalise
+  73 CALL_FUNCTION          0
+  76 POP_TOP
+  77 LOAD_FAST              vehicle
+  80 LOAD_ATTR              isAlive
+  83 CALL_FUNCTION          0
+  86 POP_JUMP_IF_FALSE      to 274
+  89 LOAD_FAST              vehicle
+  92 LOAD_ATTR              position
+  95 LOAD_CONST             1
+  98 BINARY_MULTIPLY
+  99 STORE_FAST             vehiclePos
+ 102 LOAD_FAST              vehicle
+ 105 LOAD_ATTR              typeDescriptor
+ 108 STORE_FAST             vehicleDesc
+ 111 LOAD_FAST              vehiclePos
+ 114 DUP_TOP
+ 115 LOAD_ATTR              y
+ 118 LOAD_FAST              vehicleDesc
+ 121 LOAD_ATTR              chassis
+ 124 LOAD_ATTR              hullPosition
+ 127 LOAD_ATTR              y
+ 130 LOAD_FAST              vehicleDesc
+ 133 LOAD_ATTR              hull
+ 136 LOAD_ATTR              turretPositions
+ 139 LOAD_CONST             0
+ 142 BINARY_SUBSCR
+ 143 LOAD_ATTR              y
+ 146 LOAD_CONST             0.5
+ 149 BINARY_MULTIPLY
+ 150 BINARY_ADD
+ 151 INPLACE_ADD
+ 152 ROT_TWO
+ 153 STORE_ATTR             y
+ 156 LOAD_FAST              start
+ 159 LOAD_FAST              vehiclePos
+ 162 BINARY_SUBTRACT
+ 163 LOAD_ATTR              length
+ 166 STORE_FAST             toVehicleDist
+ 169 LOAD_FAST              start
+ 172 LOAD_FAST              dir
+ 175 LOAD_FAST              toVehicleDist
+ 178 BINARY_MULTIPLY
+ 179 BINARY_ADD
+ 180 STORE_FAST             camVehiclePos
+ 183 LOAD_FAST              camVehiclePos
+ 186 LOAD_FAST              vehiclePos
+ 189 BINARY_SUBTRACT
+ 190 LOAD_ATTR              length
+ 193 STORE_FAST             camVehicleDst
+ 196 LOAD_CONST             4.0
+ 199 STORE_FAST             sizeXRay
+ 202 LOAD_CONST             50
+ 205 STORE_FAST             minToVehicleDist
+ 208 LOAD_FAST              toVehicleDist
+ 211 LOAD_FAST              minToVehicleDist
+ 214 COMPARE_OP             1
+ 217 POP_JUMP_IF_FALSE      to 278
+ 220 LOAD_GLOBAL            mode
+ 223 LOAD_CONST             'gun'
+ 226 COMPARE_OP             2
+ 229 POP_JUMP_IF_FALSE      to 278
+ 232 LOAD_FAST              sizeXRay
+ 235 LOAD_CONST             1
+ 238 LOAD_CONST             1
+ 241 LOAD_FAST              toVehicleDist
+ 244 LOAD_FAST              minToVehicleDist
+ 247 BINARY_DIVIDE
+ 248 BINARY_SUBTRACT
+ 249 BINARY_ADD
+ 250 BINARY_MULTIPLY
+ 251 LOAD_CONST             1.5
+ 254 BINARY_MULTIPLY
+ 255 STORE_FAST             scanXRay
+ 258 LOAD_FAST              scanXRay
+ 261 LOAD_FAST              camVehicleDst
+ 264 COMPARE_OP             4
+ 267 POP_JUMP_IF_FALSE      to 274
+ 270 LOAD_GLOBAL            True
+ 273 RETURN_VALUE
+ 274 LOAD_GLOBAL            False
+ 277 RETURN_VALUE
+ 278 LOAD_FAST              toVehicleDist
+ 281 LOAD_FAST              viewAngle
+ 284 BINARY_MULTIPLY
+ 285 STORE_FAST             scanXRay
+ 288 JUMP_ABSOLUTE          to 258
+ 291 POP_TOP
+ 292 POP_TOP
+ 293 POP_TOP
+ 294 LOAD_GLOBAL            True
+ 297 RETURN_VALUE

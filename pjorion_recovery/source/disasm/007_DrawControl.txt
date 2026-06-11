@@ -1,0 +1,235 @@
+# DrawControl(argc=0) varnames=('vehicle', 'fam', 'adgclr', 't_clr', 'distance')
+   0 LOAD_DEREF             mody
+   3 LOAD_ATTR              modEnable
+   6 POP_JUMP_IF_TRUE       to 73
+   9 SETUP_LOOP             to 69
+  12 LOAD_GLOBAL            BigWorld
+  15 LOAD_ATTR              entities
+  18 LOAD_ATTR              values
+  21 CALL_FUNCTION          0
+  24 GET_ITER
+  25 FOR_ITER               to 68
+  28 STORE_FAST             vehicle
+  31 LOAD_GLOBAL            isinstance
+  34 LOAD_FAST              vehicle
+  37 LOAD_DEREF             Vehicle
+  40 CALL_FUNCTION          2
+  43 POP_JUMP_IF_FALSE      to 25
+  46 LOAD_FAST              vehicle
+  49 LOAD_ATTR              isStarted
+  52 POP_JUMP_IF_FALSE      to 25
+  55 LOAD_DEREF             removeEdge
+  58 LOAD_FAST              vehicle
+  61 CALL_FUNCTION          1
+  64 POP_TOP
+  65 JUMP_ABSOLUTE          to 25
+  68 POP_BLOCK
+  69 LOAD_CONST             None
+  72 RETURN_VALUE
+  73 LOAD_GLOBAL            BigWorld
+  76 LOAD_ATTR              target
+  79 CALL_FUNCTION          0
+  82 LOAD_CONST             None
+  85 COMPARE_OP             8
+  88 POP_JUMP_IF_TRUE       to 131
+  91 LOAD_GLOBAL            isinstance
+  94 LOAD_GLOBAL            BigWorld
+  97 LOAD_ATTR              target
+ 100 CALL_FUNCTION          0
+ 103 LOAD_DEREF             Vehicle
+ 106 CALL_FUNCTION          2
+ 109 POP_JUMP_IF_FALSE      to 613
+ 112 LOAD_GLOBAL            BigWorld
+ 115 LOAD_ATTR              target
+ 118 CALL_FUNCTION          0
+ 121 LOAD_ATTR              isAlive
+ 124 CALL_FUNCTION          0
+ 127 UNARY_NOT
+ 128 POP_JUMP_IF_FALSE      to 613
+ 131 LOAD_CONST             0
+ 134 STORE_FAST             fam
+ 137 SETUP_LOOP             to 613
+ 140 LOAD_GLOBAL            BigWorld
+ 143 LOAD_ATTR              entities
+ 146 LOAD_ATTR              values
+ 149 CALL_FUNCTION          0
+ 152 GET_ITER
+ 153 FOR_ITER               to 612
+ 156 STORE_FAST             vehicle
+ 159 LOAD_GLOBAL            isinstance
+ 162 LOAD_FAST              vehicle
+ 165 LOAD_DEREF             Vehicle
+ 168 CALL_FUNCTION          2
+ 171 POP_JUMP_IF_FALSE      to 153
+ 174 LOAD_FAST              vehicle
+ 177 LOAD_ATTR              isStarted
+ 180 POP_JUMP_IF_FALSE      to 153
+ 183 LOAD_CONST             None
+ 186 STORE_FAST             adgclr
+ 189 LOAD_GLOBAL            getattr
+ 192 LOAD_FAST              vehicle
+ 195 LOAD_CONST             'zj_adgclr'
+ 198 LOAD_CONST             None
+ 201 CALL_FUNCTION          3
+ 204 STORE_FAST             t_clr
+ 207 LOAD_DEREF             mody
+ 210 LOAD_ATTR              freeAttackMarker
+ 213 POP_JUMP_IF_FALSE      to 319
+ 216 LOAD_FAST              vehicle
+ 219 LOAD_ATTR              publicInfo
+ 222 LOAD_CONST             'team'
+ 225 BINARY_SUBSCR
+ 226 LOAD_GLOBAL            BigWorld
+ 229 LOAD_ATTR              player
+ 232 CALL_FUNCTION          0
+ 235 LOAD_ATTR              team
+ 238 COMPARE_OP             3
+ 241 POP_JUMP_IF_FALSE      to 319
+ 244 LOAD_DEREF             GetObstacle
+ 247 LOAD_FAST              vehicle
+ 250 LOAD_CONST             'gun'
+ 253 LOAD_DEREF             mody
+ 256 LOAD_ATTR              freeAttackMarker
+ 259 CALL_FUNCTION          3
+ 262 UNARY_NOT
+ 263 POP_JUMP_IF_FALSE      to 319
+ 266 LOAD_DEREF             GetVehicleViewAngle
+ 269 LOAD_FAST              vehicle
+ 272 LOAD_CONST             0.7
+ 275 CALL_FUNCTION          2
+ 278 POP_JUMP_IF_FALSE      to 319
+ 281 LOAD_CONST             3
+ 284 DUP_TOP
+ 285 STORE_FAST             adgclr
+ 288 LOAD_FAST              vehicle
+ 291 STORE_ATTR             zj_adgclr
+ 294 LOAD_FAST              t_clr
+ 297 LOAD_FAST              adgclr
+ 300 COMPARE_OP             3
+ 303 POP_JUMP_IF_FALSE      to 153
+ 306 LOAD_DEREF             addEdge
+ 309 LOAD_FAST              vehicle
+ 312 CALL_FUNCTION          1
+ 315 POP_TOP
+ 316 JUMP_ABSOLUTE          to 153
+ 319 LOAD_FAST              fam
+ 322 LOAD_CONST             3
+ 325 COMPARE_OP             2
+ 328 POP_JUMP_IF_FALSE      to 344
+ 331 LOAD_DEREF             removeEdge
+ 334 LOAD_FAST              vehicle
+ 337 CALL_FUNCTION          1
+ 340 POP_TOP
+ 341 JUMP_ABSOLUTE          to 153
+ 344 LOAD_GLOBAL            BigWorld
+ 347 LOAD_ATTR              player
+ 350 CALL_FUNCTION          0
+ 353 LOAD_ATTR              getOwnVehiclePosition
+ 356 CALL_FUNCTION          0
+ 359 LOAD_FAST              vehicle
+ 362 LOAD_ATTR              position
+ 365 BINARY_SUBTRACT
+ 366 LOAD_ATTR              length
+ 369 STORE_FAST             distance
+ 372 LOAD_FAST              vehicle
+ 375 LOAD_ATTR              isAlive
+ 378 CALL_FUNCTION          0
+ 381 POP_JUMP_IF_FALSE      to 594
+ 384 LOAD_FAST              vehicle
+ 387 LOAD_ATTR              publicInfo
+ 390 LOAD_CONST             'team'
+ 393 BINARY_SUBSCR
+ 394 LOAD_GLOBAL            BigWorld
+ 397 LOAD_ATTR              player
+ 400 CALL_FUNCTION          0
+ 403 LOAD_ATTR              team
+ 406 COMPARE_OP             3
+ 409 POP_JUMP_IF_FALSE      to 594
+ 412 LOAD_FAST              vehicle
+ 415 LOAD_ATTR              isPlayerVehicle
+ 418 UNARY_NOT
+ 419 POP_JUMP_IF_FALSE      to 594
+ 422 LOAD_DEREF             mody
+ 425 LOAD_ATTR              distanceClose
+ 428 LOAD_FAST              distance
+ 431 DUP_TOP
+ 432 ROT_THREE
+ 433 COMPARE_OP             0
+ 436 JUMP_IF_FALSE_OR_POP   to 607
+ 439 LOAD_DEREF             mody
+ 442 LOAD_ATTR              distanceFar
+ 445 COMPARE_OP             0
+ 448 POP_JUMP_IF_FALSE      to 530
+ 451 LOAD_DEREF             GetObstacle
+ 454 LOAD_FAST              vehicle
+ 457 LOAD_CONST             'camera'
+ 460 LOAD_DEREF             mody
+ 463 LOAD_ATTR              forObstacleOnlyEnemies
+ 466 CALL_FUNCTION          3
+ 469 POP_JUMP_IF_FALSE      to 530
+ 472 LOAD_DEREF             GetVehicleViewAngle
+ 475 LOAD_FAST              vehicle
+ 478 LOAD_DEREF             mody
+ 481 LOAD_ATTR              viewAngle
+ 484 LOAD_DEREF             mody
+ 487 LOAD_ATTR              viewAngleEnable
+ 490 CALL_FUNCTION          3
+ 493 POP_JUMP_IF_FALSE      to 530
+ 496 LOAD_GLOBAL            BigWorld
+ 499 LOAD_ATTR              player
+ 502 CALL_FUNCTION          0
+ 505 LOAD_ATTR              inputHandler
+ 508 LOAD_ATTR              ctrlModeName
+ 511 LOAD_CONST             ('sniper', 'dualgun', 'twinGun')
+ 514 COMPARE_OP             7
+ 517 JUMP_IF_FALSE_OR_POP   to 526
+ 520 LOAD_DEREF             mody
+ 523 LOAD_ATTR              sniperOnly
+ 526 UNARY_NOT
+ 527 POP_JUMP_IF_TRUE       to 539
+ 530 LOAD_DEREF             mody
+ 533 LOAD_ATTR              altFlag
+ 536 POP_JUMP_IF_FALSE      to 594
+ 539 LOAD_CONST             0
+ 542 LOAD_FAST              vehicle
+ 545 STORE_ATTR             zj_adgclr
+ 548 LOAD_FAST              adgclr
+ 551 LOAD_CONST             3
+ 554 COMPARE_OP             3
+ 557 POP_JUMP_IF_FALSE      to 569
+ 560 LOAD_FAST              vehicle
+ 563 LOAD_ATTR              zj_adgclr
+ 566 STORE_FAST             adgclr
+ 569 LOAD_FAST              t_clr
+ 572 LOAD_FAST              adgclr
+ 575 COMPARE_OP             3
+ 578 POP_JUMP_IF_FALSE      to 153
+ 581 LOAD_DEREF             addEdge
+ 584 LOAD_FAST              vehicle
+ 587 CALL_FUNCTION          1
+ 590 POP_TOP
+ 591 JUMP_ABSOLUTE          to 153
+ 594 LOAD_DEREF             removeEdge
+ 597 LOAD_FAST              vehicle
+ 600 CALL_FUNCTION          1
+ 603 POP_TOP
+ 604 JUMP_ABSOLUTE          to 153
+ 607 ROT_TWO
+ 608 POP_TOP
+ 609 JUMP_ABSOLUTE          to 448
+ 612 POP_BLOCK
+ 613 LOAD_DEREF             mody
+ 616 LOAD_ATTR              batleStart
+ 619 POP_JUMP_IF_FALSE      to 650
+ 622 LOAD_DEREF             mody
+ 625 LOAD_ATTR              modEnable
+ 628 POP_JUMP_IF_FALSE      to 650
+ 631 LOAD_GLOBAL            BigWorld
+ 634 LOAD_ATTR              callback
+ 637 LOAD_DEREF             mody
+ 640 LOAD_ATTR              tick
+ 643 LOAD_DEREF             DrawControl
+ 646 CALL_FUNCTION          2
+ 649 POP_TOP
+ 650 LOAD_CONST             None
+ 653 RETURN_VALUE

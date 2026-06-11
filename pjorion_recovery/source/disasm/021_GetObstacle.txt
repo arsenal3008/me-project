@@ -1,0 +1,82 @@
+# GetObstacle(argc=3) varnames=('vehicle', 'mode', 'enable', 'ownVehicle', 'start', 'end', 'testRes', 'collData')
+   0 LOAD_FAST              enable
+   3 POP_JUMP_IF_FALSE      to 175
+   6 SETUP_EXCEPT           to 219
+   9 LOAD_GLOBAL            BigWorld
+  12 LOAD_ATTR              player
+  15 CALL_FUNCTION          0
+  18 LOAD_ATTR              getVehicleAttached
+  21 CALL_FUNCTION          0
+  24 STORE_FAST             ownVehicle
+  27 LOAD_FAST              mode
+  30 LOAD_CONST             'camera'
+  33 COMPARE_OP             2
+  36 POP_JUMP_IF_FALSE      to 183
+  39 LOAD_GLOBAL            BigWorld
+  42 LOAD_ATTR              camera
+  45 CALL_FUNCTION          0
+  48 LOAD_ATTR              position
+  51 STORE_FAST             start
+  54 LOAD_FAST              start
+  57 LOAD_CONST             None
+  60 COMPARE_OP             8
+  63 POP_JUMP_IF_FALSE      to 70
+  66 LOAD_GLOBAL            True
+  69 RETURN_VALUE
+  70 LOAD_FAST              vehicle
+  73 LOAD_ATTR              model
+  76 LOAD_ATTR              node
+  79 LOAD_CONST             'gun'
+  82 CALL_FUNCTION          1
+  85 LOAD_ATTR              position
+  88 STORE_FAST             end
+  91 LOAD_DEREF             collideDynamicAndStatic
+  94 LOAD_FAST              start
+  97 LOAD_FAST              end
+ 100 LOAD_FAST              ownVehicle
+ 103 LOAD_ATTR              id
+ 106 BUILD_TUPLE            1
+ 109 LOAD_CONST             128
+ 112 LOAD_GLOBAL            True
+ 115 CALL_FUNCTION          5
+ 118 STORE_FAST             testRes
+ 121 LOAD_FAST              testRes
+ 124 LOAD_CONST             None
+ 127 COMPARE_OP             9
+ 130 POP_JUMP_IF_FALSE      to 179
+ 133 LOAD_FAST              testRes
+ 136 LOAD_CONST             1
+ 139 BINARY_SUBSCR
+ 140 STORE_FAST             collData
+ 143 LOAD_FAST              collData
+ 146 LOAD_CONST             None
+ 149 COMPARE_OP             9
+ 152 POP_JUMP_IF_FALSE      to 174
+ 155 LOAD_FAST              collData
+ 158 LOAD_ATTR              entity
+ 161 LOAD_FAST              vehicle
+ 164 COMPARE_OP             2
+ 167 POP_JUMP_IF_FALSE      to 174
+ 170 LOAD_GLOBAL            False
+ 173 RETURN_VALUE
+ 174 POP_BLOCK
+ 175 LOAD_GLOBAL            True
+ 178 RETURN_VALUE
+ 179 LOAD_GLOBAL            False
+ 182 RETURN_VALUE
+ 183 LOAD_FAST              mode
+ 186 LOAD_CONST             'gun'
+ 189 COMPARE_OP             2
+ 192 POP_JUMP_IF_FALSE      to 70
+ 195 LOAD_FAST              ownVehicle
+ 198 LOAD_ATTR              model
+ 201 LOAD_ATTR              node
+ 204 LOAD_CONST             'gun'
+ 207 CALL_FUNCTION          1
+ 210 LOAD_ATTR              position
+ 213 STORE_FAST             start
+ 216 JUMP_ABSOLUTE          to 70
+ 219 POP_TOP
+ 220 POP_TOP
+ 221 POP_TOP
+ 222 JUMP_ABSOLUTE          to 175

@@ -1,0 +1,46 @@
+# new__startBattle(argc=1) varnames=('self',)
+   0 LOAD_DEREF             old__startBattle
+   3 LOAD_FAST              self
+   6 CALL_FUNCTION          1
+   9 POP_TOP
+  10 LOAD_DEREF             mody
+  13 LOAD_ATTR              GLOBAL_ENABLE
+  16 JUMP_IF_FALSE_OR_POP   to 25
+  19 LOAD_DEREF             getResolut
+  22 CALL_FUNCTION          0
+  25 LOAD_DEREF             mody
+  28 STORE_ATTR             modEnable
+  31 LOAD_DEREF             mody
+  34 LOAD_ATTR              GLOBAL_ENABLE
+  37 POP_JUMP_IF_FALSE      to 115
+  40 LOAD_DEREF             getResolut
+  43 CALL_FUNCTION          0
+  46 POP_JUMP_IF_FALSE      to 115
+  49 LOAD_GLOBAL            BigWorld
+  52 LOAD_ATTR              player
+  55 CALL_FUNCTION          0
+  58 LOAD_ATTR              arena
+  61 DUP_TOP
+  62 LOAD_ATTR              onVehicleKilled
+  65 LOAD_DEREF             onVehicleKilled
+  68 INPLACE_ADD
+  69 ROT_TWO
+  70 STORE_ATTR             onVehicleKilled
+  73 LOAD_DEREF             mody
+  76 LOAD_ATTR              loadConf
+  79 CALL_FUNCTION          0
+  82 POP_TOP
+  83 LOAD_DEREF             mody
+  86 LOAD_ATTR              interactivSettings
+  89 POP_JUMP_IF_FALSE      to 99
+  92 LOAD_DEREF             LoadConfLoop
+  95 CALL_FUNCTION          0
+  98 POP_TOP
+  99 LOAD_GLOBAL            True
+ 102 LOAD_DEREF             mody
+ 105 STORE_ATTR             batleStart
+ 108 LOAD_DEREF             DrawControl
+ 111 CALL_FUNCTION          0
+ 114 POP_TOP
+ 115 LOAD_CONST             None
+ 118 RETURN_VALUE

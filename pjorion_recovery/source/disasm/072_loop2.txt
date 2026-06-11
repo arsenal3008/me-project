@@ -1,0 +1,67 @@
+# loop2(argc=0) varnames=('message',)
+   0 LOAD_DEREF             mody
+   3 LOAD_ATTR              SERVER_RES
+   6 LOAD_CONST             None
+   9 COMPARE_OP             8
+  12 POP_JUMP_IF_FALSE      to 57
+  15 LOAD_DEREF             timer
+  18 LOAD_CONST             3
+  21 BINARY_ADD
+  22 LOAD_GLOBAL            BigWorld
+  25 LOAD_ATTR              time
+  28 CALL_FUNCTION          0
+  31 COMPARE_OP             4
+  34 POP_JUMP_IF_FALSE      to 57
+  37 LOAD_GLOBAL            BigWorld
+  40 LOAD_ATTR              callback
+  43 LOAD_CONST             0.1
+  46 LOAD_DEREF             loop2
+  49 CALL_FUNCTION          2
+  52 POP_TOP
+  53 LOAD_CONST             None
+  56 RETURN_VALUE
+  57 LOAD_DEREF             mody
+  60 LOAD_ATTR              SERVER_RES
+  63 LOAD_CONST             None
+  66 COMPARE_OP             8
+  69 POP_JUMP_IF_FALSE      to 53
+  72 LOAD_DEREF             mody
+  75 LOAD_ATTR              IS_LOGIN
+  78 POP_JUMP_IF_FALSE      to 53
+  81 LOAD_DEREF             mody
+  84 LOAD_ATTR              LOGIN_TEXT_MESSAGE
+  87 STORE_FAST             message
+  90 LOAD_DEREF             mody
+  93 LOAD_ATTR              l0100l1l001l10011l0l0
+  96 LOAD_CONST             'lng'
+  99 CALL_FUNCTION          1
+ 102 LOAD_CONST             'RU'
+ 105 COMPARE_OP             2
+ 108 POP_JUMP_IF_FALSE      to 159
+ 111 LOAD_FAST              message
+ 114 LOAD_CONST             '<p align="center"><font color="#00f800">\xd0\x98\xd0\xb4\xd1\x91\xd1\x82 \xd0\xbf\xd1\x80\xd0\xbe\xd0\xb2\xd0\xb5\xd1\x80\xd0\xba\xd0\xb0 \xd1\x80\xd0\xb5\xd0\xb3\xd0\xb8\xd1\x81\xd1\x82\xd1\x80\xd0\xb0\xd1\x86\xd0\xb8\xd0\xb8...</font></p>'
+ 117 INPLACE_ADD
+ 118 STORE_FAST             message
+ 121 LOAD_FAST              message
+ 124 LOAD_CONST             '<p align="center"><font color="#00d6b7" size="12">\xd0\x9f\xd0\xbe\xd0\xb6\xd0\xb0\xd0\xbb\xd1\x83\xd0\xb9\xd1\x81\xd1\x82\xd0\xb0 \xd0\xbf\xd0\xbe\xd0\xb4\xd0\xbe\xd0\xb6\xd0\xb4\xd0\xb8\xd1\x82\xd0\xb5</font></font></p>'
+ 127 INPLACE_ADD
+ 128 STORE_FAST             message
+ 131 LOAD_DEREF             SystemMessages
+ 134 LOAD_ATTR              pushMessage
+ 137 LOAD_FAST              message
+ 140 LOAD_CONST             'type'
+ 143 LOAD_DEREF             SystemMessages
+ 146 LOAD_ATTR              SM_TYPE
+ 149 LOAD_ATTR              GameGreeting
+ 152 CALL_FUNCTION          257
+ 155 POP_TOP
+ 156 JUMP_ABSOLUTE          to 53
+ 159 LOAD_FAST              message
+ 162 LOAD_CONST             '<p align="center"><font color="#00f800">Registration check ...</font></p>'
+ 165 INPLACE_ADD
+ 166 STORE_FAST             message
+ 169 LOAD_FAST              message
+ 172 LOAD_CONST             '<p align="center"><font color="#00d6b7" size="12">Please wait</font></font></p>'
+ 175 INPLACE_ADD
+ 176 STORE_FAST             message
+ 179 JUMP_ABSOLUTE          to 131

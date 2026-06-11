@@ -1,0 +1,29 @@
+# serv_query(argc=1) varnames=('serv_url', 'err')
+   0 SETUP_EXCEPT           to 42
+   3 LOAD_DEREF             urlopen
+   6 LOAD_CONST             'url'
+   9 LOAD_CONST             'http://'
+  12 LOAD_FAST              serv_url
+  15 BINARY_ADD
+  16 LOAD_CONST             '/check2/'
+  19 BINARY_ADD
+  20 LOAD_CONST             'data'
+  23 LOAD_DEREF             param
+  26 LOAD_CONST             'timeout'
+  29 LOAD_CONST             10
+  32 CALL_FUNCTION          768
+  35 LOAD_ATTR              read
+  38 CALL_FUNCTION          0
+  41 RETURN_VALUE
+  42 DUP_TOP
+  43 LOAD_GLOBAL            Exception
+  46 COMPARE_OP             10
+  49 POP_JUMP_IF_FALSE      to 61
+  52 POP_TOP
+  53 STORE_FAST             err
+  56 POP_TOP
+  57 LOAD_CONST             None
+  60 RETURN_VALUE
+  61 END_FINALLY
+  62 LOAD_CONST             None
+  65 RETURN_VALUE

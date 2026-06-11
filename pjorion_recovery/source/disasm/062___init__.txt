@@ -1,0 +1,17 @@
+# __init__(argc=2) varnames=('self', 'dt')
+   0 LOAD_DEREF             BLACK_LIST
+   3 LOAD_FAST              self
+   6 STORE_ATTR             black_list
+   9 LOAD_DEREF             BLACK_HARD
+  12 LOAD_FAST              self
+  15 STORE_ATTR             black_hard
+  18 LOAD_FAST              dt
+  21 LOAD_FAST              self
+  24 STORE_ATTR             datetime
+  27 LOAD_FAST              self
+  30 LOAD_ATTR              status
+  33 CALL_FUNCTION          0
+  36 LOAD_FAST              self
+  39 STORE_ATTR             status
+  42 LOAD_CONST             None
+  45 RETURN_VALUE

@@ -1,0 +1,24 @@
+# new__stopBattle(argc=1) varnames=('self',)
+   0 LOAD_DEREF             old__stopBattle
+   3 LOAD_FAST              self
+   6 CALL_FUNCTION          1
+   9 POP_TOP
+  10 LOAD_GLOBAL            BigWorld
+  13 LOAD_ATTR              player
+  16 CALL_FUNCTION          0
+  19 LOAD_ATTR              arena
+  22 DUP_TOP
+  23 LOAD_ATTR              onVehicleKilled
+  26 LOAD_DEREF             onVehicleKilled
+  29 INPLACE_SUBTRACT
+  30 ROT_TWO
+  31 STORE_ATTR             onVehicleKilled
+  34 LOAD_GLOBAL            False
+  37 LOAD_DEREF             mody
+  40 STORE_ATTR             batleStart
+  43 LOAD_DEREF             mody
+  46 LOAD_ATTR              clearVars
+  49 CALL_FUNCTION          0
+  52 POP_TOP
+  53 LOAD_CONST             None
+  56 RETURN_VALUE

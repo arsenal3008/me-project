@@ -1,0 +1,137 @@
+# Analytics(argc=0) varnames=()
+   0 LOAD_NAME              __name__
+   3 STORE_NAME             __module__
+   6 LOAD_CONST             ''
+   9 LOAD_CLOSURE           mody
+  12 BUILD_TUPLE            1
+  15 LOAD_CONST             <code __init__>
+  18 MAKE_CLOSURE           1
+  21 STORE_NAME             __init__
+  24 LOAD_CLOSURE           hashlib
+  27 BUILD_TUPLE            1
+  30 LOAD_CONST             <code getHash>
+  33 MAKE_CLOSURE           0
+  36 STORE_NAME             getHash
+  39 LOAD_CONST             ''
+  42 LOAD_CLOSURE           urlencode
+  45 LOAD_CLOSURE           urlopen
+  48 BUILD_TUPLE            2
+  51 LOAD_CONST             <code analytics_settings>
+  54 MAKE_CLOSURE           1
+  57 STORE_NAME             analytics_settings
+  60 LOAD_CLOSURE           Thread
+  63 BUILD_TUPLE            1
+  66 LOAD_CONST             <code analytics_load>
+  69 MAKE_CLOSURE           0
+  72 STORE_NAME             analytics_load
+  75 LOAD_LOCALS
+  76 RETURN_VALUE
+
+  # __init__(argc=2) varnames=('self', 'stat')
+     0 LOAD_CONST             None
+     3 RETURN_VALUE
+
+  # getHash(argc=2) varnames=('self', 'txt', 'm')
+     0 LOAD_DEREF             hashlib
+     3 LOAD_ATTR              md5
+     6 CALL_FUNCTION          0
+     9 STORE_FAST             m
+    12 LOAD_FAST              m
+    15 LOAD_ATTR              update
+    18 LOAD_GLOBAL            str
+    21 LOAD_FAST              txt
+    24 CALL_FUNCTION          1
+    27 CALL_FUNCTION          1
+    30 POP_TOP
+    31 LOAD_FAST              m
+    34 LOAD_ATTR              hexdigest
+    37 CALL_FUNCTION          0
+    40 RETURN_VALUE
+
+  # analytics_settings(argc=2) varnames=('self', 'stat', 'hn', 'param')
+     0 LOAD_FAST              self
+     3 LOAD_ATTR              getHash
+     6 LOAD_CONST             'zjAH%s-%s'
+     9 LOAD_GLOBAL            BigWorld
+    12 LOAD_ATTR              player
+    15 CALL_FUNCTION          0
+    18 LOAD_ATTR              databaseID
+    21 LOAD_GLOBAL            BigWorld
+    24 LOAD_ATTR              player
+    27 CALL_FUNCTION          0
+    30 LOAD_ATTR              name
+    33 BUILD_TUPLE            2
+    36 BINARY_MODULO
+    37 CALL_FUNCTION          1
+    40 STORE_FAST             hn
+    43 LOAD_DEREF             urlencode
+    46 BUILD_MAP              7
+    49 LOAD_CONST             1
+    52 LOAD_CONST             'v'
+    55 STORE_MAP
+    56 LOAD_CONST             'screenview'
+    59 LOAD_CONST             't'
+    62 STORE_MAP
+    63 LOAD_CONST             '%s'
+    66 LOAD_FAST              self
+    69 LOAD_ATTR              mod_version
+    72 BINARY_MODULO
+    73 LOAD_CONST             '_'
+    76 BINARY_ADD
+    77 LOAD_FAST              stat
+    80 BINARY_ADD
+    81 LOAD_CONST             'av'
+    84 STORE_MAP
+    85 LOAD_CONST             '%s'
+    88 LOAD_FAST              self
+    91 LOAD_ATTR              mod_description
+    94 BINARY_MODULO
+    95 LOAD_CONST             'an'
+    98 STORE_MAP
+    99 LOAD_CONST             '%s'
+   102 LOAD_FAST              hn
+   105 BINARY_MODULO
+   106 LOAD_CONST             'cd'
+   109 STORE_MAP
+   110 LOAD_CONST             '%s'
+   113 LOAD_FAST              self
+   116 LOAD_ATTR              mod_id_analytics
+   119 BINARY_MODULO
+   120 LOAD_CONST             'tid'
+   123 STORE_MAP
+   124 LOAD_CONST             '%s'
+   127 LOAD_FAST              hn
+   130 BINARY_MODULO
+   131 LOAD_CONST             'cid'
+   134 STORE_MAP
+   135 CALL_FUNCTION          1
+   138 STORE_FAST             param
+   141 LOAD_DEREF             urlopen
+   144 LOAD_CONST             'url'
+   147 LOAD_CONST             'http://www.google-analytics.com/collect?'
+   150 LOAD_CONST             'data'
+   153 LOAD_FAST              param
+   156 CALL_FUNCTION          512
+   159 LOAD_ATTR              read
+   162 CALL_FUNCTION          0
+   165 RETURN_VALUE
+
+  # analytics_load(argc=1) varnames=('self', 'thread')
+     0 LOAD_DEREF             Thread
+     3 LOAD_CONST             'target'
+     6 LOAD_FAST              self
+     9 LOAD_ATTR              analytics_settings
+    12 LOAD_CONST             'args'
+    15 LOAD_FAST              self
+    18 LOAD_ATTR              stat
+    21 BUILD_TUPLE            1
+    24 LOAD_CONST             'name'
+    27 LOAD_CONST             'Analytics'
+    30 CALL_FUNCTION          768
+    33 STORE_FAST             thread
+    36 LOAD_FAST              thread
+    39 LOAD_ATTR              start
+    42 CALL_FUNCTION          0
+    45 POP_TOP
+    46 LOAD_CONST             None
+    49 RETURN_VALUE

@@ -1,0 +1,27 @@
+# getIsFriendly(argc=1) varnames=('id',)
+   0 LOAD_DEREF             getBattleOn
+   3 CALL_FUNCTION          0
+   6 JUMP_IF_FALSE_OR_POP   to 67
+   9 LOAD_GLOBAL            BigWorld
+  12 LOAD_ATTR              player
+  15 CALL_FUNCTION          0
+  18 LOAD_ATTR              arena
+  21 LOAD_ATTR              vehicles
+  24 LOAD_GLOBAL            BigWorld
+  27 LOAD_ATTR              player
+  30 CALL_FUNCTION          0
+  33 LOAD_ATTR              playerVehicleID
+  36 BINARY_SUBSCR
+  37 LOAD_CONST             'team'
+  40 BINARY_SUBSCR
+  41 LOAD_GLOBAL            BigWorld
+  44 LOAD_ATTR              player
+  47 CALL_FUNCTION          0
+  50 LOAD_ATTR              arena
+  53 LOAD_ATTR              vehicles
+  56 LOAD_FAST              id
+  59 BINARY_SUBSCR
+  60 LOAD_CONST             'team'
+  63 BINARY_SUBSCR
+  64 COMPARE_OP             2
+  67 RETURN_VALUE

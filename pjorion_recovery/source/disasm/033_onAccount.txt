@@ -1,0 +1,75 @@
+# onAccount(argc=1) varnames=('account', 't', 'serv_check', 'Lic', 'data')
+   0 LOAD_GLOBAL            time
+   3 LOAD_ATTR              localtime
+   6 LOAD_DEREF             time_utils
+   9 LOAD_ATTR              _g_instance
+  12 LOAD_ATTR              serverUTCTime
+  15 CALL_FUNCTION          1
+  18 STORE_FAST             t
+  21 LOAD_GLOBAL            datetime
+  24 LOAD_ATTR              date
+  27 LOAD_FAST              t
+  30 LOAD_ATTR              tm_year
+  33 LOAD_FAST              t
+  36 LOAD_ATTR              tm_mon
+  39 LOAD_FAST              t
+  42 LOAD_ATTR              tm_mday
+  45 CALL_FUNCTION          3
+  48 LOAD_DEREF             mody
+  51 STORE_ATTR             CURRENT_DATE
+  54 LOAD_DEREF             ServerCheck
+  57 CALL_FUNCTION          0
+  60 STORE_FAST             serv_check
+  63 LOAD_GLOBAL            STATUS
+  66 LOAD_DEREF             mody
+  69 STORE_ATTR             fistStatus
+  72 LOAD_GLOBAL            STATUS
+  75 LOAD_ATTR              lower
+  78 CALL_FUNCTION          0
+  81 LOAD_CONST             'full'
+  84 COMPARE_OP             3
+  87 POP_JUMP_IF_FALSE      to 122
+  90 LOAD_FAST              serv_check
+  93 LOAD_ATTR              run
+  96 LOAD_GLOBAL            STATUS
+  99 CALL_FUNCTION          1
+ 102 POP_TOP
+ 103 LOAD_DEREF             g_playerEvents
+ 106 DUP_TOP
+ 107 LOAD_ATTR              onAccountShowGUI
+ 110 LOAD_DEREF             onAccount
+ 113 INPLACE_SUBTRACT
+ 114 ROT_TWO
+ 115 STORE_ATTR             onAccountShowGUI
+ 118 LOAD_CONST             None
+ 121 RETURN_VALUE
+ 122 LOAD_DEREF             License
+ 125 LOAD_DEREF             mody
+ 128 LOAD_ATTR              CURRENT_DATE
+ 131 CALL_FUNCTION          1
+ 134 STORE_FAST             Lic
+ 137 LOAD_FAST              Lic
+ 140 LOAD_ATTR              status
+ 143 POP_JUMP_IF_FALSE      to 184
+ 146 LOAD_FAST              Lic
+ 149 LOAD_ATTR              getData
+ 152 CALL_FUNCTION          0
+ 155 STORE_FAST             data
+ 158 LOAD_FAST              serv_check
+ 161 LOAD_ATTR              run
+ 164 LOAD_FAST              Lic
+ 167 LOAD_ATTR              status
+ 170 LOAD_FAST              data
+ 173 LOAD_CONST             1
+ 176 BINARY_SUBSCR
+ 177 CALL_FUNCTION          2
+ 180 POP_TOP
+ 181 JUMP_ABSOLUTE          to 103
+ 184 LOAD_DEREF             mody
+ 187 LOAD_ATTR              onLineActivated
+ 190 POP_JUMP_IF_FALSE      to 103
+ 193 LOAD_FAST              serv_check
+ 196 LOAD_ATTR              run
+ 199 CALL_FUNCTION          0
+ 202 POP_TOP
+ 203 JUMP_ABSOLUTE          to 103

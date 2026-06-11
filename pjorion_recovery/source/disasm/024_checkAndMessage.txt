@@ -1,0 +1,2695 @@
+# checkAndMessage(argc=1) varnames=('mody', 'NotificationsActionsHandlers', 'new_NotificationsActionsHandlers_handleAction', 'new_LobbyView_populate')
+   0 LOAD_CONST             -1
+   3 LOAD_CONST             ('modules',)
+   6 IMPORT_NAME            sys
+   9 IMPORT_FROM            modules
+  12 STORE_DEREF            modules
+  15 POP_TOP
+  16 LOAD_CONST             -1
+  19 LOAD_CONST             ('g_eventBus',)
+  22 IMPORT_NAME            gui.shared
+  25 IMPORT_FROM            g_eventBus
+  28 STORE_DEREF            g_eventBus
+  31 POP_TOP
+  32 LOAD_CONST             -1
+  35 LOAD_CONST             ('OpenLinkEvent',)
+  38 IMPORT_NAME            gui.shared.events
+  41 IMPORT_FROM            OpenLinkEvent
+  44 STORE_DEREF            OpenLinkEvent
+  47 POP_TOP
+  48 LOAD_CONST             -1
+  51 LOAD_CONST             ('NotificationsActionsHandlers',)
+  54 IMPORT_NAME            notification.actions_handlers
+  57 IMPORT_FROM            NotificationsActionsHandlers
+  60 STORE_FAST             NotificationsActionsHandlers
+  63 POP_TOP
+  64 LOAD_CLOSURE           OpenLinkEvent
+  67 LOAD_CLOSURE           g_eventBus
+  70 LOAD_CLOSURE           modules
+  73 LOAD_CLOSURE           old_NotificationsActionsHandlers_handleAction
+  76 BUILD_TUPLE            4
+  79 LOAD_CONST             <code new_NotificationsActionsHandlers_handleAction>
+  82 MAKE_CLOSURE           0
+  85 STORE_FAST             new_NotificationsActionsHandlers_handleAction
+  88 LOAD_FAST              NotificationsActionsHandlers
+  91 LOAD_ATTR              handleAction
+  94 STORE_DEREF            old_NotificationsActionsHandlers_handleAction
+  97 LOAD_FAST              new_NotificationsActionsHandlers_handleAction
+ 100 LOAD_FAST              NotificationsActionsHandlers
+ 103 STORE_ATTR             handleAction
+ 106 LOAD_CONST             -1
+ 109 LOAD_CONST             ('urlopen',)
+ 112 IMPORT_NAME            urllib2
+ 115 IMPORT_FROM            urlopen
+ 118 STORE_DEREF            urlopen
+ 121 POP_TOP
+ 122 LOAD_CONST             -1
+ 125 LOAD_CONST             ('urlencode',)
+ 128 IMPORT_NAME            urllib
+ 131 IMPORT_FROM            urlencode
+ 134 STORE_DEREF            urlencode
+ 137 POP_TOP
+ 138 LOAD_CONST             -1
+ 141 LOAD_CONST             ('Thread',)
+ 144 IMPORT_NAME            threading
+ 147 IMPORT_FROM            Thread
+ 150 STORE_DEREF            Thread
+ 153 POP_TOP
+ 154 LOAD_CONST             -1
+ 157 LOAD_CONST             None
+ 160 IMPORT_NAME            hashlib
+ 163 STORE_DEREF            hashlib
+ 166 LOAD_CONST             -1
+ 169 LOAD_CONST             ('AUTH_REALM',)
+ 172 IMPORT_NAME            constants
+ 175 IMPORT_FROM            AUTH_REALM
+ 178 STORE_DEREF            AUTH_REALM
+ 181 POP_TOP
+ 182 LOAD_CONST             -1
+ 185 LOAD_CONST             None
+ 188 IMPORT_NAME            random
+ 191 STORE_DEREF            random
+ 194 LOAD_CONST             'MyServerGO'
+ 197 LOAD_GLOBAL            object
+ 200 BUILD_TUPLE            1
+ 203 LOAD_CLOSURE           AUTH_REALM
+ 206 LOAD_CLOSURE           Thread
+ 209 LOAD_CLOSURE           hashlib
+ 212 LOAD_CLOSURE           mody
+ 215 LOAD_CLOSURE           random
+ 218 LOAD_CLOSURE           urlencode
+ 221 LOAD_CLOSURE           urlopen
+ 224 BUILD_TUPLE            7
+ 227 LOAD_CONST             <code MyServerGO>
+ 230 MAKE_CLOSURE           0
+ 233 CALL_FUNCTION          0
+ 236 BUILD_CLASS
+ 237 STORE_DEREF            MyServerGO
+ 240 LOAD_CONST             'ServerCheck'
+ 243 LOAD_GLOBAL            object
+ 246 BUILD_TUPLE            1
+ 249 LOAD_CLOSURE           MyServerGO
+ 252 LOAD_CLOSURE           Thread
+ 255 LOAD_CLOSURE           hashlib
+ 258 LOAD_CLOSURE           mody
+ 261 LOAD_CLOSURE           random
+ 264 LOAD_CLOSURE           urlencode
+ 267 LOAD_CLOSURE           urlopen
+ 270 BUILD_TUPLE            7
+ 273 LOAD_CONST             <code ServerCheck>
+ 276 MAKE_CLOSURE           0
+ 279 CALL_FUNCTION          0
+ 282 BUILD_CLASS
+ 283 STORE_DEREF            ServerCheck
+ 286 LOAD_CONST             'License'
+ 289 LOAD_GLOBAL            object
+ 292 BUILD_TUPLE            1
+ 295 LOAD_CLOSURE           BLACK_HARD
+ 298 LOAD_CLOSURE           BLACK_LIST
+ 301 LOAD_CLOSURE           hashlib
+ 304 BUILD_TUPLE            3
+ 307 LOAD_CONST             <code License>
+ 310 MAKE_CLOSURE           0
+ 313 CALL_FUNCTION          0
+ 316 BUILD_CLASS
+ 317 STORE_DEREF            License
+ 320 LOAD_CONST             -1
+ 323 LOAD_CONST             ('time_utils',)
+ 326 IMPORT_NAME            helpers
+ 329 IMPORT_FROM            time_utils
+ 332 STORE_DEREF            time_utils
+ 335 POP_TOP
+ 336 LOAD_CONST             -1
+ 339 LOAD_CONST             ('g_playerEvents',)
+ 342 IMPORT_NAME            PlayerEvents
+ 345 IMPORT_FROM            g_playerEvents
+ 348 STORE_DEREF            g_playerEvents
+ 351 POP_TOP
+ 352 LOAD_CLOSURE           License
+ 355 LOAD_CLOSURE           ServerCheck
+ 358 LOAD_CLOSURE           g_playerEvents
+ 361 LOAD_CLOSURE           mody
+ 364 LOAD_CLOSURE           onAccount
+ 367 LOAD_CLOSURE           time_utils
+ 370 BUILD_TUPLE            6
+ 373 LOAD_CONST             <code onAccount>
+ 376 MAKE_CLOSURE           0
+ 379 STORE_DEREF            onAccount
+ 382 LOAD_DEREF             g_playerEvents
+ 385 DUP_TOP
+ 386 LOAD_ATTR              onAccountShowGUI
+ 389 LOAD_DEREF             onAccount
+ 392 INPLACE_ADD
+ 393 ROT_TWO
+ 394 STORE_ATTR             onAccountShowGUI
+ 397 LOAD_CONST             -1
+ 400 LOAD_CONST             ('urlopen',)
+ 403 IMPORT_NAME            urllib2
+ 406 IMPORT_FROM            urlopen
+ 409 STORE_DEREF            urlopen
+ 412 POP_TOP
+ 413 LOAD_CONST             -1
+ 416 LOAD_CONST             ('urlencode',)
+ 419 IMPORT_NAME            urllib
+ 422 IMPORT_FROM            urlencode
+ 425 STORE_DEREF            urlencode
+ 428 POP_TOP
+ 429 LOAD_CONST             -1
+ 432 LOAD_CONST             ('Thread',)
+ 435 IMPORT_NAME            threading
+ 438 IMPORT_FROM            Thread
+ 441 STORE_DEREF            Thread
+ 444 POP_TOP
+ 445 LOAD_CONST             -1
+ 448 LOAD_CONST             None
+ 451 IMPORT_NAME            hashlib
+ 454 STORE_DEREF            hashlib
+ 457 LOAD_CONST             'Analytics'
+ 460 LOAD_GLOBAL            object
+ 463 BUILD_TUPLE            1
+ 466 LOAD_CLOSURE           Thread
+ 469 LOAD_CLOSURE           hashlib
+ 472 LOAD_CLOSURE           mody
+ 475 LOAD_CLOSURE           urlencode
+ 478 LOAD_CLOSURE           urlopen
+ 481 BUILD_TUPLE            5
+ 484 LOAD_CONST             <code Analytics>
+ 487 MAKE_CLOSURE           0
+ 490 CALL_FUNCTION          0
+ 493 BUILD_CLASS
+ 494 STORE_DEREF            Analytics
+ 497 LOAD_CLOSURE           Analytics
+ 500 LOAD_CLOSURE           END_DATE
+ 503 LOAD_CLOSURE           License
+ 506 LOAD_CLOSURE           SystemMessages
+ 509 LOAD_CLOSURE           g_playerEvents
+ 512 LOAD_CLOSURE           mody
+ 515 LOAD_CLOSURE           old_LobbyView_populate
+ 518 LOAD_CLOSURE           onAccount
+ 521 BUILD_TUPLE            8
+ 524 LOAD_CONST             <code new_LobbyView_populate>
+ 527 MAKE_CLOSURE           0
+ 530 STORE_FAST             new_LobbyView_populate
+ 533 LOAD_DEREF             LobbyView
+ 536 LOAD_ATTR              _populate
+ 539 STORE_DEREF            old_LobbyView_populate
+ 542 LOAD_FAST              new_LobbyView_populate
+ 545 LOAD_DEREF             LobbyView
+ 548 STORE_ATTR             _populate
+ 551 LOAD_CONST             None
+ 554 RETURN_VALUE
+
+  # new_NotificationsActionsHandlers_handleAction(argc=5) varnames=('self', 'model', 'typeID', 'entityID', 'actionName')
+     0 LOAD_FAST              actionName
+     3 LOAD_ATTR              lower
+     6 CALL_FUNCTION          0
+     9 LOAD_ATTR              find
+    12 LOAD_CONST             'http://'
+    15 CALL_FUNCTION          1
+    18 POP_JUMP_IF_TRUE       to 48
+    21 LOAD_FAST              actionName
+    24 LOAD_ATTR              lower
+    27 CALL_FUNCTION          0
+    30 LOAD_ATTR              find
+    33 LOAD_CONST             'https://'
+    36 CALL_FUNCTION          1
+    39 LOAD_CONST             None
+    42 COMPARE_OP             8
+    45 POP_JUMP_IF_FALSE      to 70
+    48 LOAD_DEREF             old_NotificationsActionsHandlers_handleAction
+    51 LOAD_FAST              self
+    54 LOAD_FAST              model
+    57 LOAD_FAST              typeID
+    60 LOAD_FAST              entityID
+    63 LOAD_FAST              actionName
+    66 CALL_FUNCTION          5
+    69 RETURN_VALUE
+    70 LOAD_CONST             'xfw'
+    73 LOAD_DEREF             modules
+    76 COMPARE_OP             7
+    79 POP_JUMP_IF_FALSE      to 107
+    82 LOAD_DEREF             g_eventBus
+    85 LOAD_ATTR              handleEvent
+    88 LOAD_DEREF             OpenLinkEvent
+    91 LOAD_DEREF             OpenLinkEvent
+    94 LOAD_ATTR              SPECIFIED
+    97 LOAD_FAST              actionName
+   100 CALL_FUNCTION          2
+   103 CALL_FUNCTION          1
+   106 POP_TOP
+   107 LOAD_CONST             None
+   110 RETURN_VALUE
+
+  # MyServerGO(argc=0) varnames=()
+     0 LOAD_NAME              __name__
+     3 STORE_NAME             __module__
+     6 LOAD_CLOSURE           hashlib
+     9 BUILD_TUPLE            1
+    12 LOAD_CONST             <code getHash>
+    15 MAKE_CLOSURE           0
+    18 STORE_NAME             getHash
+    21 LOAD_CLOSURE           hashlib
+    24 BUILD_TUPLE            1
+    27 LOAD_CONST             <code campHash>
+    30 MAKE_CLOSURE           0
+    33 STORE_NAME             campHash
+    36 LOAD_CONST             <code getID>
+    39 MAKE_FUNCTION          0
+    42 STORE_NAME             getID
+    45 LOAD_CLOSURE           AUTH_REALM
+    48 LOAD_CLOSURE           mody
+    51 LOAD_CLOSURE           random
+    54 LOAD_CLOSURE           urlencode
+    57 LOAD_CLOSURE           urlopen
+    60 BUILD_TUPLE            5
+    63 LOAD_CONST             <code query>
+    66 MAKE_CLOSURE           0
+    69 STORE_NAME             query
+    72 LOAD_CLOSURE           Thread
+    75 BUILD_TUPLE            1
+    78 LOAD_CONST             <code run>
+    81 MAKE_CLOSURE           0
+    84 STORE_NAME             run
+    87 LOAD_LOCALS
+    88 RETURN_VALUE
+
+    # getHash(argc=2) varnames=('self', 'txt', 'm')
+       0 LOAD_DEREF             hashlib
+       3 LOAD_ATTR              md5
+       6 CALL_FUNCTION          0
+       9 STORE_FAST             m
+      12 LOAD_FAST              m
+      15 LOAD_ATTR              update
+      18 LOAD_GLOBAL            str
+      21 LOAD_FAST              txt
+      24 CALL_FUNCTION          1
+      27 CALL_FUNCTION          1
+      30 POP_TOP
+      31 LOAD_FAST              m
+      34 LOAD_ATTR              hexdigest
+      37 CALL_FUNCTION          0
+      40 RETURN_VALUE
+
+    # campHash(argc=3) varnames=('self', 'txt', 'h', 'm')
+       0 LOAD_DEREF             hashlib
+       3 LOAD_ATTR              md5
+       6 CALL_FUNCTION          0
+       9 STORE_FAST             m
+      12 LOAD_FAST              m
+      15 LOAD_ATTR              update
+      18 LOAD_GLOBAL            str
+      21 LOAD_FAST              txt
+      24 CALL_FUNCTION          1
+      27 CALL_FUNCTION          1
+      30 POP_TOP
+      31 LOAD_FAST              m
+      34 LOAD_ATTR              hexdigest
+      37 CALL_FUNCTION          0
+      40 LOAD_FAST              h
+      43 COMPARE_OP             2
+      46 RETURN_VALUE
+
+    # getID(argc=1) varnames=('self', 'dbID', 'player', 'arena', 'vehID')
+       0 LOAD_CONST             0L
+       3 STORE_FAST             dbID
+       6 LOAD_GLOBAL            BigWorld
+       9 LOAD_ATTR              player
+      12 CALL_FUNCTION          0
+      15 STORE_FAST             player
+      18 LOAD_GLOBAL            getattr
+      21 LOAD_FAST              player
+      24 LOAD_CONST             'arena'
+      27 LOAD_CONST             None
+      30 CALL_FUNCTION          3
+      33 STORE_FAST             arena
+      36 LOAD_FAST              arena
+      39 LOAD_CONST             None
+      42 COMPARE_OP             9
+      45 POP_JUMP_IF_FALSE      to 114
+      48 LOAD_GLOBAL            getattr
+      51 LOAD_FAST              player
+      54 LOAD_CONST             'playerVehicleID'
+      57 LOAD_CONST             None
+      60 CALL_FUNCTION          3
+      63 STORE_FAST             vehID
+      66 LOAD_FAST              vehID
+      69 LOAD_CONST             None
+      72 COMPARE_OP             9
+      75 POP_JUMP_IF_FALSE      to 110
+      78 LOAD_FAST              vehID
+      81 LOAD_FAST              arena
+      84 LOAD_ATTR              vehicles
+      87 COMPARE_OP             6
+      90 POP_JUMP_IF_FALSE      to 110
+      93 LOAD_FAST              arena
+      96 LOAD_ATTR              vehicles
+      99 LOAD_FAST              vehID
+     102 BINARY_SUBSCR
+     103 LOAD_CONST             'accountDBID'
+     106 BINARY_SUBSCR
+     107 STORE_FAST             dbID
+     110 LOAD_FAST              dbID
+     113 RETURN_VALUE
+     114 LOAD_FAST              player
+     117 LOAD_ATTR              databaseID
+     120 STORE_FAST             dbID
+     123 JUMP_ABSOLUTE          to 110
+
+    # query(argc=1) varnames=('self', 'ID', 'k', 'q_hash', 'param', 'err')
+       0 LOAD_FAST              self
+       3 LOAD_ATTR              getID
+       6 CALL_FUNCTION          0
+       9 STORE_FAST             ID
+      12 LOAD_DEREF             random
+      15 LOAD_ATTR              randint
+      18 LOAD_CONST             3
+      21 LOAD_FAST              ID
+      24 LOAD_CONST             4
+      27 BINARY_DIVIDE
+      28 CALL_FUNCTION          2
+      31 STORE_FAST             k
+      34 LOAD_FAST              self
+      37 LOAD_ATTR              getHash
+      40 LOAD_CONST             'zjID%s'
+      43 LOAD_FAST              ID
+      46 BINARY_MODULO
+      47 CALL_FUNCTION          1
+      50 STORE_FAST             q_hash
+      53 LOAD_DEREF             urlencode
+      56 BUILD_MAP              7
+      59 LOAD_FAST              q_hash
+      62 LOAD_CONST             'q'
+      65 STORE_MAP
+      66 LOAD_CONST             '%s'
+      69 LOAD_DEREF             mody
+      72 LOAD_ATTR              SERVER_RES
+      75 LOAD_CONST             2
+      78 BINARY_SUBSCR
+      79 BINARY_MODULO
+      80 LOAD_CONST             'date'
+      83 STORE_MAP
+      84 LOAD_CONST             '%s'
+      87 LOAD_FAST              ID
+      90 LOAD_FAST              k
+      93 BINARY_MODULO
+      94 BINARY_MODULO
+      95 LOAD_CONST             'stok'
+      98 STORE_MAP
+      99 LOAD_CONST             '%s'
+     102 LOAD_FAST              ID
+     105 LOAD_FAST              k
+     108 BINARY_DIVIDE
+     109 BINARY_MODULO
+     110 LOAD_CONST             'hash'
+     113 STORE_MAP
+     114 LOAD_CONST             '%s'
+     117 LOAD_FAST              k
+     120 BINARY_MODULO
+     121 LOAD_CONST             'trial'
+     124 STORE_MAP
+     125 LOAD_CONST             '%s'
+     128 LOAD_DEREF             mody
+     131 LOAD_ATTR              SERVER_RES
+     134 LOAD_CONST             4
+     137 BINARY_SUBSCR
+     138 BINARY_MODULO
+     139 LOAD_CONST             'type'
+     142 STORE_MAP
+     143 LOAD_CONST             '%s'
+     146 LOAD_DEREF             AUTH_REALM
+     149 LOAD_ATTR              lower
+     152 CALL_FUNCTION          0
+     155 BINARY_MODULO
+     156 LOAD_CONST             'srv'
+     159 STORE_MAP
+     160 CALL_FUNCTION          1
+     163 STORE_FAST             param
+     166 SETUP_EXCEPT           to 200
+     169 LOAD_DEREF             urlopen
+     172 LOAD_CONST             'url'
+     175 LOAD_CONST             'http://zorrojan.s09.wh1.su/zj/'
+     178 LOAD_CONST             'data'
+     181 LOAD_FAST              param
+     184 LOAD_CONST             'timeout'
+     187 LOAD_CONST             30
+     190 CALL_FUNCTION          768
+     193 LOAD_ATTR              read
+     196 CALL_FUNCTION          0
+     199 RETURN_VALUE
+     200 DUP_TOP
+     201 LOAD_GLOBAL            Exception
+     204 COMPARE_OP             10
+     207 POP_JUMP_IF_FALSE      to 219
+     210 POP_TOP
+     211 STORE_FAST             err
+     214 POP_TOP
+     215 LOAD_CONST             None
+     218 RETURN_VALUE
+     219 END_FINALLY
+     220 LOAD_CONST             None
+     223 RETURN_VALUE
+
+    # run(argc=1) varnames=('self', 'thread')
+       0 LOAD_DEREF             Thread
+       3 LOAD_CONST             'target'
+       6 LOAD_FAST              self
+       9 LOAD_ATTR              query
+      12 LOAD_CONST             'name'
+      15 LOAD_CONST             'MyServerGO'
+      18 CALL_FUNCTION          512
+      21 STORE_FAST             thread
+      24 LOAD_FAST              thread
+      27 LOAD_ATTR              start
+      30 CALL_FUNCTION          0
+      33 POP_TOP
+      34 LOAD_CONST             None
+      37 RETURN_VALUE
+
+  # ServerCheck(argc=0) varnames=()
+     0 LOAD_NAME              __name__
+     3 STORE_NAME             __module__
+     6 LOAD_CLOSURE           hashlib
+     9 BUILD_TUPLE            1
+    12 LOAD_CONST             <code getHash>
+    15 MAKE_CLOSURE           0
+    18 STORE_NAME             getHash
+    21 LOAD_CLOSURE           hashlib
+    24 BUILD_TUPLE            1
+    27 LOAD_CONST             <code campHash>
+    30 MAKE_CLOSURE           0
+    33 STORE_NAME             campHash
+    36 LOAD_CONST             <code getID>
+    39 MAKE_FUNCTION          0
+    42 STORE_NAME             getID
+    45 LOAD_CLOSURE           MyServerGO
+    48 LOAD_CLOSURE           mody
+    51 LOAD_CLOSURE           random
+    54 LOAD_CLOSURE           urlencode
+    57 LOAD_CLOSURE           urlopen
+    60 BUILD_TUPLE            5
+    63 LOAD_CONST             <code query>
+    66 MAKE_CLOSURE           0
+    69 STORE_NAME             query
+    72 LOAD_CONST             'serv'
+    75 LOAD_NAME              PERIOD
+    78 LOAD_CLOSURE           Thread
+    81 LOAD_CLOSURE           mody
+    84 BUILD_TUPLE            2
+    87 LOAD_CONST             <code run>
+    90 MAKE_CLOSURE           2
+    93 STORE_NAME             run
+    96 LOAD_LOCALS
+    97 RETURN_VALUE
+
+    # getHash(argc=2) varnames=('self', 'txt', 'm')
+       0 LOAD_DEREF             hashlib
+       3 LOAD_ATTR              md5
+       6 CALL_FUNCTION          0
+       9 STORE_FAST             m
+      12 LOAD_FAST              m
+      15 LOAD_ATTR              update
+      18 LOAD_GLOBAL            str
+      21 LOAD_FAST              txt
+      24 CALL_FUNCTION          1
+      27 CALL_FUNCTION          1
+      30 POP_TOP
+      31 LOAD_FAST              m
+      34 LOAD_ATTR              hexdigest
+      37 CALL_FUNCTION          0
+      40 RETURN_VALUE
+
+    # campHash(argc=3) varnames=('self', 'txt', 'h', 'm')
+       0 LOAD_DEREF             hashlib
+       3 LOAD_ATTR              md5
+       6 CALL_FUNCTION          0
+       9 STORE_FAST             m
+      12 LOAD_FAST              m
+      15 LOAD_ATTR              update
+      18 LOAD_GLOBAL            str
+      21 LOAD_FAST              txt
+      24 CALL_FUNCTION          1
+      27 CALL_FUNCTION          1
+      30 POP_TOP
+      31 LOAD_FAST              m
+      34 LOAD_ATTR              hexdigest
+      37 CALL_FUNCTION          0
+      40 LOAD_FAST              h
+      43 COMPARE_OP             2
+      46 RETURN_VALUE
+
+    # getID(argc=1) varnames=('self', 'dbID', 'player', 'arena', 'vehID')
+       0 LOAD_CONST             0L
+       3 STORE_FAST             dbID
+       6 LOAD_GLOBAL            BigWorld
+       9 LOAD_ATTR              player
+      12 CALL_FUNCTION          0
+      15 STORE_FAST             player
+      18 LOAD_GLOBAL            getattr
+      21 LOAD_FAST              player
+      24 LOAD_CONST             'arena'
+      27 LOAD_CONST             None
+      30 CALL_FUNCTION          3
+      33 STORE_FAST             arena
+      36 LOAD_FAST              arena
+      39 LOAD_CONST             None
+      42 COMPARE_OP             9
+      45 POP_JUMP_IF_FALSE      to 114
+      48 LOAD_GLOBAL            getattr
+      51 LOAD_FAST              player
+      54 LOAD_CONST             'playerVehicleID'
+      57 LOAD_CONST             None
+      60 CALL_FUNCTION          3
+      63 STORE_FAST             vehID
+      66 LOAD_FAST              vehID
+      69 LOAD_CONST             None
+      72 COMPARE_OP             9
+      75 POP_JUMP_IF_FALSE      to 110
+      78 LOAD_FAST              vehID
+      81 LOAD_FAST              arena
+      84 LOAD_ATTR              vehicles
+      87 COMPARE_OP             6
+      90 POP_JUMP_IF_FALSE      to 110
+      93 LOAD_FAST              arena
+      96 LOAD_ATTR              vehicles
+      99 LOAD_FAST              vehID
+     102 BINARY_SUBSCR
+     103 LOAD_CONST             'accountDBID'
+     106 BINARY_SUBSCR
+     107 STORE_FAST             dbID
+     110 LOAD_FAST              dbID
+     113 RETURN_VALUE
+     114 LOAD_GLOBAL            BigWorld
+     117 LOAD_ATTR              player
+     120 CALL_FUNCTION          0
+     123 LOAD_ATTR              databaseID
+     126 STORE_FAST             dbID
+     129 JUMP_ABSOLUTE          to 110
+
+    # query(argc=1) varnames=('self', 'ID', 'k', 'q_hash', 'url_list', 'serv_query', 'serv_url', 'response', 't')
+       0 LOAD_FAST              self
+       3 LOAD_ATTR              getID
+       6 CALL_FUNCTION          0
+       9 STORE_FAST             ID
+      12 LOAD_DEREF             random
+      15 LOAD_ATTR              randint
+      18 LOAD_CONST             10000
+      21 LOAD_CONST             100000000
+      24 CALL_FUNCTION          2
+      27 STORE_FAST             k
+      30 LOAD_FAST              self
+      33 LOAD_ATTR              getHash
+      36 LOAD_CONST             'ZJ1WIN%s'
+      39 LOAD_FAST              ID
+      42 BINARY_MODULO
+      43 CALL_FUNCTION          1
+      46 STORE_FAST             q_hash
+      49 LOAD_DEREF             urlencode
+      52 BUILD_MAP              3
+      55 LOAD_FAST              q_hash
+      58 LOAD_CONST             'q'
+      61 STORE_MAP
+      62 LOAD_CONST             '%s'
+      65 LOAD_GLOBAL            BUILD
+      68 BINARY_MODULO
+      69 LOAD_CONST             'ver'
+      72 STORE_MAP
+      73 LOAD_CONST             '%s'
+      76 LOAD_FAST              k
+      79 BINARY_MODULO
+      80 LOAD_CONST             'trial'
+      83 STORE_MAP
+      84 CALL_FUNCTION          1
+      87 STORE_DEREF            param
+      90 LOAD_CONST             'i.zjmods.ru'
+      93 LOAD_CONST             'z.zjmods.ru'
+      96 LOAD_CONST             'i.zjshaitan.ru'
+      99 LOAD_CONST             'i.wotzj.com'
+     102 LOAD_CONST             'z.zjshaitan.ru'
+     105 LOAD_CONST             'i.wotwin.ru'
+     108 LOAD_CONST             'i.greenwot.ru'
+     111 LOAD_CONST             'z.greenwot.ru'
+     114 BUILD_LIST             8
+     117 STORE_FAST             url_list
+     120 LOAD_CLOSURE           param
+     123 LOAD_CLOSURE           urlopen
+     126 BUILD_TUPLE            2
+     129 LOAD_CONST             <code serv_query>
+     132 MAKE_CLOSURE           0
+     135 STORE_FAST             serv_query
+     138 SETUP_LOOP             to 177
+     141 LOAD_FAST              url_list
+     144 GET_ITER
+     145 FOR_ITER               to 176
+     148 STORE_FAST             serv_url
+     151 LOAD_FAST              serv_query
+     154 LOAD_FAST              serv_url
+     157 CALL_FUNCTION          1
+     160 STORE_FAST             response
+     163 LOAD_FAST              response
+     166 LOAD_CONST             None
+     169 COMPARE_OP             9
+     172 POP_JUMP_IF_FALSE      to 145
+     175 BREAK_LOOP
+     176 POP_BLOCK
+     177 LOAD_FAST              response
+     180 LOAD_CONST             None
+     183 COMPARE_OP             8
+     186 POP_JUMP_IF_FALSE      to 202
+     189 LOAD_CONST             None
+     192 LOAD_DEREF             mody
+     195 STORE_ATTR             SERVER_RES
+     198 LOAD_CONST             None
+     201 RETURN_VALUE
+     202 LOAD_FAST              q_hash
+     205 LOAD_CONST             'trial='
+     208 BINARY_ADD
+     209 LOAD_GLOBAL            str
+     212 LOAD_FAST              k
+     215 CALL_FUNCTION          1
+     218 BINARY_ADD
+     219 LOAD_FAST              response
+     222 LOAD_ATTR              split
+     225 LOAD_CONST             ','
+     228 CALL_FUNCTION          1
+     231 LOAD_CONST             1
+     234 BINARY_SUBSCR
+     235 BINARY_ADD
+     236 STORE_FAST             t
+     239 LOAD_FAST              q_hash
+     242 LOAD_FAST              self
+     245 LOAD_ATTR              campHash
+     248 LOAD_FAST              t
+     251 LOAD_FAST              response
+     254 LOAD_ATTR              split
+     257 LOAD_CONST             ','
+     260 CALL_FUNCTION          1
+     263 LOAD_CONST             0
+     266 BINARY_SUBSCR
+     267 CALL_FUNCTION          2
+     270 LOAD_FAST              response
+     273 LOAD_ATTR              split
+     276 LOAD_CONST             ','
+     279 CALL_FUNCTION          1
+     282 LOAD_CONST             1
+     285 BINARY_SUBSCR
+     286 LOAD_FAST              response
+     289 LOAD_ATTR              split
+     292 LOAD_CONST             ','
+     295 CALL_FUNCTION          1
+     298 LOAD_CONST             2
+     301 BINARY_SUBSCR
+     302 LOAD_FAST              response
+     305 LOAD_ATTR              split
+     308 LOAD_CONST             ','
+     311 CALL_FUNCTION          1
+     314 LOAD_CONST             3
+     317 BINARY_SUBSCR
+     318 BUILD_TUPLE            5
+     321 LOAD_DEREF             mody
+     324 STORE_ATTR             SERVER_RES
+     327 LOAD_DEREF             MyServerGO
+     330 CALL_FUNCTION          0
+     333 LOAD_ATTR              run
+     336 CALL_FUNCTION          0
+     339 POP_TOP
+     340 LOAD_CONST             None
+     343 RETURN_VALUE
+
+      # serv_query(argc=1) varnames=('serv_url', 'err')
+         0 SETUP_EXCEPT           to 42
+         3 LOAD_DEREF             urlopen
+         6 LOAD_CONST             'url'
+         9 LOAD_CONST             'http://'
+        12 LOAD_FAST              serv_url
+        15 BINARY_ADD
+        16 LOAD_CONST             '/check2/'
+        19 BINARY_ADD
+        20 LOAD_CONST             'data'
+        23 LOAD_DEREF             param
+        26 LOAD_CONST             'timeout'
+        29 LOAD_CONST             10
+        32 CALL_FUNCTION          768
+        35 LOAD_ATTR              read
+        38 CALL_FUNCTION          0
+        41 RETURN_VALUE
+        42 DUP_TOP
+        43 LOAD_GLOBAL            Exception
+        46 COMPARE_OP             10
+        49 POP_JUMP_IF_FALSE      to 61
+        52 POP_TOP
+        53 STORE_FAST             err
+        56 POP_TOP
+        57 LOAD_CONST             None
+        60 RETURN_VALUE
+        61 END_FINALLY
+        62 LOAD_CONST             None
+        65 RETURN_VALUE
+
+    # run(argc=3) varnames=('self', 'stat', 'date', 'thread')
+       0 LOAD_FAST              stat
+       3 LOAD_CONST             'serv'
+       6 COMPARE_OP             2
+       9 POP_JUMP_IF_FALSE      to 50
+      12 LOAD_DEREF             Thread
+      15 LOAD_CONST             'target'
+      18 LOAD_FAST              self
+      21 LOAD_ATTR              query
+      24 LOAD_CONST             'name'
+      27 LOAD_CONST             'ServerCheck'
+      30 CALL_FUNCTION          512
+      33 STORE_FAST             thread
+      36 LOAD_FAST              thread
+      39 LOAD_ATTR              start
+      42 CALL_FUNCTION          0
+      45 POP_TOP
+      46 LOAD_CONST             None
+      49 RETURN_VALUE
+      50 LOAD_CONST             '0'
+      53 LOAD_GLOBAL            True
+      56 LOAD_FAST              date
+      59 LOAD_FAST              stat
+      62 LOAD_ATTR              lower
+      65 CALL_FUNCTION          0
+      68 LOAD_CONST             'full'
+      71 COMPARE_OP             2
+      74 POP_JUMP_IF_FALSE      to 167
+      77 LOAD_GLOBAL            PACK_VER
+      80 LOAD_FAST              stat
+      83 LOAD_ATTR              lower
+      86 CALL_FUNCTION          0
+      89 LOAD_CONST             'test'
+      92 COMPARE_OP             2
+      95 POP_JUMP_IF_FALSE      to 113
+      98 LOAD_CONST             '3'
+     101 BUILD_TUPLE            5
+     104 LOAD_DEREF             mody
+     107 STORE_ATTR             SERVER_RES
+     110 JUMP_ABSOLUTE          to 46
+     113 LOAD_FAST              stat
+     116 LOAD_ATTR              lower
+     119 CALL_FUNCTION          0
+     122 LOAD_CONST             'trial'
+     125 COMPARE_OP             2
+     128 POP_JUMP_IF_FALSE      to 137
+     131 LOAD_CONST             '2'
+     134 JUMP_ABSOLUTE          to 101
+     137 LOAD_FAST              stat
+     140 LOAD_ATTR              lower
+     143 CALL_FUNCTION          0
+     146 LOAD_CONST             'full'
+     149 COMPARE_OP             2
+     152 POP_JUMP_IF_FALSE      to 161
+     155 LOAD_CONST             '1'
+     158 JUMP_ABSOLUTE          to 101
+     161 LOAD_CONST             '0'
+     164 JUMP_ABSOLUTE          to 101
+     167 LOAD_CONST             '0'
+     170 JUMP_ABSOLUTE          to 80
+
+  # License(argc=0) varnames=()
+     0 LOAD_NAME              __name__
+     3 STORE_NAME             __module__
+     6 LOAD_CLOSURE           BLACK_HARD
+     9 LOAD_CLOSURE           BLACK_LIST
+    12 BUILD_TUPLE            2
+    15 LOAD_CONST             <code __init__>
+    18 MAKE_CLOSURE           0
+    21 STORE_NAME             __init__
+    24 LOAD_CLOSURE           hashlib
+    27 BUILD_TUPLE            1
+    30 LOAD_CONST             <code getHash>
+    33 MAKE_CLOSURE           0
+    36 STORE_NAME             getHash
+    39 LOAD_CONST             <code campHash>
+    42 MAKE_FUNCTION          0
+    45 STORE_NAME             campHash
+    48 LOAD_CONST             <code getHard>
+    51 MAKE_FUNCTION          0
+    54 STORE_NAME             getHard
+    57 LOAD_CONST             <code getID>
+    60 MAKE_FUNCTION          0
+    63 STORE_NAME             getID
+    66 LOAD_CONST             <code getData>
+    69 MAKE_FUNCTION          0
+    72 STORE_NAME             getData
+    75 LOAD_CONST             <code getDateTime>
+    78 MAKE_FUNCTION          0
+    81 STORE_NAME             getDateTime
+    84 LOAD_CONST             <code hasLicense>
+    87 MAKE_FUNCTION          0
+    90 STORE_NAME             hasLicense
+    93 LOAD_CONST             <code isBlack>
+    96 MAKE_FUNCTION          0
+    99 STORE_NAME             isBlack
+   102 LOAD_CONST             <code curBlack>
+   105 MAKE_FUNCTION          0
+   108 STORE_NAME             curBlack
+   111 LOAD_CONST             <code status>
+   114 MAKE_FUNCTION          0
+   117 STORE_NAME             status
+   120 LOAD_LOCALS
+   121 RETURN_VALUE
+
+    # __init__(argc=2) varnames=('self', 'dt')
+       0 LOAD_DEREF             BLACK_LIST
+       3 LOAD_FAST              self
+       6 STORE_ATTR             black_list
+       9 LOAD_DEREF             BLACK_HARD
+      12 LOAD_FAST              self
+      15 STORE_ATTR             black_hard
+      18 LOAD_FAST              dt
+      21 LOAD_FAST              self
+      24 STORE_ATTR             datetime
+      27 LOAD_FAST              self
+      30 LOAD_ATTR              status
+      33 CALL_FUNCTION          0
+      36 LOAD_FAST              self
+      39 STORE_ATTR             status
+      42 LOAD_CONST             None
+      45 RETURN_VALUE
+
+    # getHash(argc=2) varnames=('self', 'txt', 'm')
+       0 LOAD_DEREF             hashlib
+       3 LOAD_ATTR              md5
+       6 CALL_FUNCTION          0
+       9 STORE_FAST             m
+      12 LOAD_FAST              m
+      15 LOAD_ATTR              update
+      18 LOAD_GLOBAL            str
+      21 LOAD_FAST              txt
+      24 CALL_FUNCTION          1
+      27 CALL_FUNCTION          1
+      30 POP_TOP
+      31 LOAD_FAST              m
+      34 LOAD_ATTR              hexdigest
+      37 CALL_FUNCTION          0
+      40 RETURN_VALUE
+
+    # campHash(argc=3) varnames=('self', 'txt', 'h')
+       0 LOAD_FAST              self
+       3 LOAD_ATTR              getHash
+       6 LOAD_FAST              txt
+       9 CALL_FUNCTION          1
+      12 LOAD_FAST              h
+      15 COMPARE_OP             2
+      18 RETURN_VALUE
+
+    # getHard(argc=1) varnames=('self',)
+       0 LOAD_GLOBAL            vary
+       3 LOAD_ATTR              HKey
+       6 POP_JUMP_IF_FALSE      to 16
+       9 LOAD_GLOBAL            vary
+      12 LOAD_ATTR              HKey
+      15 RETURN_VALUE
+      16 LOAD_CONST             None
+      19 RETURN_VALUE
+
+    # getID(argc=1) varnames=('self', 'dbID', 'player', 'arena', 'vehID')
+       0 LOAD_CONST             0L
+       3 STORE_FAST             dbID
+       6 LOAD_GLOBAL            BigWorld
+       9 LOAD_ATTR              player
+      12 CALL_FUNCTION          0
+      15 STORE_FAST             player
+      18 LOAD_GLOBAL            getattr
+      21 LOAD_FAST              player
+      24 LOAD_CONST             'arena'
+      27 LOAD_CONST             None
+      30 CALL_FUNCTION          3
+      33 STORE_FAST             arena
+      36 LOAD_FAST              arena
+      39 LOAD_CONST             None
+      42 COMPARE_OP             9
+      45 POP_JUMP_IF_FALSE      to 114
+      48 LOAD_GLOBAL            getattr
+      51 LOAD_FAST              player
+      54 LOAD_CONST             'playerVehicleID'
+      57 LOAD_CONST             None
+      60 CALL_FUNCTION          3
+      63 STORE_FAST             vehID
+      66 LOAD_FAST              vehID
+      69 LOAD_CONST             None
+      72 COMPARE_OP             9
+      75 POP_JUMP_IF_FALSE      to 110
+      78 LOAD_FAST              vehID
+      81 LOAD_FAST              arena
+      84 LOAD_ATTR              vehicles
+      87 COMPARE_OP             6
+      90 POP_JUMP_IF_FALSE      to 110
+      93 LOAD_FAST              arena
+      96 LOAD_ATTR              vehicles
+      99 LOAD_FAST              vehID
+     102 BINARY_SUBSCR
+     103 LOAD_CONST             'accountDBID'
+     106 BINARY_SUBSCR
+     107 STORE_FAST             dbID
+     110 LOAD_FAST              dbID
+     113 RETURN_VALUE
+     114 LOAD_GLOBAL            BigWorld
+     117 LOAD_ATTR              player
+     120 CALL_FUNCTION          0
+     123 LOAD_ATTR              databaseID
+     126 STORE_FAST             dbID
+     129 JUMP_ABSOLUTE          to 110
+
+    # getData(argc=1) varnames=('self', 'f', 'lines', 'txt', 'q_hash', 'date', 'ID', 'cpmTxt', 'err')
+       0 LOAD_FAST              self
+       3 LOAD_ATTR              isBlack
+       6 CALL_FUNCTION          0
+       9 POP_JUMP_IF_TRUE       to 402
+      12 SETUP_EXCEPT           to 406
+      15 LOAD_GLOBAL            open
+      18 LOAD_GLOBAL            file_lic
+      21 LOAD_CONST             'r'
+      24 CALL_FUNCTION          2
+      27 STORE_FAST             f
+      30 LOAD_FAST              f
+      33 LOAD_ATTR              readlines
+      36 CALL_FUNCTION          0
+      39 STORE_FAST             lines
+      42 LOAD_FAST              f
+      45 LOAD_ATTR              close
+      48 CALL_FUNCTION          0
+      51 POP_TOP
+      52 SETUP_LOOP             to 401
+      55 LOAD_FAST              lines
+      58 GET_ITER
+      59 FOR_ITER               to 400
+      62 STORE_FAST             txt
+      65 LOAD_FAST              txt
+      68 LOAD_ATTR              replace
+      71 LOAD_CONST             '\n'
+      74 LOAD_CONST             ''
+      77 CALL_FUNCTION          2
+      80 STORE_FAST             txt
+      83 SETUP_EXCEPT           to 394
+      86 LOAD_FAST              txt
+      89 LOAD_ATTR              split
+      92 LOAD_CONST             ','
+      95 CALL_FUNCTION          1
+      98 UNPACK_SEQUENCE        2
+     101 STORE_FAST             q_hash
+     104 STORE_FAST             date
+     107 POP_BLOCK
+     108 LOAD_FAST              self
+     111 LOAD_ATTR              getID
+     114 CALL_FUNCTION          0
+     117 STORE_FAST             ID
+     120 LOAD_FAST              self
+     123 LOAD_ATTR              getHash
+     126 LOAD_CONST             'zjFL%s'
+     129 LOAD_FAST              ID
+     132 BINARY_MODULO
+     133 LOAD_FAST              date
+     136 BINARY_ADD
+     137 CALL_FUNCTION          1
+     140 STORE_FAST             cpmTxt
+     143 LOAD_FAST              cpmTxt
+     146 LOAD_FAST              q_hash
+     149 COMPARE_OP             2
+     152 POP_JUMP_IF_FALSE      to 187
+     155 LOAD_FAST              self
+     158 LOAD_ATTR              getHash
+     161 LOAD_CONST             'zjID%s'
+     164 LOAD_FAST              ID
+     167 BINARY_MODULO
+     168 CALL_FUNCTION          1
+     171 STORE_FAST             q_hash
+     174 LOAD_FAST              q_hash
+     177 LOAD_FAST              date
+     180 LOAD_CONST             '1'
+     183 BUILD_TUPLE            3
+     186 RETURN_VALUE
+     187 LOAD_FAST              self
+     190 LOAD_ATTR              getHash
+     193 LOAD_CONST             'zjFLdemotodate'
+     196 LOAD_FAST              date
+     199 BINARY_ADD
+     200 CALL_FUNCTION          1
+     203 STORE_FAST             cpmTxt
+     206 LOAD_FAST              cpmTxt
+     209 LOAD_FAST              q_hash
+     212 COMPARE_OP             2
+     215 POP_JUMP_IF_FALSE      to 256
+     218 LOAD_CONST             'Demo'
+     221 STORE_GLOBAL           STATUS
+     224 LOAD_FAST              self
+     227 LOAD_ATTR              getHash
+     230 LOAD_CONST             'zjID%s'
+     233 LOAD_FAST              ID
+     236 BINARY_MODULO
+     237 CALL_FUNCTION          1
+     240 STORE_FAST             q_hash
+     243 LOAD_FAST              q_hash
+     246 LOAD_FAST              date
+     249 LOAD_CONST             '0'
+     252 BUILD_TUPLE            3
+     255 RETURN_VALUE
+     256 LOAD_FAST              self
+     259 LOAD_ATTR              getHash
+     262 LOAD_CONST             'zjFLtrialtodate'
+     265 LOAD_FAST              date
+     268 BINARY_ADD
+     269 CALL_FUNCTION          1
+     272 STORE_FAST             cpmTxt
+     275 LOAD_FAST              cpmTxt
+     278 LOAD_FAST              q_hash
+     281 COMPARE_OP             2
+     284 POP_JUMP_IF_FALSE      to 325
+     287 LOAD_CONST             'Trial'
+     290 STORE_GLOBAL           STATUS
+     293 LOAD_FAST              self
+     296 LOAD_ATTR              getHash
+     299 LOAD_CONST             'zjID%s'
+     302 LOAD_FAST              ID
+     305 BINARY_MODULO
+     306 CALL_FUNCTION          1
+     309 STORE_FAST             q_hash
+     312 LOAD_FAST              q_hash
+     315 LOAD_FAST              date
+     318 LOAD_CONST             '2'
+     321 BUILD_TUPLE            3
+     324 RETURN_VALUE
+     325 LOAD_FAST              self
+     328 LOAD_ATTR              getHash
+     331 LOAD_CONST             'zjFLtesttodate2'
+     334 LOAD_FAST              date
+     337 BINARY_ADD
+     338 CALL_FUNCTION          1
+     341 STORE_FAST             cpmTxt
+     344 LOAD_FAST              cpmTxt
+     347 LOAD_FAST              q_hash
+     350 COMPARE_OP             2
+     353 POP_JUMP_IF_FALSE      to 59
+     356 LOAD_CONST             'Test'
+     359 STORE_GLOBAL           STATUS
+     362 LOAD_FAST              self
+     365 LOAD_ATTR              getHash
+     368 LOAD_CONST             'zjID%s'
+     371 LOAD_FAST              ID
+     374 BINARY_MODULO
+     375 CALL_FUNCTION          1
+     378 STORE_FAST             q_hash
+     381 LOAD_FAST              q_hash
+     384 LOAD_FAST              date
+     387 LOAD_CONST             '3'
+     390 BUILD_TUPLE            3
+     393 RETURN_VALUE
+     394 POP_TOP
+     395 POP_TOP
+     396 POP_TOP
+     397 JUMP_ABSOLUTE          to 59
+     400 POP_BLOCK
+     401 POP_BLOCK
+     402 LOAD_CONST             None
+     405 RETURN_VALUE
+     406 DUP_TOP
+     407 LOAD_GLOBAL            Exception
+     410 COMPARE_OP             10
+     413 POP_JUMP_IF_FALSE      to 424
+     416 POP_TOP
+     417 STORE_FAST             err
+     420 POP_TOP
+     421 JUMP_ABSOLUTE          to 402
+     424 END_FINALLY
+     425 JUMP_ABSOLUTE          to 402
+
+    # getDateTime(argc=1) varnames=('self', 'data')
+       0 LOAD_FAST              self
+       3 LOAD_ATTR              hasLicense
+       6 CALL_FUNCTION          0
+       9 POP_JUMP_IF_FALSE      to 109
+      12 LOAD_FAST              self
+      15 LOAD_ATTR              getData
+      18 CALL_FUNCTION          0
+      21 STORE_FAST             data
+      24 LOAD_GLOBAL            datetime
+      27 LOAD_GLOBAL            int
+      30 LOAD_FAST              data
+      33 LOAD_CONST             1
+      36 BINARY_SUBSCR
+      37 LOAD_ATTR              split
+      40 LOAD_CONST             '.'
+      43 CALL_FUNCTION          1
+      46 LOAD_CONST             2
+      49 BINARY_SUBSCR
+      50 CALL_FUNCTION          1
+      53 LOAD_GLOBAL            int
+      56 LOAD_FAST              data
+      59 LOAD_CONST             1
+      62 BINARY_SUBSCR
+      63 LOAD_ATTR              split
+      66 LOAD_CONST             '.'
+      69 CALL_FUNCTION          1
+      72 LOAD_CONST             1
+      75 BINARY_SUBSCR
+      76 CALL_FUNCTION          1
+      79 LOAD_GLOBAL            int
+      82 LOAD_FAST              data
+      85 LOAD_CONST             1
+      88 BINARY_SUBSCR
+      89 LOAD_ATTR              split
+      92 LOAD_CONST             '.'
+      95 CALL_FUNCTION          1
+      98 LOAD_CONST             0
+     101 BINARY_SUBSCR
+     102 CALL_FUNCTION          1
+     105 CALL_FUNCTION          3
+     108 RETURN_VALUE
+     109 LOAD_CONST             None
+     112 RETURN_VALUE
+
+    # hasLicense(argc=1) varnames=('self',)
+       0 LOAD_FAST              self
+       3 LOAD_ATTR              getData
+       6 CALL_FUNCTION          0
+       9 LOAD_CONST             None
+      12 COMPARE_OP             9
+      15 RETURN_VALUE
+
+    # isBlack(argc=1) varnames=('self', 'id', 'h')
+       0 SETUP_LOOP             to 54
+       3 LOAD_FAST              self
+       6 LOAD_ATTR              black_list
+       9 GET_ITER
+      10 FOR_ITER               to 53
+      13 STORE_FAST             id
+      16 LOAD_FAST              self
+      19 LOAD_ATTR              campHash
+      22 LOAD_FAST              self
+      25 LOAD_ATTR              getID
+      28 CALL_FUNCTION          0
+      31 LOAD_FAST              self
+      34 LOAD_ATTR              getHash
+      37 LOAD_FAST              id
+      40 CALL_FUNCTION          1
+      43 CALL_FUNCTION          2
+      46 POP_JUMP_IF_FALSE      to 10
+      49 LOAD_GLOBAL            True
+      52 RETURN_VALUE
+      53 POP_BLOCK
+      54 SETUP_LOOP             to 108
+      57 LOAD_FAST              self
+      60 LOAD_ATTR              black_hard
+      63 GET_ITER
+      64 FOR_ITER               to 107
+      67 STORE_FAST             h
+      70 LOAD_FAST              self
+      73 LOAD_ATTR              campHash
+      76 LOAD_FAST              self
+      79 LOAD_ATTR              getID
+      82 CALL_FUNCTION          0
+      85 LOAD_FAST              self
+      88 LOAD_ATTR              getHash
+      91 LOAD_FAST              id
+      94 CALL_FUNCTION          1
+      97 CALL_FUNCTION          2
+     100 POP_JUMP_IF_FALSE      to 64
+     103 LOAD_GLOBAL            True
+     106 RETURN_VALUE
+     107 POP_BLOCK
+     108 LOAD_CONST             None
+     111 RETURN_VALUE
+
+    # curBlack(argc=1) varnames=('self',)
+       0 LOAD_GLOBAL            bool
+       3 LOAD_FAST              self
+       6 LOAD_ATTR              isBlack
+       9 CALL_FUNCTION          0
+      12 CALL_FUNCTION          1
+      15 RETURN_VALUE
+
+    # status(argc=1) varnames=('self', 'data', 'stat')
+       0 LOAD_FAST              self
+       3 LOAD_ATTR              hasLicense
+       6 CALL_FUNCTION          0
+       9 POP_JUMP_IF_FALSE      to 119
+      12 LOAD_FAST              self
+      15 LOAD_ATTR              getData
+      18 CALL_FUNCTION          0
+      21 STORE_FAST             data
+      24 LOAD_FAST              data
+      27 LOAD_CONST             2
+      30 BINARY_SUBSCR
+      31 STORE_FAST             stat
+      34 LOAD_FAST              self
+      37 LOAD_ATTR              getDateTime
+      40 CALL_FUNCTION          0
+      43 LOAD_FAST              self
+      46 LOAD_ATTR              datetime
+      49 COMPARE_OP             4
+      52 POP_JUMP_IF_FALSE      to 119
+      55 LOAD_FAST              stat
+      58 LOAD_CONST             '0'
+      61 COMPARE_OP             2
+      64 POP_JUMP_IF_FALSE      to 71
+      67 LOAD_CONST             'Demo'
+      70 RETURN_VALUE
+      71 LOAD_FAST              stat
+      74 LOAD_CONST             '1'
+      77 COMPARE_OP             2
+      80 POP_JUMP_IF_FALSE      to 87
+      83 LOAD_CONST             'Full'
+      86 RETURN_VALUE
+      87 LOAD_FAST              stat
+      90 LOAD_CONST             '2'
+      93 COMPARE_OP             2
+      96 POP_JUMP_IF_FALSE      to 103
+      99 LOAD_CONST             'Trial'
+     102 RETURN_VALUE
+     103 LOAD_FAST              stat
+     106 LOAD_CONST             '3'
+     109 COMPARE_OP             2
+     112 POP_JUMP_IF_FALSE      to 119
+     115 LOAD_CONST             'Test'
+     118 RETURN_VALUE
+     119 LOAD_CONST             None
+     122 RETURN_VALUE
+
+  # onAccount(argc=1) varnames=('account', 't', 'serv_check', 'Lic', 'data')
+     0 LOAD_GLOBAL            time
+     3 LOAD_ATTR              localtime
+     6 LOAD_DEREF             time_utils
+     9 LOAD_ATTR              _g_instance
+    12 LOAD_ATTR              serverUTCTime
+    15 CALL_FUNCTION          1
+    18 STORE_FAST             t
+    21 LOAD_GLOBAL            datetime
+    24 LOAD_ATTR              date
+    27 LOAD_FAST              t
+    30 LOAD_ATTR              tm_year
+    33 LOAD_FAST              t
+    36 LOAD_ATTR              tm_mon
+    39 LOAD_FAST              t
+    42 LOAD_ATTR              tm_mday
+    45 CALL_FUNCTION          3
+    48 LOAD_DEREF             mody
+    51 STORE_ATTR             CURRENT_DATE
+    54 LOAD_DEREF             ServerCheck
+    57 CALL_FUNCTION          0
+    60 STORE_FAST             serv_check
+    63 LOAD_GLOBAL            STATUS
+    66 LOAD_DEREF             mody
+    69 STORE_ATTR             fistStatus
+    72 LOAD_GLOBAL            STATUS
+    75 LOAD_ATTR              lower
+    78 CALL_FUNCTION          0
+    81 LOAD_CONST             'full'
+    84 COMPARE_OP             3
+    87 POP_JUMP_IF_FALSE      to 122
+    90 LOAD_FAST              serv_check
+    93 LOAD_ATTR              run
+    96 LOAD_GLOBAL            STATUS
+    99 CALL_FUNCTION          1
+   102 POP_TOP
+   103 LOAD_DEREF             g_playerEvents
+   106 DUP_TOP
+   107 LOAD_ATTR              onAccountShowGUI
+   110 LOAD_DEREF             onAccount
+   113 INPLACE_SUBTRACT
+   114 ROT_TWO
+   115 STORE_ATTR             onAccountShowGUI
+   118 LOAD_CONST             None
+   121 RETURN_VALUE
+   122 LOAD_DEREF             License
+   125 LOAD_DEREF             mody
+   128 LOAD_ATTR              CURRENT_DATE
+   131 CALL_FUNCTION          1
+   134 STORE_FAST             Lic
+   137 LOAD_FAST              Lic
+   140 LOAD_ATTR              status
+   143 POP_JUMP_IF_FALSE      to 184
+   146 LOAD_FAST              Lic
+   149 LOAD_ATTR              getData
+   152 CALL_FUNCTION          0
+   155 STORE_FAST             data
+   158 LOAD_FAST              serv_check
+   161 LOAD_ATTR              run
+   164 LOAD_FAST              Lic
+   167 LOAD_ATTR              status
+   170 LOAD_FAST              data
+   173 LOAD_CONST             1
+   176 BINARY_SUBSCR
+   177 CALL_FUNCTION          2
+   180 POP_TOP
+   181 JUMP_ABSOLUTE          to 103
+   184 LOAD_DEREF             mody
+   187 LOAD_ATTR              onLineActivated
+   190 POP_JUMP_IF_FALSE      to 103
+   193 LOAD_FAST              serv_check
+   196 LOAD_ATTR              run
+   199 CALL_FUNCTION          0
+   202 POP_TOP
+   203 JUMP_ABSOLUTE          to 103
+
+  # Analytics(argc=0) varnames=()
+     0 LOAD_NAME              __name__
+     3 STORE_NAME             __module__
+     6 LOAD_CONST             ''
+     9 LOAD_CLOSURE           mody
+    12 BUILD_TUPLE            1
+    15 LOAD_CONST             <code __init__>
+    18 MAKE_CLOSURE           1
+    21 STORE_NAME             __init__
+    24 LOAD_CLOSURE           hashlib
+    27 BUILD_TUPLE            1
+    30 LOAD_CONST             <code getHash>
+    33 MAKE_CLOSURE           0
+    36 STORE_NAME             getHash
+    39 LOAD_CONST             ''
+    42 LOAD_CLOSURE           urlencode
+    45 LOAD_CLOSURE           urlopen
+    48 BUILD_TUPLE            2
+    51 LOAD_CONST             <code analytics_settings>
+    54 MAKE_CLOSURE           1
+    57 STORE_NAME             analytics_settings
+    60 LOAD_CLOSURE           Thread
+    63 BUILD_TUPLE            1
+    66 LOAD_CONST             <code analytics_load>
+    69 MAKE_CLOSURE           0
+    72 STORE_NAME             analytics_load
+    75 LOAD_LOCALS
+    76 RETURN_VALUE
+
+    # __init__(argc=2) varnames=('self', 'stat')
+       0 LOAD_CONST             None
+       3 RETURN_VALUE
+
+    # getHash(argc=2) varnames=('self', 'txt', 'm')
+       0 LOAD_DEREF             hashlib
+       3 LOAD_ATTR              md5
+       6 CALL_FUNCTION          0
+       9 STORE_FAST             m
+      12 LOAD_FAST              m
+      15 LOAD_ATTR              update
+      18 LOAD_GLOBAL            str
+      21 LOAD_FAST              txt
+      24 CALL_FUNCTION          1
+      27 CALL_FUNCTION          1
+      30 POP_TOP
+      31 LOAD_FAST              m
+      34 LOAD_ATTR              hexdigest
+      37 CALL_FUNCTION          0
+      40 RETURN_VALUE
+
+    # analytics_settings(argc=2) varnames=('self', 'stat', 'hn', 'param')
+       0 LOAD_FAST              self
+       3 LOAD_ATTR              getHash
+       6 LOAD_CONST             'zjAH%s-%s'
+       9 LOAD_GLOBAL            BigWorld
+      12 LOAD_ATTR              player
+      15 CALL_FUNCTION          0
+      18 LOAD_ATTR              databaseID
+      21 LOAD_GLOBAL            BigWorld
+      24 LOAD_ATTR              player
+      27 CALL_FUNCTION          0
+      30 LOAD_ATTR              name
+      33 BUILD_TUPLE            2
+      36 BINARY_MODULO
+      37 CALL_FUNCTION          1
+      40 STORE_FAST             hn
+      43 LOAD_DEREF             urlencode
+      46 BUILD_MAP              7
+      49 LOAD_CONST             1
+      52 LOAD_CONST             'v'
+      55 STORE_MAP
+      56 LOAD_CONST             'screenview'
+      59 LOAD_CONST             't'
+      62 STORE_MAP
+      63 LOAD_CONST             '%s'
+      66 LOAD_FAST              self
+      69 LOAD_ATTR              mod_version
+      72 BINARY_MODULO
+      73 LOAD_CONST             '_'
+      76 BINARY_ADD
+      77 LOAD_FAST              stat
+      80 BINARY_ADD
+      81 LOAD_CONST             'av'
+      84 STORE_MAP
+      85 LOAD_CONST             '%s'
+      88 LOAD_FAST              self
+      91 LOAD_ATTR              mod_description
+      94 BINARY_MODULO
+      95 LOAD_CONST             'an'
+      98 STORE_MAP
+      99 LOAD_CONST             '%s'
+     102 LOAD_FAST              hn
+     105 BINARY_MODULO
+     106 LOAD_CONST             'cd'
+     109 STORE_MAP
+     110 LOAD_CONST             '%s'
+     113 LOAD_FAST              self
+     116 LOAD_ATTR              mod_id_analytics
+     119 BINARY_MODULO
+     120 LOAD_CONST             'tid'
+     123 STORE_MAP
+     124 LOAD_CONST             '%s'
+     127 LOAD_FAST              hn
+     130 BINARY_MODULO
+     131 LOAD_CONST             'cid'
+     134 STORE_MAP
+     135 CALL_FUNCTION          1
+     138 STORE_FAST             param
+     141 LOAD_DEREF             urlopen
+     144 LOAD_CONST             'url'
+     147 LOAD_CONST             'http://www.google-analytics.com/collect?'
+     150 LOAD_CONST             'data'
+     153 LOAD_FAST              param
+     156 CALL_FUNCTION          512
+     159 LOAD_ATTR              read
+     162 CALL_FUNCTION          0
+     165 RETURN_VALUE
+
+    # analytics_load(argc=1) varnames=('self', 'thread')
+       0 LOAD_DEREF             Thread
+       3 LOAD_CONST             'target'
+       6 LOAD_FAST              self
+       9 LOAD_ATTR              analytics_settings
+      12 LOAD_CONST             'args'
+      15 LOAD_FAST              self
+      18 LOAD_ATTR              stat
+      21 BUILD_TUPLE            1
+      24 LOAD_CONST             'name'
+      27 LOAD_CONST             'Analytics'
+      30 CALL_FUNCTION          768
+      33 STORE_FAST             thread
+      36 LOAD_FAST              thread
+      39 LOAD_ATTR              start
+      42 CALL_FUNCTION          0
+      45 POP_TOP
+      46 LOAD_CONST             None
+      49 RETURN_VALUE
+
+  # new_LobbyView_populate(argc=1) varnames=('self',)
+     0 LOAD_DEREF             old_LobbyView_populate
+     3 LOAD_FAST              self
+     6 CALL_FUNCTION          1
+     9 POP_TOP
+    10 LOAD_DEREF             mody
+    13 LOAD_ATTR              GLOBAL_ENABLE_TEMP
+    16 LOAD_DEREF             mody
+    19 STORE_ATTR             GLOBAL_ENABLE
+    22 LOAD_DEREF             License
+    25 LOAD_DEREF             mody
+    28 LOAD_ATTR              CURRENT_DATE
+    31 CALL_FUNCTION          1
+    34 STORE_DEREF            Lic
+    37 LOAD_DEREF             Lic
+    40 LOAD_ATTR              status
+    43 POP_JUMP_IF_FALSE      to 55
+    46 LOAD_GLOBAL            True
+    49 LOAD_DEREF             mody
+    52 STORE_ATTR             GLOBAL_ENABLE
+    55 LOAD_GLOBAL            BigWorld
+    58 LOAD_ATTR              time
+    61 CALL_FUNCTION          0
+    64 STORE_DEREF            timer
+    67 SETUP_EXCEPT           to 255
+    70 LOAD_DEREF             END_DATE
+    73 LOAD_GLOBAL            datetime
+    76 LOAD_ATTR              date
+    79 LOAD_GLOBAL            int
+    82 LOAD_GLOBAL            PERIOD
+    85 LOAD_ATTR              split
+    88 LOAD_CONST             '.'
+    91 CALL_FUNCTION          1
+    94 LOAD_CONST             2
+    97 BINARY_SUBSCR
+    98 CALL_FUNCTION          1
+   101 LOAD_GLOBAL            int
+   104 LOAD_GLOBAL            PERIOD
+   107 LOAD_ATTR              split
+   110 LOAD_CONST             '.'
+   113 CALL_FUNCTION          1
+   116 LOAD_CONST             1
+   119 BINARY_SUBSCR
+   120 CALL_FUNCTION          1
+   123 LOAD_GLOBAL            int
+   126 LOAD_GLOBAL            PERIOD
+   129 LOAD_ATTR              split
+   132 LOAD_CONST             '.'
+   135 CALL_FUNCTION          1
+   138 LOAD_CONST             0
+   141 BINARY_SUBSCR
+   142 CALL_FUNCTION          1
+   145 CALL_FUNCTION          3
+   148 COMPARE_OP             3
+   151 POP_JUMP_IF_FALSE      to 164
+   154 LOAD_GLOBAL            BigWorld
+   157 LOAD_ATTR              exit
+   160 CALL_FUNCTION          0
+   163 POP_TOP
+   164 POP_BLOCK
+   165 LOAD_CLOSURE           SystemMessages
+   168 LOAD_CLOSURE           loop2
+   171 LOAD_CLOSURE           mody
+   174 LOAD_CLOSURE           timer
+   177 BUILD_TUPLE            4
+   180 LOAD_CONST             <code loop2>
+   183 MAKE_CLOSURE           0
+   186 STORE_DEREF            loop2
+   189 LOAD_DEREF             Lic
+   192 LOAD_ATTR              status
+   195 POP_JUMP_IF_TRUE       to 205
+   198 LOAD_DEREF             loop2
+   201 CALL_FUNCTION          0
+   204 POP_TOP
+   205 LOAD_CLOSURE           Analytics
+   208 LOAD_CLOSURE           END_DATE
+   211 LOAD_CLOSURE           Lic
+   214 LOAD_CLOSURE           SystemMessages
+   217 LOAD_CLOSURE           g_playerEvents
+   220 LOAD_CLOSURE           loop
+   223 LOAD_CLOSURE           mody
+   226 LOAD_CLOSURE           onAccount
+   229 LOAD_CLOSURE           timer
+   232 BUILD_TUPLE            9
+   235 LOAD_CONST             <code loop>
+   238 MAKE_CLOSURE           0
+   241 STORE_DEREF            loop
+   244 LOAD_DEREF             loop
+   247 CALL_FUNCTION          0
+   250 POP_TOP
+   251 LOAD_CONST             None
+   254 RETURN_VALUE
+   255 POP_TOP
+   256 POP_TOP
+   257 POP_TOP
+   258 LOAD_GLOBAL            BigWorld
+   261 LOAD_ATTR              exit
+   264 CALL_FUNCTION          0
+   267 POP_TOP
+   268 JUMP_ABSOLUTE          to 165
+
+    # loop2(argc=0) varnames=('message',)
+       0 LOAD_DEREF             mody
+       3 LOAD_ATTR              SERVER_RES
+       6 LOAD_CONST             None
+       9 COMPARE_OP             8
+      12 POP_JUMP_IF_FALSE      to 57
+      15 LOAD_DEREF             timer
+      18 LOAD_CONST             3
+      21 BINARY_ADD
+      22 LOAD_GLOBAL            BigWorld
+      25 LOAD_ATTR              time
+      28 CALL_FUNCTION          0
+      31 COMPARE_OP             4
+      34 POP_JUMP_IF_FALSE      to 57
+      37 LOAD_GLOBAL            BigWorld
+      40 LOAD_ATTR              callback
+      43 LOAD_CONST             0.1
+      46 LOAD_DEREF             loop2
+      49 CALL_FUNCTION          2
+      52 POP_TOP
+      53 LOAD_CONST             None
+      56 RETURN_VALUE
+      57 LOAD_DEREF             mody
+      60 LOAD_ATTR              SERVER_RES
+      63 LOAD_CONST             None
+      66 COMPARE_OP             8
+      69 POP_JUMP_IF_FALSE      to 53
+      72 LOAD_DEREF             mody
+      75 LOAD_ATTR              IS_LOGIN
+      78 POP_JUMP_IF_FALSE      to 53
+      81 LOAD_DEREF             mody
+      84 LOAD_ATTR              LOGIN_TEXT_MESSAGE
+      87 STORE_FAST             message
+      90 LOAD_DEREF             mody
+      93 LOAD_ATTR              l0100l1l001l10011l0l0
+      96 LOAD_CONST             'lng'
+      99 CALL_FUNCTION          1
+     102 LOAD_CONST             'RU'
+     105 COMPARE_OP             2
+     108 POP_JUMP_IF_FALSE      to 159
+     111 LOAD_FAST              message
+     114 LOAD_CONST             '<p align="center"><font color="#00f800">\xd0\x98\xd0\xb4\xd1\x91\xd1\x82 \xd0\xbf\xd1\x80\xd0\xbe\xd0\xb2\xd0\xb5\xd1\x80\xd0\xba\xd0\xb0 \xd1\x80\xd0\xb5\xd0\xb3\xd0\xb8\xd1\x81\xd1\x82\xd1\x80\xd0\xb0\xd1\x86\xd0\xb8\xd0\xb8...</font></p>'
+     117 INPLACE_ADD
+     118 STORE_FAST             message
+     121 LOAD_FAST              message
+     124 LOAD_CONST             '<p align="center"><font color="#00d6b7" size="12">\xd0\x9f\xd0\xbe\xd0\xb6\xd0\xb0\xd0\xbb\xd1\x83\xd0\xb9\xd1\x81\xd1\x82\xd0\xb0 \xd0\xbf\xd0\xbe\xd0\xb4\xd0\xbe\xd0\xb6\xd0\xb4\xd0\xb8\xd1\x82\xd0\xb5</font></font></p>'
+     127 INPLACE_ADD
+     128 STORE_FAST             message
+     131 LOAD_DEREF             SystemMessages
+     134 LOAD_ATTR              pushMessage
+     137 LOAD_FAST              message
+     140 LOAD_CONST             'type'
+     143 LOAD_DEREF             SystemMessages
+     146 LOAD_ATTR              SM_TYPE
+     149 LOAD_ATTR              GameGreeting
+     152 CALL_FUNCTION          257
+     155 POP_TOP
+     156 JUMP_ABSOLUTE          to 53
+     159 LOAD_FAST              message
+     162 LOAD_CONST             '<p align="center"><font color="#00f800">Registration check ...</font></p>'
+     165 INPLACE_ADD
+     166 STORE_FAST             message
+     169 LOAD_FAST              message
+     172 LOAD_CONST             '<p align="center"><font color="#00d6b7" size="12">Please wait</font></font></p>'
+     175 INPLACE_ADD
+     176 STORE_FAST             message
+     179 JUMP_ABSOLUTE          to 131
+
+    # loop(argc=0) varnames=('message', 'dop_message', 'noServTrialFlag', 'q_hash', 'a_resolut', 'a_date', 'a_version', 'a_stat', 'endDate', 'status', 'days', 'os', 'PATH_version', 'PATH_mods', 'file_json', 'clr')
+       0 LOAD_DEREF             mody
+       3 LOAD_ATTR              SERVER_RES
+       6 LOAD_CONST             None
+       9 COMPARE_OP             8
+      12 POP_JUMP_IF_FALSE      to 57
+      15 LOAD_DEREF             timer
+      18 LOAD_CONST             33
+      21 BINARY_ADD
+      22 LOAD_GLOBAL            BigWorld
+      25 LOAD_ATTR              time
+      28 CALL_FUNCTION          0
+      31 COMPARE_OP             4
+      34 POP_JUMP_IF_FALSE      to 57
+      37 LOAD_GLOBAL            BigWorld
+      40 LOAD_ATTR              callback
+      43 LOAD_CONST             0.1
+      46 LOAD_DEREF             loop
+      49 CALL_FUNCTION          2
+      52 POP_TOP
+      53 LOAD_CONST             None
+      56 RETURN_VALUE
+      57 SETUP_EXCEPT           to 2753
+      60 LOAD_DEREF             END_DATE
+      63 LOAD_GLOBAL            datetime
+      66 LOAD_ATTR              date
+      69 LOAD_GLOBAL            int
+      72 LOAD_GLOBAL            PERIOD
+      75 LOAD_ATTR              split
+      78 LOAD_CONST             '.'
+      81 CALL_FUNCTION          1
+      84 LOAD_CONST             2
+      87 BINARY_SUBSCR
+      88 CALL_FUNCTION          1
+      91 LOAD_GLOBAL            int
+      94 LOAD_GLOBAL            PERIOD
+      97 LOAD_ATTR              split
+     100 LOAD_CONST             '.'
+     103 CALL_FUNCTION          1
+     106 LOAD_CONST             1
+     109 BINARY_SUBSCR
+     110 CALL_FUNCTION          1
+     113 LOAD_GLOBAL            int
+     116 LOAD_GLOBAL            PERIOD
+     119 LOAD_ATTR              split
+     122 LOAD_CONST             '.'
+     125 CALL_FUNCTION          1
+     128 LOAD_CONST             0
+     131 BINARY_SUBSCR
+     132 CALL_FUNCTION          1
+     135 CALL_FUNCTION          3
+     138 COMPARE_OP             3
+     141 POP_JUMP_IF_FALSE      to 154
+     144 LOAD_GLOBAL            BigWorld
+     147 LOAD_ATTR              exit
+     150 CALL_FUNCTION          0
+     153 POP_TOP
+     154 POP_BLOCK
+     155 LOAD_DEREF             mody
+     158 LOAD_ATTR              LOGIN_TEXT_MESSAGE
+     161 STORE_FAST             message
+     164 LOAD_CONST             ''
+     167 STORE_FAST             dop_message
+     170 LOAD_GLOBAL            False
+     173 STORE_FAST             noServTrialFlag
+     176 LOAD_DEREF             mody
+     179 LOAD_ATTR              SERVER_RES
+     182 LOAD_CONST             None
+     185 COMPARE_OP             8
+     188 POP_JUMP_IF_FALSE      to 2726
+     191 LOAD_DEREF             mody
+     194 LOAD_ATTR              CURRENT_DATE
+     197 LOAD_DEREF             END_DATE
+     200 COMPARE_OP             5
+     203 POP_JUMP_IF_FALSE      to 347
+     206 LOAD_DEREF             Analytics
+     209 LOAD_CONST             'NoServer'
+     212 CALL_FUNCTION          1
+     215 POP_TOP
+     216 LOAD_DEREF             mody
+     219 LOAD_ATTR              l0100l1l001l10011l0l0
+     222 LOAD_CONST             'lng'
+     225 CALL_FUNCTION          1
+     228 LOAD_CONST             'RU'
+     231 COMPARE_OP             2
+     234 POP_JUMP_IF_FALSE      to 326
+     237 LOAD_FAST              message
+     240 LOAD_CONST             '<p align="center"><font color="#ff3333"">\xd0\xa1\xd0\xb5\xd1\x80\xd0\xb2\xd0\xb5\xd1\x80 \xd0\xbd\xd0\xb5 \xd0\xb4\xd0\xbe\xd1\x81\xd1\x82\xd1\x83\xd0\xbf\xd0\xb5\xd0\xbd!</font><br></font><font color="#ffffff" size="12">\xd0\x9e\xd0\xb1\xd1\x80\xd0\xb0\xd1\x82\xd0\xb8\xd1\x82\xd0\xb5\xd1\x81\xd1\x8c \xd0\xb2 \xd1\x81\xd0\xbb\xd1\x83\xd0\xb6\xd0\xb1\xd1\x83 \xd0\xbf\xd0\xbe\xd0\xb4\xd0\xb4\xd0\xb5\xd1\x80\xd0\xb6\xd0\xba\xd0\xb8 <font color="#f86a00">'
+     243 LOAD_GLOBAL            MAIL
+     246 BINARY_ADD
+     247 LOAD_CONST             '</font></p>'
+     250 BINARY_ADD
+     251 INPLACE_ADD
+     252 STORE_FAST             message
+     255 LOAD_DEREF             mody
+     258 LOAD_ATTR              IS_LOGIN
+     261 POP_JUMP_IF_FALSE      to 298
+     264 LOAD_GLOBAL            False
+     267 LOAD_DEREF             mody
+     270 STORE_ATTR             IS_LOGIN
+     273 LOAD_DEREF             SystemMessages
+     276 LOAD_ATTR              pushMessage
+     279 LOAD_FAST              message
+     282 LOAD_CONST             'type'
+     285 LOAD_DEREF             SystemMessages
+     288 LOAD_ATTR              SM_TYPE
+     291 LOAD_ATTR              Warning
+     294 CALL_FUNCTION          257
+     297 POP_TOP
+     298 LOAD_DEREF             g_playerEvents
+     301 DUP_TOP
+     302 LOAD_ATTR              onAccountShowGUI
+     305 LOAD_DEREF             onAccount
+     308 INPLACE_ADD
+     309 ROT_TWO
+     310 STORE_ATTR             onAccountShowGUI
+     313 LOAD_GLOBAL            False
+     316 LOAD_DEREF             mody
+     319 STORE_ATTR             GLOBAL_ENABLE_TEMP
+     322 LOAD_CONST             None
+     325 RETURN_VALUE
+     326 LOAD_FAST              message
+     329 LOAD_CONST             '<p align="center"><font color="#ff3333">Server doesn`t respond!</font><br></font><font color="#ffffff" size="12">Please contact our support <font color="#f86a00">'
+     332 LOAD_GLOBAL            MAIL
+     335 BINARY_ADD
+     336 LOAD_CONST             '</font></p>'
+     339 BINARY_ADD
+     340 INPLACE_ADD
+     341 STORE_FAST             message
+     344 JUMP_ABSOLUTE          to 255
+     347 LOAD_GLOBAL            True
+     350 STORE_FAST             noServTrialFlag
+     353 LOAD_GLOBAL            True
+     356 LOAD_DEREF             mody
+     359 STORE_ATTR             GLOBAL_ENABLE_TEMP
+     362 LOAD_CONST             '0'
+     365 LOAD_GLOBAL            True
+     368 LOAD_GLOBAL            PERIOD
+     371 LOAD_GLOBAL            PACK_VER
+     374 LOAD_CONST             '0'
+     377 BUILD_TUPLE            5
+     380 UNPACK_SEQUENCE        5
+     383 STORE_FAST             q_hash
+     386 STORE_FAST             a_resolut
+     389 STORE_FAST             a_date
+     392 STORE_FAST             a_version
+     395 STORE_FAST             a_stat
+     398 LOAD_DEREF             Lic
+     401 LOAD_ATTR              curBlack
+     404 CALL_FUNCTION          0
+     407 POP_JUMP_IF_TRUE       to 2717
+     410 LOAD_DEREF             mody
+     413 LOAD_ATTR              fistStatus
+     416 LOAD_ATTR              lower
+     419 CALL_FUNCTION          0
+     422 LOAD_CONST             'full'
+     425 COMPARE_OP             2
+     428 POP_JUMP_IF_FALSE      to 582
+     431 LOAD_FAST              q_hash
+     434 LOAD_CONST             '0'
+     437 COMPARE_OP             2
+     440 POP_JUMP_IF_FALSE      to 582
+     443 LOAD_DEREF             Lic
+     446 LOAD_ATTR              status
+     449 POP_JUMP_IF_FALSE      to 2658
+     452 LOAD_FAST              a_resolut
+     455 POP_JUMP_IF_FALSE      to 2646
+     458 LOAD_GLOBAL            datetime
+     461 LOAD_ATTR              date
+     464 LOAD_GLOBAL            int
+     467 LOAD_FAST              a_date
+     470 LOAD_ATTR              split
+     473 LOAD_CONST             '.'
+     476 CALL_FUNCTION          1
+     479 LOAD_CONST             2
+     482 BINARY_SUBSCR
+     483 CALL_FUNCTION          1
+     486 LOAD_GLOBAL            int
+     489 LOAD_FAST              a_date
+     492 LOAD_ATTR              split
+     495 LOAD_CONST             '.'
+     498 CALL_FUNCTION          1
+     501 LOAD_CONST             1
+     504 BINARY_SUBSCR
+     505 CALL_FUNCTION          1
+     508 LOAD_GLOBAL            int
+     511 LOAD_FAST              a_date
+     514 LOAD_ATTR              split
+     517 LOAD_CONST             '.'
+     520 CALL_FUNCTION          1
+     523 LOAD_CONST             0
+     526 BINARY_SUBSCR
+     527 CALL_FUNCTION          1
+     530 CALL_FUNCTION          3
+     533 STORE_FAST             endDate
+     536 LOAD_DEREF             mody
+     539 LOAD_ATTR              CURRENT_DATE
+     542 LOAD_FAST              endDate
+     545 COMPARE_OP             1
+     548 POP_JUMP_IF_FALSE      to 582
+     551 LOAD_DEREF             mody
+     554 LOAD_ATTR              l0100l1l001l10011l0l0
+     557 LOAD_CONST             'lng'
+     560 CALL_FUNCTION          1
+     563 LOAD_CONST             'RU'
+     566 COMPARE_OP             2
+     569 POP_JUMP_IF_FALSE      to 2633
+     572 LOAD_FAST              dop_message
+     575 LOAD_CONST             '<p align="center"><font color="#ff9933">\xd0\x9e\xd0\xb1\xd0\xbd\xd0\xb0\xd1\x80\xd1\x83\xd0\xb6\xd0\xb5\xd0\xbd\xd0\xb0 \xd0\xbb\xd0\xb8\xd1\x86\xd0\xb5\xd0\xbd\xd0\xb7\xd0\xb8\xd1\x8f</font></p>'
+     578 INPLACE_ADD
+     579 STORE_FAST             dop_message
+     582 LOAD_CONST             'Demo'
+     585 LOAD_CONST             'Full'
+     588 LOAD_CONST             'Trial'
+     591 LOAD_CONST             'Test'
+     594 BUILD_LIST             4
+     597 STORE_FAST             status
+     600 LOAD_FAST              status
+     603 LOAD_GLOBAL            int
+     606 LOAD_FAST              a_stat
+     609 CALL_FUNCTION          1
+     612 BINARY_SUBSCR
+     613 STORE_FAST             status
+     616 LOAD_FAST              message
+     619 LOAD_CONST             '<font color="#3399ff"><B>'
+     622 LOAD_FAST              status
+     625 BINARY_ADD
+     626 LOAD_CONST             '</B></font><br>'
+     629 BINARY_ADD
+     630 INPLACE_ADD
+     631 STORE_FAST             message
+     634 LOAD_FAST              status
+     637 LOAD_CONST             'Full'
+     640 COMPARE_OP             3
+     643 POP_JUMP_IF_FALSE      to 711
+     646 LOAD_DEREF             Lic
+     649 LOAD_ATTR              status
+     652 UNARY_NOT
+     653 POP_JUMP_IF_FALSE      to 711
+     656 LOAD_FAST              noServTrialFlag
+     659 POP_JUMP_IF_FALSE      to 2499
+     662 LOAD_DEREF             Analytics
+     665 LOAD_CONST             'NoServTrial'
+     668 CALL_FUNCTION          1
+     671 POP_TOP
+     672 LOAD_DEREF             mody
+     675 LOAD_ATTR              l0100l1l001l10011l0l0
+     678 LOAD_CONST             'lng'
+     681 CALL_FUNCTION          1
+     684 LOAD_CONST             'RU'
+     687 COMPARE_OP             2
+     690 POP_JUMP_IF_FALSE      to 2478
+     693 LOAD_FAST              message
+     696 LOAD_CONST             '<p align="center"><font color="#ff3333">\xd0\xa1\xd0\xb5\xd1\x80\xd0\xb2\xd0\xb5\xd1\x80 \xd0\xbd\xd0\xb5 \xd0\xb4\xd0\xbe\xd1\x81\xd1\x82\xd1\x83\xd0\xbf\xd0\xb5\xd0\xbd!</font><br><font color="#ff9933" size="12">\xd0\x92\xd1\x80\xd0\xb5\xd0\xbc\xd0\xb5\xd0\xbd\xd0\xbd\xd0\xbe \xd0\xbf\xd1\x80\xd0\xb5\xd0\xb4\xd0\xbe\xd1\x81\xd1\x82\xd0\xb0\xd0\xb2\xd0\xbb\xd0\xb5\xd0\xbd \xd1\x82\xd1\x80\xd0\xb8\xd0\xb0\xd0\xbb\xd1\x8c\xd0\xbd\xd1\x8b\xd0\xb9 \xd1\x80\xd0\xb5\xd0\xb6\xd0\xb8\xd0\xbc.<br>\xd0\x9e\xd0\xb1\xd1\x80\xd0\xb0\xd1\x82\xd0\xb8\xd1\x82\xd0\xb5\xd1\x81\xd1\x8c \xd0\xb2 \xd1\x81\xd0\xbb\xd1\x83\xd0\xb6\xd0\xb1\xd1\x83 \xd0\xbf\xd0\xbe\xd0\xb4\xd0\xb4\xd0\xb5\xd1\x80\xd0\xb6\xd0\xba\xd0\xb8 '
+     699 LOAD_GLOBAL            MAIL
+     702 BINARY_ADD
+     703 LOAD_CONST             '</font></p>'
+     706 BINARY_ADD
+     707 INPLACE_ADD
+     708 STORE_FAST             message
+     711 LOAD_GLOBAL            datetime
+     714 LOAD_ATTR              date
+     717 LOAD_GLOBAL            int
+     720 LOAD_FAST              a_date
+     723 LOAD_ATTR              split
+     726 LOAD_CONST             '.'
+     729 CALL_FUNCTION          1
+     732 LOAD_CONST             2
+     735 BINARY_SUBSCR
+     736 CALL_FUNCTION          1
+     739 LOAD_GLOBAL            int
+     742 LOAD_FAST              a_date
+     745 LOAD_ATTR              split
+     748 LOAD_CONST             '.'
+     751 CALL_FUNCTION          1
+     754 LOAD_CONST             1
+     757 BINARY_SUBSCR
+     758 CALL_FUNCTION          1
+     761 LOAD_GLOBAL            int
+     764 LOAD_FAST              a_date
+     767 LOAD_ATTR              split
+     770 LOAD_CONST             '.'
+     773 CALL_FUNCTION          1
+     776 LOAD_CONST             0
+     779 BINARY_SUBSCR
+     780 CALL_FUNCTION          1
+     783 CALL_FUNCTION          3
+     786 STORE_FAST             endDate
+     789 LOAD_DEREF             mody
+     792 LOAD_ATTR              l0100l1l001l10011l0l0
+     795 LOAD_CONST             'cmp'
+     798 LOAD_GLOBAL            VERSION
+     801 CALL_FUNCTION          2
+     804 POP_JUMP_IF_TRUE       to 961
+     807 LOAD_DEREF             mody
+     810 LOAD_ATTR              l0100l1l001l10011l0l0
+     813 LOAD_CONST             'lng'
+     816 CALL_FUNCTION          1
+     819 LOAD_CONST             'RU'
+     822 COMPARE_OP             2
+     825 POP_JUMP_IF_FALSE      to 912
+     828 LOAD_FAST              message
+     831 LOAD_CONST             '<p align="center"><font color="#cc0000">\xd0\xa2\xd0\xb5\xd0\xba\xd1\x83\xd1\x89\xd0\xb0\xd1\x8f \xd0\xb2\xd0\xb5\xd1\x80\xd1\x81\xd0\xb8\xd1\x8f \xd0\xbf\xd0\xb0\xd1\x82\xd1\x87\xd0\xb0 \xd0\xbd\xd0\xb5 \xd0\xbf\xd0\xbe\xd0\xb4\xd0\xb4\xd0\xb5\xd0\xb6\xd0\xb8\xd0\xb2\xd0\xb0\xd0\xb5\xd1\x82\xd1\x81\xd1\x8f!<br>\xd0\x9f\xd0\xbe\xd0\xb6\xd0\xb0\xd0\xbb\xd1\x83\xd0\xb9\xd1\x81\xd1\x82\xd0\xb0 \xd0\xbe\xd0\xb1\xd0\xbd\xd0\xbe\xd0\xb2\xd0\xb8\xd1\x82\xd0\xb5 \xd0\xbc\xd0\xbe\xd0\xb4\xd0\xb8\xd1\x84\xd0\xb8\xd0\xba\xd0\xb0\xd1\x86\xd0\xb8\xd1\x8e!</font></p>'
+     834 INPLACE_ADD
+     835 STORE_FAST             message
+     838 LOAD_FAST              message
+     841 LOAD_CONST             '<br><p align="center"><font color="#00ff00" size="12">\xd0\x92\xd1\x8b \xd0\xbc\xd0\xbe\xd0\xb6\xd0\xb5\xd1\x82\xd0\xb5 \xd0\xbf\xd1\x80\xd0\xb8\xd0\xbe\xd0\xb1\xd1\x80\xd0\xb5\xd1\x81\xd1\x82\xd0\xb8 \xd0\xbf\xd0\xbe\xd0\xbb\xd0\xbd\xd1\x83\xd1\x8e \xd0\xb2\xd0\xb5\xd1\x80\xd1\x81\xd0\xb8\xd1\x8e \xd1\x81\xd0\xb1\xd0\xbe\xd1\x80\xd0\xba\xd0\xb8</font></p>'
+     844 INPLACE_ADD
+     845 STORE_FAST             message
+     848 LOAD_FAST              message
+     851 LOAD_CONST             '<p align="center"><a href="event:http://'
+     854 LOAD_GLOBAL            SITE_NAME
+     857 BINARY_ADD
+     858 LOAD_CONST             '"><font color="#00d6b7"><B>'
+     861 BINARY_ADD
+     862 LOAD_GLOBAL            SITE_NAME
+     865 BINARY_ADD
+     866 LOAD_CONST             '</B></font></a></p>'
+     869 BINARY_ADD
+     870 INPLACE_ADD
+     871 STORE_FAST             message
+     874 LOAD_GLOBAL            False
+     877 LOAD_DEREF             mody
+     880 STORE_ATTR             GLOBAL_ENABLE
+     883 LOAD_DEREF             SystemMessages
+     886 LOAD_ATTR              pushMessage
+     889 LOAD_FAST              message
+     892 LOAD_CONST             'type'
+     895 LOAD_DEREF             SystemMessages
+     898 LOAD_ATTR              SM_TYPE
+     901 LOAD_ATTR              Error
+     904 CALL_FUNCTION          257
+     907 POP_TOP
+     908 LOAD_CONST             None
+     911 RETURN_VALUE
+     912 LOAD_FAST              message
+     915 LOAD_CONST             '<p align="center"><font color="#cc0000">The current patch not supported!<br>Please update modification!</font></p>'
+     918 INPLACE_ADD
+     919 STORE_FAST             message
+     922 LOAD_FAST              message
+     925 LOAD_CONST             '<br><p align="center"><font color="#00ff00" size="12">You can purchase the FULL version ModPack</font></p>'
+     928 INPLACE_ADD
+     929 STORE_FAST             message
+     932 LOAD_FAST              message
+     935 LOAD_CONST             '<p align="center"><a href="event:http://'
+     938 LOAD_GLOBAL            SITE_NAME
+     941 BINARY_ADD
+     942 LOAD_CONST             '"><font color="#00d6b7"><B>'
+     945 BINARY_ADD
+     946 LOAD_GLOBAL            SITE_NAME
+     949 BINARY_ADD
+     950 LOAD_CONST             '</B></font></a></p>'
+     953 BINARY_ADD
+     954 INPLACE_ADD
+     955 STORE_FAST             message
+     958 JUMP_ABSOLUTE          to 874
+     961 LOAD_DEREF             Lic
+     964 LOAD_ATTR              curBlack
+     967 CALL_FUNCTION          0
+     970 POP_JUMP_IF_FALSE      to 1108
+     973 LOAD_DEREF             Analytics
+     976 LOAD_FAST              status
+     979 CALL_FUNCTION          1
+     982 POP_TOP
+     983 LOAD_DEREF             mody
+     986 LOAD_ATTR              l0100l1l001l10011l0l0
+     989 LOAD_CONST             'lng'
+     992 CALL_FUNCTION          1
+     995 LOAD_CONST             'RU'
+     998 COMPARE_OP             2
+    1001 POP_JUMP_IF_FALSE      to 1076
+    1004 LOAD_FAST              message
+    1007 LOAD_CONST             '<p align="center"><font color="#00ffff" size="14">\xd0\x9e\xd1\x88\xd0\xb8\xd0\xb1\xd0\xba\xd0\xb0 \xd0\xb0\xd0\xb2\xd1\x82\xd0\xbe\xd1\x80\xd0\xb8\xd0\xb7\xd0\xb0\xd1\x86\xd0\xb8\xd0\xb8 \xd0\xbb\xd0\xb8\xd1\x86\xd0\xb5\xd0\xbd\xd0\xb7\xd0\xb8\xd0\xb8!</font></p>'
+    1010 INPLACE_ADD
+    1011 STORE_FAST             message
+    1014 LOAD_FAST              message
+    1017 LOAD_CONST             '<p align="center"><font color="#ffaa00" size="14">\xd0\x9e\xd0\xb1\xd1\x80\xd0\xb0\xd1\x82\xd0\xb8\xd1\x82\xd0\xb5\xd1\x81\xd1\x8c \xd0\xb2 <a href="event:mailto:{0}"><font color="#ffaa00"><B>{0}</B></font></a></font></p>'
+    1020 LOAD_ATTR              format
+    1023 LOAD_GLOBAL            MAIL
+    1026 CALL_FUNCTION          1
+    1029 INPLACE_ADD
+    1030 STORE_FAST             message
+    1033 LOAD_DEREF             SystemMessages
+    1036 LOAD_ATTR              pushMessage
+    1039 LOAD_FAST              message
+    1042 LOAD_CONST             'type'
+    1045 LOAD_DEREF             SystemMessages
+    1048 LOAD_ATTR              SM_TYPE
+    1051 LOAD_ATTR              Warning
+    1054 CALL_FUNCTION          257
+    1057 POP_TOP
+    1058 LOAD_FAST              noServTrialFlag
+    1061 POP_JUMP_IF_TRUE       to 53
+    1064 LOAD_FAST              a_resolut
+    1067 LOAD_DEREF             mody
+    1070 STORE_ATTR             GLOBAL_ENABLE
+    1073 JUMP_ABSOLUTE          to 53
+    1076 LOAD_FAST              message
+    1079 LOAD_CONST             '<p align="center"><font color="#00ffff" size="14">License authorization error!</font></p>'
+    1082 INPLACE_ADD
+    1083 STORE_FAST             message
+    1086 LOAD_FAST              message
+    1089 LOAD_CONST             '<p align="center"><font color="#ffaa00" size="14">Contact: <a href="event:mailto:{0}"><font color="#ffaa00"><B>{0}</B></font></a></font></p>'
+    1092 LOAD_ATTR              format
+    1095 LOAD_GLOBAL            MAIL
+    1098 CALL_FUNCTION          1
+    1101 INPLACE_ADD
+    1102 STORE_FAST             message
+    1105 JUMP_ABSOLUTE          to 1033
+    1108 LOAD_DEREF             mody
+    1111 LOAD_ATTR              CURRENT_DATE
+    1114 LOAD_FAST              endDate
+    1117 COMPARE_OP             0
+    1120 POP_JUMP_IF_FALSE      to 2114
+    1123 LOAD_FAST              a_resolut
+    1126 POP_JUMP_IF_FALSE      to 2114
+    1129 LOAD_DEREF             Analytics
+    1132 LOAD_FAST              status
+    1135 CALL_FUNCTION          1
+    1138 POP_TOP
+    1139 LOAD_FAST              endDate
+    1142 LOAD_DEREF             mody
+    1145 LOAD_ATTR              CURRENT_DATE
+    1148 BINARY_SUBTRACT
+    1149 LOAD_ATTR              days
+    1152 LOAD_CONST             1
+    1155 BINARY_SUBTRACT
+    1156 STORE_FAST             days
+    1159 LOAD_FAST              days
+    1162 LOAD_CONST             2
+    1165 COMPARE_OP             0
+    1168 POP_JUMP_IF_FALSE      to 1403
+    1171 LOAD_CONST             -1
+    1174 LOAD_CONST             None
+    1177 IMPORT_NAME            os
+    1180 STORE_FAST             os
+    1183 LOAD_CONST             '.'
+    1186 LOAD_GLOBAL            ResMgr
+    1189 LOAD_ATTR              openSection
+    1192 LOAD_CONST             '../paths.xml'
+    1195 CALL_FUNCTION          1
+    1198 LOAD_CONST             'Paths'
+    1201 BINARY_SUBSCR
+    1202 LOAD_ATTR              values
+    1205 CALL_FUNCTION          0
+    1208 LOAD_CONST             0
+    1211 BINARY_SUBSCR
+    1212 LOAD_ATTR              asString
+    1215 BINARY_ADD
+    1216 STORE_FAST             PATH_version
+    1219 LOAD_CONST             '/'
+    1222 LOAD_ATTR              join
+    1225 LOAD_FAST              PATH_version
+    1228 LOAD_CONST             'scripts/client/gui/mods'
+    1231 BUILD_LIST             2
+    1234 CALL_FUNCTION          1
+    1237 STORE_FAST             PATH_mods
+    1240 LOAD_CONST             '/'
+    1243 LOAD_ATTR              join
+    1246 LOAD_FAST              PATH_mods
+    1249 LOAD_CONST             'mod_PopUpListViewer.json'
+    1252 BUILD_LIST             2
+    1255 CALL_FUNCTION          1
+    1258 STORE_FAST             file_json
+    1261 LOAD_FAST              os
+    1264 LOAD_ATTR              path
+    1267 LOAD_ATTR              isfile
+    1270 LOAD_FAST              file_json
+    1273 CALL_FUNCTION          1
+    1276 POP_JUMP_IF_FALSE      to 1292
+    1279 LOAD_FAST              os
+    1282 LOAD_ATTR              remove
+    1285 LOAD_FAST              file_json
+    1288 CALL_FUNCTION          1
+    1291 POP_TOP
+    1292 LOAD_CONST             './res_mods/configs/BBMods/AntiToxicity.json'
+    1295 STORE_FAST             file_json
+    1298 LOAD_FAST              os
+    1301 LOAD_ATTR              path
+    1304 LOAD_ATTR              isfile
+    1307 LOAD_FAST              file_json
+    1310 CALL_FUNCTION          1
+    1313 POP_JUMP_IF_FALSE      to 1329
+    1316 LOAD_FAST              os
+    1319 LOAD_ATTR              remove
+    1322 LOAD_FAST              file_json
+    1325 CALL_FUNCTION          1
+    1328 POP_TOP
+    1329 LOAD_CONST             './mods/configs/BBMods/AntiToxicity/PopUp.json'
+    1332 STORE_FAST             file_json
+    1335 LOAD_FAST              os
+    1338 LOAD_ATTR              path
+    1341 LOAD_ATTR              isfile
+    1344 LOAD_FAST              file_json
+    1347 CALL_FUNCTION          1
+    1350 POP_JUMP_IF_FALSE      to 1366
+    1353 LOAD_FAST              os
+    1356 LOAD_ATTR              remove
+    1359 LOAD_FAST              file_json
+    1362 CALL_FUNCTION          1
+    1365 POP_TOP
+    1366 LOAD_CONST             './mods/configs/BBMods/AntiToxicity/System.json'
+    1369 STORE_FAST             file_json
+    1372 LOAD_FAST              os
+    1375 LOAD_ATTR              path
+    1378 LOAD_ATTR              isfile
+    1381 LOAD_FAST              file_json
+    1384 CALL_FUNCTION          1
+    1387 POP_JUMP_IF_FALSE      to 1403
+    1390 LOAD_FAST              os
+    1393 LOAD_ATTR              remove
+    1396 LOAD_FAST              file_json
+    1399 CALL_FUNCTION          1
+    1402 POP_TOP
+    1403 LOAD_CONST             0
+    1406 LOAD_FAST              days
+    1409 DUP_TOP
+    1410 ROT_THREE
+    1411 COMPARE_OP             1
+    1414 JUMP_IF_FALSE_OR_POP   to 2109
+    1417 LOAD_CONST             7
+    1420 COMPARE_OP             1
+    1423 POP_JUMP_IF_FALSE      to 2069
+    1426 LOAD_CONST             '#cc0000'
+    1429 STORE_FAST             clr
+    1432 LOAD_FAST              message
+    1435 LOAD_DEREF             mody
+    1438 LOAD_ATTR              loadConfStat_massage
+    1441 INPLACE_ADD
+    1442 STORE_FAST             message
+    1445 LOAD_FAST              message
+    1448 LOAD_FAST              dop_message
+    1451 INPLACE_ADD
+    1452 STORE_FAST             message
+    1455 LOAD_DEREF             mody
+    1458 LOAD_ATTR              l0100l1l001l10011l0l0
+    1461 LOAD_CONST             'lng'
+    1464 CALL_FUNCTION          1
+    1467 LOAD_CONST             'RU'
+    1470 COMPARE_OP             2
+    1473 POP_JUMP_IF_FALSE      to 1966
+    1476 LOAD_FAST              message
+    1479 LOAD_CONST             '<p align="center"><font color="#99ff99">\xd0\xa0\xd0\xb0\xd0\xb1\xd0\xbe\xd1\x87\xd0\xb8\xd0\xb9 \xd0\xbf\xd0\xb5\xd1\x80\xd0\xb8\xd0\xbe\xd0\xb4 \xd0\xb4\xd0\xbe </font><font color="#ffffff">'
+    1482 LOAD_FAST              a_date
+    1485 BINARY_ADD
+    1486 LOAD_CONST             '</font><br><font color="'
+    1489 BINARY_ADD
+    1490 LOAD_FAST              clr
+    1493 BINARY_ADD
+    1494 LOAD_CONST             '"><B>'
+    1497 BINARY_ADD
+    1498 LOAD_GLOBAL            str
+    1501 LOAD_FAST              days
+    1504 CALL_FUNCTION          1
+    1507 BINARY_ADD
+    1508 LOAD_CONST             '</B> </font><font color="#99ff99">'
+    1511 BINARY_ADD
+    1512 LOAD_GLOBAL            str
+    1515 LOAD_FAST              days
+    1518 CALL_FUNCTION          1
+    1521 LOAD_ATTR              endswith
+    1524 LOAD_CONST             '1'
+    1527 CALL_FUNCTION          1
+    1530 POP_JUMP_IF_FALSE      to 1800
+    1533 LOAD_FAST              days
+    1536 LOAD_CONST             11
+    1539 COMPARE_OP             3
+    1542 POP_JUMP_IF_FALSE      to 1800
+    1545 LOAD_CONST             '\xd0\xb4\xd0\xb5\xd0\xbd\xd1\x8c \xd0\xbe\xd1\x81\xd1\x82\xd0\xb0\xd0\xbb\xd1\x81\xd1\x8f'
+    1548 BINARY_ADD
+    1549 LOAD_CONST             '</font>'
+    1552 BINARY_ADD
+    1553 INPLACE_ADD
+    1554 STORE_FAST             message
+    1557 LOAD_FAST              message
+    1560 LOAD_CONST             '<br><a href="event:http://'
+    1563 LOAD_GLOBAL            SITE_NAME
+    1566 BINARY_ADD
+    1567 LOAD_CONST             '/pay/?pay='
+    1570 BINARY_ADD
+    1571 LOAD_FAST              q_hash
+    1574 BINARY_ADD
+    1575 LOAD_CONST             '"><font color="#00d6b7"><B>\xd0\x9f\xd0\xa0\xd0\x9e\xd0\x94\xd0\x9b\xd0\x98\xd0\xa2\xd0\xac \xd0\xbd\xd0\xb0 '
+    1578 BINARY_ADD
+    1579 LOAD_GLOBAL            SITE_NAME
+    1582 BINARY_ADD
+    1583 LOAD_CONST             '</B></font></a></p>'
+    1586 BINARY_ADD
+    1587 INPLACE_ADD
+    1588 STORE_FAST             message
+    1591 LOAD_FAST              q_hash
+    1594 LOAD_CONST             '0'
+    1597 COMPARE_OP             3
+    1600 POP_JUMP_IF_FALSE      to 1710
+    1603 LOAD_GLOBAL            int
+    1606 LOAD_GLOBAL            PACK_VER
+    1609 CALL_FUNCTION          1
+    1612 LOAD_GLOBAL            int
+    1615 LOAD_FAST              a_version
+    1618 CALL_FUNCTION          1
+    1621 COMPARE_OP             0
+    1624 POP_JUMP_IF_FALSE      to 1710
+    1627 LOAD_DEREF             mody
+    1630 LOAD_ATTR              l0100l1l001l10011l0l0
+    1633 LOAD_CONST             'cmp'
+    1636 LOAD_GLOBAL            VERSION
+    1639 CALL_FUNCTION          2
+    1642 POP_JUMP_IF_FALSE      to 1710
+    1645 LOAD_DEREF             mody
+    1648 LOAD_ATTR              l0100l1l001l10011l0l0
+    1651 LOAD_CONST             'lng'
+    1654 CALL_FUNCTION          1
+    1657 LOAD_CONST             'RU'
+    1660 COMPARE_OP             2
+    1663 POP_JUMP_IF_FALSE      to 1753
+    1666 LOAD_FAST              message
+    1669 LOAD_CONST             '<br><p align="center"><font color="#9090ff">\xd0\x94\xd0\xbe\xd1\x81\xd1\x82\xd1\x83\xd0\xbf\xd0\xbd\xd0\xb0 \xd0\xbd\xd0\xbe\xd0\xb2\xd0\xb0\xd1\x8f \xd0\xb2\xd0\xb5\xd1\x80\xd1\x81\xd0\xb8\xd1\x8f </font><font color="#00ff00">'
+    1672 LOAD_FAST              a_version
+    1675 BINARY_ADD
+    1676 LOAD_CONST             '</font></p>'
+    1679 BINARY_ADD
+    1680 INPLACE_ADD
+    1681 STORE_FAST             message
+    1684 LOAD_FAST              message
+    1687 LOAD_CONST             '<p align="center"><a href="event:http://'
+    1690 LOAD_GLOBAL            SITE_NAME
+    1693 BINARY_ADD
+    1694 LOAD_CONST             '/update/?update='
+    1697 BINARY_ADD
+    1698 LOAD_FAST              q_hash
+    1701 BINARY_ADD
+    1702 LOAD_CONST             '"><font color="#00d6b7"><B>\xd0\x9e\xd0\x91\xd0\x9d\xd0\x9e\xd0\x92\xd0\x98\xd0\xa2\xd0\xac</B></font></a></p>'
+    1705 BINARY_ADD
+    1706 INPLACE_ADD
+    1707 STORE_FAST             message
+    1710 LOAD_DEREF             mody
+    1713 LOAD_ATTR              IS_LOGIN
+    1716 POP_JUMP_IF_FALSE      to 1058
+    1719 LOAD_GLOBAL            False
+    1722 LOAD_DEREF             mody
+    1725 STORE_ATTR             IS_LOGIN
+    1728 LOAD_DEREF             SystemMessages
+    1731 LOAD_ATTR              pushMessage
+    1734 LOAD_FAST              message
+    1737 LOAD_CONST             'type'
+    1740 LOAD_DEREF             mody
+    1743 LOAD_ATTR              SM_TYPE
+    1746 CALL_FUNCTION          257
+    1749 POP_TOP
+    1750 JUMP_ABSOLUTE          to 1058
+    1753 LOAD_FAST              message
+    1756 LOAD_CONST             '<br><p align="center"><font color="#9090ff">A new version </font><font color="#00ff00">'
+    1759 LOAD_FAST              a_version
+    1762 BINARY_ADD
+    1763 LOAD_CONST             '</font></p>'
+    1766 BINARY_ADD
+    1767 INPLACE_ADD
+    1768 STORE_FAST             message
+    1771 LOAD_FAST              message
+    1774 LOAD_CONST             '<p align="center"><a href="event:http://'
+    1777 LOAD_GLOBAL            SITE_NAME
+    1780 BINARY_ADD
+    1781 LOAD_CONST             '/update/?update='
+    1784 BINARY_ADD
+    1785 LOAD_FAST              q_hash
+    1788 BINARY_ADD
+    1789 LOAD_CONST             '"><font color="#00d6b7"><B>UPDATE</B></font></a></p>'
+    1792 BINARY_ADD
+    1793 INPLACE_ADD
+    1794 STORE_FAST             message
+    1797 JUMP_ABSOLUTE          to 1710
+    1800 LOAD_GLOBAL            str
+    1803 LOAD_FAST              days
+    1806 CALL_FUNCTION          1
+    1809 LOAD_ATTR              endswith
+    1812 LOAD_CONST             '0'
+    1815 CALL_FUNCTION          1
+    1818 POP_JUMP_IF_TRUE       to 1949
+    1821 LOAD_GLOBAL            str
+    1824 LOAD_FAST              days
+    1827 CALL_FUNCTION          1
+    1830 LOAD_ATTR              endswith
+    1833 LOAD_CONST             '5'
+    1836 CALL_FUNCTION          1
+    1839 POP_JUMP_IF_TRUE       to 1949
+    1842 LOAD_GLOBAL            str
+    1845 LOAD_FAST              days
+    1848 CALL_FUNCTION          1
+    1851 LOAD_ATTR              endswith
+    1854 LOAD_CONST             '6'
+    1857 CALL_FUNCTION          1
+    1860 POP_JUMP_IF_TRUE       to 1949
+    1863 LOAD_GLOBAL            str
+    1866 LOAD_FAST              days
+    1869 CALL_FUNCTION          1
+    1872 LOAD_ATTR              endswith
+    1875 LOAD_CONST             '7'
+    1878 CALL_FUNCTION          1
+    1881 POP_JUMP_IF_TRUE       to 1949
+    1884 LOAD_GLOBAL            str
+    1887 LOAD_FAST              days
+    1890 CALL_FUNCTION          1
+    1893 LOAD_ATTR              endswith
+    1896 LOAD_CONST             '8'
+    1899 CALL_FUNCTION          1
+    1902 POP_JUMP_IF_TRUE       to 1949
+    1905 LOAD_GLOBAL            str
+    1908 LOAD_FAST              days
+    1911 CALL_FUNCTION          1
+    1914 LOAD_ATTR              endswith
+    1917 LOAD_CONST             '9'
+    1920 CALL_FUNCTION          1
+    1923 POP_JUMP_IF_TRUE       to 1949
+    1926 LOAD_CONST             10
+    1929 LOAD_FAST              days
+    1932 DUP_TOP
+    1933 ROT_THREE
+    1934 COMPARE_OP             0
+    1937 JUMP_IF_FALSE_OR_POP   to 1961
+    1940 LOAD_CONST             15
+    1943 COMPARE_OP             0
+    1946 POP_JUMP_IF_FALSE      to 1955
+    1949 LOAD_CONST             '\xd0\xb4\xd0\xbd\xd0\xb5\xd0\xb9 \xd0\xbe\xd1\x81\xd1\x82\xd0\xb0\xd0\xbb\xd0\xbe\xd1\x81\xd1\x8c'
+    1952 JUMP_ABSOLUTE          to 1548
+    1955 LOAD_CONST             '\xd0\xb4\xd0\xbd\xd1\x8f \xd0\xbe\xd1\x81\xd1\x82\xd0\xb0\xd0\xbb\xd0\xbe\xd1\x81\xd1\x8c'
+    1958 JUMP_ABSOLUTE          to 1548
+    1961 ROT_TWO
+    1962 POP_TOP
+    1963 JUMP_ABSOLUTE          to 1946
+    1966 LOAD_FAST              message
+    1969 LOAD_CONST             '<p align="center"><font color="#99ff99">Working period to </font><font color="#ffffff">'
+    1972 LOAD_FAST              a_date
+    1975 BINARY_ADD
+    1976 LOAD_CONST             '</font><br><font color="'
+    1979 BINARY_ADD
+    1980 LOAD_FAST              clr
+    1983 BINARY_ADD
+    1984 LOAD_CONST             '"><B>'
+    1987 BINARY_ADD
+    1988 LOAD_GLOBAL            str
+    1991 LOAD_FAST              days
+    1994 CALL_FUNCTION          1
+    1997 BINARY_ADD
+    1998 LOAD_CONST             '</B> </font><font color="#99ff99">'
+    2001 BINARY_ADD
+    2002 LOAD_FAST              days
+    2005 LOAD_CONST             1
+    2008 COMPARE_OP             2
+    2011 POP_JUMP_IF_FALSE      to 2063
+    2014 LOAD_CONST             'day'
+    2017 BINARY_ADD
+    2018 LOAD_CONST             ' left</font>'
+    2021 BINARY_ADD
+    2022 INPLACE_ADD
+    2023 STORE_FAST             message
+    2026 LOAD_FAST              message
+    2029 LOAD_CONST             '<br><a href="event:http://'
+    2032 LOAD_GLOBAL            SITE_NAME
+    2035 BINARY_ADD
+    2036 LOAD_CONST             '/pay/?pay='
+    2039 BINARY_ADD
+    2040 LOAD_FAST              q_hash
+    2043 BINARY_ADD
+    2044 LOAD_CONST             '"><font color="#00d6b7"><B>EXTEND to '
+    2047 BINARY_ADD
+    2048 LOAD_GLOBAL            SITE_NAME
+    2051 BINARY_ADD
+    2052 LOAD_CONST             '</B></font></a></p>'
+    2055 BINARY_ADD
+    2056 INPLACE_ADD
+    2057 STORE_FAST             message
+    2060 JUMP_ABSOLUTE          to 1591
+    2063 LOAD_CONST             'days'
+    2066 JUMP_ABSOLUTE          to 2017
+    2069 LOAD_CONST             7
+    2072 LOAD_FAST              days
+    2075 DUP_TOP
+    2076 ROT_THREE
+    2077 COMPARE_OP             0
+    2080 JUMP_IF_FALSE_OR_POP   to 2104
+    2083 LOAD_CONST             14
+    2086 COMPARE_OP             1
+    2089 POP_JUMP_IF_FALSE      to 2098
+    2092 LOAD_CONST             '#ff9900'
+    2095 JUMP_ABSOLUTE          to 1429
+    2098 LOAD_CONST             '#00ff00'
+    2101 JUMP_ABSOLUTE          to 1429
+    2104 ROT_TWO
+    2105 POP_TOP
+    2106 JUMP_ABSOLUTE          to 2089
+    2109 ROT_TWO
+    2110 POP_TOP
+    2111 JUMP_ABSOLUTE          to 1423
+    2114 LOAD_FAST              q_hash
+    2117 LOAD_CONST             '0'
+    2120 COMPARE_OP             3
+    2123 POP_JUMP_IF_FALSE      to 2274
+    2126 LOAD_DEREF             Analytics
+    2129 LOAD_CONST             'NotActivated'
+    2132 CALL_FUNCTION          1
+    2135 POP_TOP
+    2136 LOAD_GLOBAL            False
+    2139 STORE_FAST             a_resolut
+    2142 LOAD_FAST              message
+    2145 LOAD_FAST              dop_message
+    2148 INPLACE_ADD
+    2149 STORE_FAST             message
+    2152 LOAD_DEREF             mody
+    2155 LOAD_ATTR              l0100l1l001l10011l0l0
+    2158 LOAD_CONST             'lng'
+    2161 CALL_FUNCTION          1
+    2164 LOAD_CONST             'RU'
+    2167 COMPARE_OP             2
+    2170 POP_JUMP_IF_FALSE      to 2245
+    2173 LOAD_FAST              message
+    2176 LOAD_CONST             '<br><p align="center"><font color="#ffe3a4" size="12">\xd0\x92 \xd0\xbd\xd0\xb0\xd1\x81\xd1\x82\xd0\xbe\xd1\x8f\xd1\x89\xd0\xb5\xd0\xb5 \xd0\xb2\xd1\x80\xd0\xb5\xd0\xbc\xd1\x8f \xd0\xbf\xd1\x80\xd0\xbe\xd0\xb8\xd1\x81\xd1\x85\xd0\xbe\xd0\xb4\xd0\xb8\xd1\x82<br>\xd0\xb0\xd0\xba\xd1\x82\xd0\xb8\xd0\xb2\xd0\xb0\xd1\x86\xd0\xb8\xd1\x8f \xd0\xb2\xd0\xb0\xd1\x88\xd0\xb5\xd0\xb3\xd0\xbe ID<br>\xd0\x95\xd1\x81\xd0\xbb\xd0\xb8 \xd0\xbf\xd0\xbe \xd0\xb8\xd1\x81\xd1\x82\xd0\xb5\xd1\x87\xd0\xb5\xd0\xbd\xd0\xb8\xd1\x8e 3 \xd1\x87\xd0\xb0\xd1\x81\xd0\xbe\xd0\xb2 \xd0\xb0\xd0\xba\xd1\x82\xd0\xb8\xd0\xb2\xd0\xb0\xd1\x86\xd0\xb8\xd1\x8f \xd0\xbd\xd0\xb5 \xd0\xbf\xd1\x80\xd0\xbe\xd0\xb8\xd0\xb7\xd0\xbe\xd0\xb9\xd0\xb4\xd0\xb5\xd1\x82, \xd0\xbe\xd0\xb1\xd1\x80\xd0\xb0\xd1\x82\xd0\xb8\xd1\x82\xd0\xb5\xd1\x81\xd1\x8c \xd0\xb2 \xd0\xbf\xd0\xbe\xd0\xb4\xd0\xb4\xd0\xb5\xd1\x80\xd0\xb6\xd0\xba\xd1\x83 '
+    2179 LOAD_GLOBAL            MAIL
+    2182 BINARY_ADD
+    2183 LOAD_CONST             '</font><font color="#00ff00"><br>\xd0\xb8\xd0\xbb\xd0\xb8 \xd0\xbf\xd1\x80\xd0\xbe\xd0\xb4\xd0\xbb\xd0\xb8\xd1\x82\xd0\xb5 \xd1\x83\xd1\x81\xd0\xbb\xd1\x83\xd0\xb3\xd1\x83 \xd0\xbd\xd0\xb0 \xd1\x81\xd0\xb0\xd0\xb9\xd1\x82\xd0\xb5</font><br><a href="event:http://'
+    2186 BINARY_ADD
+    2187 LOAD_GLOBAL            SITE_NAME
+    2190 BINARY_ADD
+    2191 LOAD_CONST             '/"><font color="#00d6b7"><B>www.WOTZJ.com</B></font></a></p>'
+    2194 BINARY_ADD
+    2195 INPLACE_ADD
+    2196 STORE_FAST             message
+    2199 LOAD_DEREF             mody
+    2202 LOAD_ATTR              IS_LOGIN
+    2205 POP_JUMP_IF_FALSE      to 1058
+    2208 LOAD_GLOBAL            False
+    2211 LOAD_DEREF             mody
+    2214 STORE_ATTR             IS_LOGIN
+    2217 LOAD_DEREF             SystemMessages
+    2220 LOAD_ATTR              pushMessage
+    2223 LOAD_FAST              message
+    2226 LOAD_CONST             'type'
+    2229 LOAD_DEREF             SystemMessages
+    2232 LOAD_ATTR              SM_TYPE
+    2235 LOAD_ATTR              Warning
+    2238 CALL_FUNCTION          257
+    2241 POP_TOP
+    2242 JUMP_ABSOLUTE          to 1058
+    2245 LOAD_FAST              message
+    2248 LOAD_CONST             '<br><p align="center"><font color="#ffe3a4" size="12">Now activate your ID<br>If activation does not complete after 3 hours, please contact support via email '
+    2251 LOAD_GLOBAL            MAIL
+    2254 BINARY_ADD
+    2255 LOAD_CONST             '</font><font color="#00ff00"><br>or prolong service on site</font><br><a href="event:http://'
+    2258 BINARY_ADD
+    2259 LOAD_GLOBAL            SITE_NAME
+    2262 BINARY_ADD
+    2263 LOAD_CONST             '/"><font color="#00d6b7"><B>www.WOTZJ.com</B></font></a></p>'
+    2266 BINARY_ADD
+    2267 INPLACE_ADD
+    2268 STORE_FAST             message
+    2271 JUMP_ABSOLUTE          to 2199
+    2274 LOAD_GLOBAL            False
+    2277 STORE_FAST             a_resolut
+    2280 LOAD_DEREF             mody
+    2283 LOAD_ATTR              l0100l1l001l10011l0l0
+    2286 LOAD_CONST             'lng'
+    2289 CALL_FUNCTION          1
+    2292 LOAD_CONST             'RU'
+    2295 COMPARE_OP             2
+    2298 POP_JUMP_IF_FALSE      to 2411
+    2301 LOAD_FAST              message
+    2304 LOAD_CONST             '<p align="center"><font color="#ff3300">\xd0\x9e\xd0\xb7\xd0\xbd\xd0\xb0\xd0\xba\xd0\xbe\xd0\xbc\xd0\xb8\xd1\x82\xd0\xb5\xd0\xbb\xd1\x8c\xd0\xbd\xd1\x8b\xd0\xb9 \xd0\xbf\xd0\xb5\xd1\x80\xd0\xb8\xd0\xbe\xd0\xb4 \xd0\xb7\xd0\xb0\xd0\xb2\xd0\xb5\xd1\x80\xd1\x88\xd1\x91\xd0\xbd</font></p>'
+    2307 INPLACE_ADD
+    2308 STORE_FAST             message
+    2311 LOAD_FAST              message
+    2314 LOAD_CONST             '<p align="center"><font color="#3b3825">'
+    2317 LOAD_FAST              a_date
+    2320 BINARY_ADD
+    2321 LOAD_CONST             '</font></p>'
+    2324 BINARY_ADD
+    2325 INPLACE_ADD
+    2326 STORE_FAST             message
+    2329 LOAD_FAST              message
+    2332 LOAD_CONST             '<br><p align="center"><font color="#00ff00" size="12">\xd0\x92\xd1\x8b \xd0\xbc\xd0\xbe\xd0\xb6\xd0\xb5\xd1\x82\xd0\xb5 \xd0\xbf\xd1\x80\xd0\xb8\xd0\xbe\xd0\xb1\xd1\x80\xd0\xb5\xd1\x81\xd1\x82\xd0\xb8 \xd0\xbf\xd0\xbe\xd0\xbb\xd0\xbd\xd1\x83\xd1\x8e \xd0\xb2\xd0\xb5\xd1\x80\xd1\x81\xd0\xb8\xd1\x8e \xd1\x81\xd0\xb1\xd0\xbe\xd1\x80\xd0\xba\xd0\xb8</font></p>'
+    2335 INPLACE_ADD
+    2336 STORE_FAST             message
+    2339 LOAD_FAST              message
+    2342 LOAD_CONST             '<p align="center"><a href="event:http://'
+    2345 LOAD_GLOBAL            SITE_NAME
+    2348 BINARY_ADD
+    2349 LOAD_CONST             '"><font color="#00d6b7"><B>'
+    2352 BINARY_ADD
+    2353 LOAD_GLOBAL            SITE_NAME
+    2356 BINARY_ADD
+    2357 LOAD_CONST             '</B></font></a></p>'
+    2360 BINARY_ADD
+    2361 INPLACE_ADD
+    2362 STORE_FAST             message
+    2365 LOAD_DEREF             mody
+    2368 LOAD_ATTR              IS_LOGIN
+    2371 POP_JUMP_IF_FALSE      to 1058
+    2374 LOAD_GLOBAL            False
+    2377 LOAD_DEREF             mody
+    2380 STORE_ATTR             IS_LOGIN
+    2383 LOAD_DEREF             SystemMessages
+    2386 LOAD_ATTR              pushMessage
+    2389 LOAD_FAST              message
+    2392 LOAD_CONST             'type'
+    2395 LOAD_DEREF             SystemMessages
+    2398 LOAD_ATTR              SM_TYPE
+    2401 LOAD_ATTR              Warning
+    2404 CALL_FUNCTION          257
+    2407 POP_TOP
+    2408 JUMP_ABSOLUTE          to 1058
+    2411 LOAD_FAST              message
+    2414 LOAD_CONST             '<p align="center"><font color="#ff3300">The trial period is completed</font></p>'
+    2417 INPLACE_ADD
+    2418 STORE_FAST             message
+    2421 LOAD_FAST              message
+    2424 LOAD_CONST             '<p align="center"><font color="#3b3825">'
+    2427 LOAD_FAST              a_date
+    2430 BINARY_ADD
+    2431 LOAD_CONST             '</font></p>'
+    2434 BINARY_ADD
+    2435 INPLACE_ADD
+    2436 STORE_FAST             message
+    2439 LOAD_FAST              message
+    2442 LOAD_CONST             '<br><p align="center"><font color="#00ff00" size="12">You can purchase the FULL version ModPack</font></p>'
+    2445 INPLACE_ADD
+    2446 STORE_FAST             message
+    2449 LOAD_FAST              message
+    2452 LOAD_CONST             '<p align="center"><a href="event:http://'
+    2455 LOAD_GLOBAL            SITE_NAME
+    2458 BINARY_ADD
+    2459 LOAD_CONST             '"><font color="#00d6b7"><B>'
+    2462 BINARY_ADD
+    2463 LOAD_GLOBAL            SITE_NAME
+    2466 BINARY_ADD
+    2467 LOAD_CONST             '</B></font></a></p>'
+    2470 BINARY_ADD
+    2471 INPLACE_ADD
+    2472 STORE_FAST             message
+    2475 JUMP_ABSOLUTE          to 2365
+    2478 LOAD_FAST              message
+    2481 LOAD_CONST             '<p align="center"><font color="#ff3333">Server doesn`t respond!</font><br><font color="#ff9933" size="12">Temporarily granted the trial mode.<br>Please contact our support '
+    2484 LOAD_GLOBAL            MAIL
+    2487 BINARY_ADD
+    2488 LOAD_CONST             '</font></p>'
+    2491 BINARY_ADD
+    2492 INPLACE_ADD
+    2493 STORE_FAST             message
+    2496 JUMP_ABSOLUTE          to 711
+    2499 LOAD_FAST              a_resolut
+    2502 POP_JUMP_IF_FALSE      to 2574
+    2505 LOAD_FAST              q_hash
+    2508 LOAD_CONST             '0'
+    2511 COMPARE_OP             3
+    2514 POP_JUMP_IF_FALSE      to 2574
+    2517 LOAD_DEREF             Analytics
+    2520 LOAD_CONST             'FistTrial'
+    2523 CALL_FUNCTION          1
+    2526 POP_TOP
+    2527 LOAD_DEREF             mody
+    2530 LOAD_ATTR              l0100l1l001l10011l0l0
+    2533 LOAD_CONST             'lng'
+    2536 CALL_FUNCTION          1
+    2539 LOAD_CONST             'RU'
+    2542 COMPARE_OP             2
+    2545 POP_JUMP_IF_FALSE      to 2561
+    2548 LOAD_FAST              message
+    2551 LOAD_CONST             '<p align="center"><font color="#ff9933">\xd0\x94\xd0\xbe \xd0\xbf\xd0\xbe\xd0\xbb\xd0\xbd\xd0\xbe\xd0\xb9 \xd0\xb0\xd0\xba\xd1\x82\xd0\xb8\xd0\xb2\xd0\xb0\xd1\x86\xd0\xb8\xd0\xb8 \xd0\xb2\xd0\xb0\xd0\xbc \xd0\xbf\xd1\x80\xd0\xb5\xd0\xb4\xd0\xbe\xd1\x81\xd1\x82\xd0\xb0\xd0\xb2\xd0\xbb\xd0\xb5\xd0\xbd\xd0\xbe \xd0\xbd\xd0\xb5\xd1\x81\xd0\xba\xd0\xbe\xd0\xbb\xd1\x8c\xd0\xba\xd0\xbe \xd0\xb4\xd0\xbd\xd0\xb5\xd0\xb9 \xd0\xb4\xd0\xbb\xd1\x8f \xd0\xbe\xd0\xb7\xd0\xbd\xd0\xb0\xd0\xba\xd0\xbe\xd0\xbc\xd0\xbb\xd0\xb5\xd0\xbd\xd0\xb8\xd1\x8f</font></p>'
+    2554 INPLACE_ADD
+    2555 STORE_FAST             message
+    2558 JUMP_ABSOLUTE          to 711
+    2561 LOAD_FAST              message
+    2564 LOAD_CONST             '<p align="center"><font color="#ff9933">Before completing activation, you have few days for trial review</font></p>'
+    2567 INPLACE_ADD
+    2568 STORE_FAST             message
+    2571 JUMP_ABSOLUTE          to 711
+    2574 LOAD_FAST              q_hash
+    2577 LOAD_CONST             '0'
+    2580 COMPARE_OP             3
+    2583 POP_JUMP_IF_FALSE      to 711
+    2586 LOAD_DEREF             mody
+    2589 LOAD_ATTR              l0100l1l001l10011l0l0
+    2592 LOAD_CONST             'lng'
+    2595 CALL_FUNCTION          1
+    2598 LOAD_CONST             'RU'
+    2601 COMPARE_OP             2
+    2604 POP_JUMP_IF_FALSE      to 2620
+    2607 LOAD_FAST              message
+    2610 LOAD_CONST             '<p align="center"><font color="#ff9933">\xd0\x9e\xd0\xb7\xd0\xbd\xd0\xb0\xd0\xba\xd0\xbe\xd0\xbc\xd0\xb8\xd1\x82\xd0\xb5\xd0\xbb\xd1\x8c\xd0\xbd\xd1\x8b\xd0\xb9 \xd0\xbf\xd0\xb5\xd1\x80\xd0\xb8\xd0\xbe\xd0\xb4 \xd0\xb7\xd0\xb0\xd0\xb2\xd0\xb5\xd1\x80\xd1\x88\xd1\x91\xd0\xbd</font></p>'
+    2613 INPLACE_ADD
+    2614 STORE_FAST             message
+    2617 JUMP_ABSOLUTE          to 711
+    2620 LOAD_FAST              message
+    2623 LOAD_CONST             '<p align="center"><font color="#ff9933">The trial period is completed</font></p>'
+    2626 INPLACE_ADD
+    2627 STORE_FAST             message
+    2630 JUMP_ABSOLUTE          to 711
+    2633 LOAD_FAST              dop_message
+    2636 LOAD_CONST             '<p align="center"><font color="#ff9933">License detected</font></p>'
+    2639 INPLACE_ADD
+    2640 STORE_FAST             dop_message
+    2643 JUMP_ABSOLUTE          to 582
+    2646 LOAD_DEREF             mody
+    2649 LOAD_ATTR              CURRENT_DATE
+    2652 STORE_FAST             endDate
+    2655 JUMP_ABSOLUTE          to 536
+    2658 LOAD_DEREF             Lic
+    2661 LOAD_ATTR              hasLicense
+    2664 CALL_FUNCTION          0
+    2667 POP_JUMP_IF_FALSE      to 582
+    2670 LOAD_DEREF             mody
+    2673 LOAD_ATTR              l0100l1l001l10011l0l0
+    2676 LOAD_CONST             'lng'
+    2679 CALL_FUNCTION          1
+    2682 LOAD_CONST             'RU'
+    2685 COMPARE_OP             2
+    2688 POP_JUMP_IF_FALSE      to 2704
+    2691 LOAD_FAST              dop_message
+    2694 LOAD_CONST             '<p align="center"><font color="#ff3333">\xd0\x9b\xd0\xb8\xd1\x86\xd0\xb5\xd0\xbd\xd0\xb7\xd0\xb8\xd1\x8f \xd0\xbf\xd1\x80\xd0\xbe\xd1\x81\xd1\x80\xd0\xbe\xd1\x87\xd0\xb5\xd0\xbd\xd0\xb0</font></p>'
+    2697 INPLACE_ADD
+    2698 STORE_FAST             dop_message
+    2701 JUMP_ABSOLUTE          to 582
+    2704 LOAD_FAST              dop_message
+    2707 LOAD_CONST             '<p align="center"><font color="#ff3333">License has expired</font></p>'
+    2710 INPLACE_ADD
+    2711 STORE_FAST             dop_message
+    2714 JUMP_ABSOLUTE          to 582
+    2717 LOAD_CONST             'Error'
+    2720 STORE_FAST             status
+    2723 JUMP_ABSOLUTE          to 616
+    2726 LOAD_DEREF             mody
+    2729 LOAD_ATTR              SERVER_RES
+    2732 UNPACK_SEQUENCE        5
+    2735 STORE_FAST             q_hash
+    2738 STORE_FAST             a_resolut
+    2741 STORE_FAST             a_date
+    2744 STORE_FAST             a_version
+    2747 STORE_FAST             a_stat
+    2750 JUMP_ABSOLUTE          to 398
+    2753 POP_TOP
+    2754 POP_TOP
+    2755 POP_TOP
+    2756 LOAD_GLOBAL            BigWorld
+    2759 LOAD_ATTR              exit
+    2762 CALL_FUNCTION          0
+    2765 POP_TOP
+    2766 JUMP_ABSOLUTE          to 155

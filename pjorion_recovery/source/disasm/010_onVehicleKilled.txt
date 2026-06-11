@@ -1,0 +1,12 @@
+# onVehicleKilled(argc=1) varnames=('targetID', 'args', 'vehicle')
+   0 LOAD_GLOBAL            BigWorld
+   3 LOAD_ATTR              entity
+   6 LOAD_FAST              targetID
+   9 CALL_FUNCTION          1
+  12 STORE_FAST             vehicle
+  15 LOAD_DEREF             removeEdge
+  18 LOAD_FAST              vehicle
+  21 CALL_FUNCTION          1
+  24 POP_TOP
+  25 LOAD_CONST             None
+  28 RETURN_VALUE

@@ -1,0 +1,18 @@
+# getIsVisible(argc=1) varnames=('id', 'vehicle')
+   0 LOAD_DEREF             getBattleOn
+   3 CALL_FUNCTION          0
+   6 POP_JUMP_IF_FALSE      to 43
+   9 LOAD_GLOBAL            BigWorld
+  12 LOAD_ATTR              entity
+  15 LOAD_FAST              id
+  18 CALL_FUNCTION          1
+  21 STORE_FAST             vehicle
+  24 LOAD_FAST              vehicle
+  27 LOAD_CONST             None
+  30 COMPARE_OP             9
+  33 JUMP_IF_FALSE_OR_POP   to 42
+  36 LOAD_FAST              vehicle
+  39 LOAD_ATTR              isStarted
+  42 RETURN_VALUE
+  43 LOAD_CONST             None
+  46 RETURN_VALUE

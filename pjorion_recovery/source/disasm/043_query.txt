@@ -1,0 +1,159 @@
+# query(argc=1) varnames=('self', 'ID', 'k', 'q_hash', 'url_list', 'serv_query', 'serv_url', 'response', 't')
+   0 LOAD_FAST              self
+   3 LOAD_ATTR              getID
+   6 CALL_FUNCTION          0
+   9 STORE_FAST             ID
+  12 LOAD_DEREF             random
+  15 LOAD_ATTR              randint
+  18 LOAD_CONST             10000
+  21 LOAD_CONST             100000000
+  24 CALL_FUNCTION          2
+  27 STORE_FAST             k
+  30 LOAD_FAST              self
+  33 LOAD_ATTR              getHash
+  36 LOAD_CONST             'ZJ1WIN%s'
+  39 LOAD_FAST              ID
+  42 BINARY_MODULO
+  43 CALL_FUNCTION          1
+  46 STORE_FAST             q_hash
+  49 LOAD_DEREF             urlencode
+  52 BUILD_MAP              3
+  55 LOAD_FAST              q_hash
+  58 LOAD_CONST             'q'
+  61 STORE_MAP
+  62 LOAD_CONST             '%s'
+  65 LOAD_GLOBAL            BUILD
+  68 BINARY_MODULO
+  69 LOAD_CONST             'ver'
+  72 STORE_MAP
+  73 LOAD_CONST             '%s'
+  76 LOAD_FAST              k
+  79 BINARY_MODULO
+  80 LOAD_CONST             'trial'
+  83 STORE_MAP
+  84 CALL_FUNCTION          1
+  87 STORE_DEREF            param
+  90 LOAD_CONST             'i.zjmods.ru'
+  93 LOAD_CONST             'z.zjmods.ru'
+  96 LOAD_CONST             'i.zjshaitan.ru'
+  99 LOAD_CONST             'i.wotzj.com'
+ 102 LOAD_CONST             'z.zjshaitan.ru'
+ 105 LOAD_CONST             'i.wotwin.ru'
+ 108 LOAD_CONST             'i.greenwot.ru'
+ 111 LOAD_CONST             'z.greenwot.ru'
+ 114 BUILD_LIST             8
+ 117 STORE_FAST             url_list
+ 120 LOAD_CLOSURE           param
+ 123 LOAD_CLOSURE           urlopen
+ 126 BUILD_TUPLE            2
+ 129 LOAD_CONST             <code serv_query>
+ 132 MAKE_CLOSURE           0
+ 135 STORE_FAST             serv_query
+ 138 SETUP_LOOP             to 177
+ 141 LOAD_FAST              url_list
+ 144 GET_ITER
+ 145 FOR_ITER               to 176
+ 148 STORE_FAST             serv_url
+ 151 LOAD_FAST              serv_query
+ 154 LOAD_FAST              serv_url
+ 157 CALL_FUNCTION          1
+ 160 STORE_FAST             response
+ 163 LOAD_FAST              response
+ 166 LOAD_CONST             None
+ 169 COMPARE_OP             9
+ 172 POP_JUMP_IF_FALSE      to 145
+ 175 BREAK_LOOP
+ 176 POP_BLOCK
+ 177 LOAD_FAST              response
+ 180 LOAD_CONST             None
+ 183 COMPARE_OP             8
+ 186 POP_JUMP_IF_FALSE      to 202
+ 189 LOAD_CONST             None
+ 192 LOAD_DEREF             mody
+ 195 STORE_ATTR             SERVER_RES
+ 198 LOAD_CONST             None
+ 201 RETURN_VALUE
+ 202 LOAD_FAST              q_hash
+ 205 LOAD_CONST             'trial='
+ 208 BINARY_ADD
+ 209 LOAD_GLOBAL            str
+ 212 LOAD_FAST              k
+ 215 CALL_FUNCTION          1
+ 218 BINARY_ADD
+ 219 LOAD_FAST              response
+ 222 LOAD_ATTR              split
+ 225 LOAD_CONST             ','
+ 228 CALL_FUNCTION          1
+ 231 LOAD_CONST             1
+ 234 BINARY_SUBSCR
+ 235 BINARY_ADD
+ 236 STORE_FAST             t
+ 239 LOAD_FAST              q_hash
+ 242 LOAD_FAST              self
+ 245 LOAD_ATTR              campHash
+ 248 LOAD_FAST              t
+ 251 LOAD_FAST              response
+ 254 LOAD_ATTR              split
+ 257 LOAD_CONST             ','
+ 260 CALL_FUNCTION          1
+ 263 LOAD_CONST             0
+ 266 BINARY_SUBSCR
+ 267 CALL_FUNCTION          2
+ 270 LOAD_FAST              response
+ 273 LOAD_ATTR              split
+ 276 LOAD_CONST             ','
+ 279 CALL_FUNCTION          1
+ 282 LOAD_CONST             1
+ 285 BINARY_SUBSCR
+ 286 LOAD_FAST              response
+ 289 LOAD_ATTR              split
+ 292 LOAD_CONST             ','
+ 295 CALL_FUNCTION          1
+ 298 LOAD_CONST             2
+ 301 BINARY_SUBSCR
+ 302 LOAD_FAST              response
+ 305 LOAD_ATTR              split
+ 308 LOAD_CONST             ','
+ 311 CALL_FUNCTION          1
+ 314 LOAD_CONST             3
+ 317 BINARY_SUBSCR
+ 318 BUILD_TUPLE            5
+ 321 LOAD_DEREF             mody
+ 324 STORE_ATTR             SERVER_RES
+ 327 LOAD_DEREF             MyServerGO
+ 330 CALL_FUNCTION          0
+ 333 LOAD_ATTR              run
+ 336 CALL_FUNCTION          0
+ 339 POP_TOP
+ 340 LOAD_CONST             None
+ 343 RETURN_VALUE
+
+  # serv_query(argc=1) varnames=('serv_url', 'err')
+     0 SETUP_EXCEPT           to 42
+     3 LOAD_DEREF             urlopen
+     6 LOAD_CONST             'url'
+     9 LOAD_CONST             'http://'
+    12 LOAD_FAST              serv_url
+    15 BINARY_ADD
+    16 LOAD_CONST             '/check2/'
+    19 BINARY_ADD
+    20 LOAD_CONST             'data'
+    23 LOAD_DEREF             param
+    26 LOAD_CONST             'timeout'
+    29 LOAD_CONST             10
+    32 CALL_FUNCTION          768
+    35 LOAD_ATTR              read
+    38 CALL_FUNCTION          0
+    41 RETURN_VALUE
+    42 DUP_TOP
+    43 LOAD_GLOBAL            Exception
+    46 COMPARE_OP             10
+    49 POP_JUMP_IF_FALSE      to 61
+    52 POP_TOP
+    53 STORE_FAST             err
+    56 POP_TOP
+    57 LOAD_CONST             None
+    60 RETURN_VALUE
+    61 END_FINALLY
+    62 LOAD_CONST             None
+    65 RETURN_VALUE

@@ -1,0 +1,3 @@
+# __init__(argc=2) varnames=('self', 'stat')
+   0 LOAD_CONST             None
+   3 RETURN_VALUE

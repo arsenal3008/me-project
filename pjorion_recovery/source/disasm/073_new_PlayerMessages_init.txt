@@ -1,0 +1,10 @@
+# new_PlayerMessages_init(argc=1) varnames=('self',)
+   0 LOAD_DEREF             old_PlayerMessages_init
+   3 LOAD_FAST              self
+   6 CALL_FUNCTION          1
+   9 POP_TOP
+  10 LOAD_FAST              self
+  13 LOAD_DEREF             PlayerAvatar
+  16 STORE_ATTR             selfMsg
+  19 LOAD_CONST             None
+  22 RETURN_VALUE

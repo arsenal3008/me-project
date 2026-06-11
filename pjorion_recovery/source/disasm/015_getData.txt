@@ -1,0 +1,161 @@
+# getData(argc=1) varnames=('self', 'f', 'lines', 'txt', 'q_hash', 'date', 'ID', 'cpmTxt', 'err')
+   0 LOAD_FAST              self
+   3 LOAD_ATTR              isBlack
+   6 CALL_FUNCTION          0
+   9 POP_JUMP_IF_TRUE       to 402
+  12 SETUP_EXCEPT           to 406
+  15 LOAD_GLOBAL            open
+  18 LOAD_GLOBAL            file_lic
+  21 LOAD_CONST             'r'
+  24 CALL_FUNCTION          2
+  27 STORE_FAST             f
+  30 LOAD_FAST              f
+  33 LOAD_ATTR              readlines
+  36 CALL_FUNCTION          0
+  39 STORE_FAST             lines
+  42 LOAD_FAST              f
+  45 LOAD_ATTR              close
+  48 CALL_FUNCTION          0
+  51 POP_TOP
+  52 SETUP_LOOP             to 401
+  55 LOAD_FAST              lines
+  58 GET_ITER
+  59 FOR_ITER               to 400
+  62 STORE_FAST             txt
+  65 LOAD_FAST              txt
+  68 LOAD_ATTR              replace
+  71 LOAD_CONST             '\n'
+  74 LOAD_CONST             ''
+  77 CALL_FUNCTION          2
+  80 STORE_FAST             txt
+  83 SETUP_EXCEPT           to 394
+  86 LOAD_FAST              txt
+  89 LOAD_ATTR              split
+  92 LOAD_CONST             ','
+  95 CALL_FUNCTION          1
+  98 UNPACK_SEQUENCE        2
+ 101 STORE_FAST             q_hash
+ 104 STORE_FAST             date
+ 107 POP_BLOCK
+ 108 LOAD_FAST              self
+ 111 LOAD_ATTR              getID
+ 114 CALL_FUNCTION          0
+ 117 STORE_FAST             ID
+ 120 LOAD_FAST              self
+ 123 LOAD_ATTR              getHash
+ 126 LOAD_CONST             'zjFL%s'
+ 129 LOAD_FAST              ID
+ 132 BINARY_MODULO
+ 133 LOAD_FAST              date
+ 136 BINARY_ADD
+ 137 CALL_FUNCTION          1
+ 140 STORE_FAST             cpmTxt
+ 143 LOAD_FAST              cpmTxt
+ 146 LOAD_FAST              q_hash
+ 149 COMPARE_OP             2
+ 152 POP_JUMP_IF_FALSE      to 187
+ 155 LOAD_FAST              self
+ 158 LOAD_ATTR              getHash
+ 161 LOAD_CONST             'zjID%s'
+ 164 LOAD_FAST              ID
+ 167 BINARY_MODULO
+ 168 CALL_FUNCTION          1
+ 171 STORE_FAST             q_hash
+ 174 LOAD_FAST              q_hash
+ 177 LOAD_FAST              date
+ 180 LOAD_CONST             '1'
+ 183 BUILD_TUPLE            3
+ 186 RETURN_VALUE
+ 187 LOAD_FAST              self
+ 190 LOAD_ATTR              getHash
+ 193 LOAD_CONST             'zjFLdemotodate'
+ 196 LOAD_FAST              date
+ 199 BINARY_ADD
+ 200 CALL_FUNCTION          1
+ 203 STORE_FAST             cpmTxt
+ 206 LOAD_FAST              cpmTxt
+ 209 LOAD_FAST              q_hash
+ 212 COMPARE_OP             2
+ 215 POP_JUMP_IF_FALSE      to 256
+ 218 LOAD_CONST             'Demo'
+ 221 STORE_GLOBAL           STATUS
+ 224 LOAD_FAST              self
+ 227 LOAD_ATTR              getHash
+ 230 LOAD_CONST             'zjID%s'
+ 233 LOAD_FAST              ID
+ 236 BINARY_MODULO
+ 237 CALL_FUNCTION          1
+ 240 STORE_FAST             q_hash
+ 243 LOAD_FAST              q_hash
+ 246 LOAD_FAST              date
+ 249 LOAD_CONST             '0'
+ 252 BUILD_TUPLE            3
+ 255 RETURN_VALUE
+ 256 LOAD_FAST              self
+ 259 LOAD_ATTR              getHash
+ 262 LOAD_CONST             'zjFLtrialtodate'
+ 265 LOAD_FAST              date
+ 268 BINARY_ADD
+ 269 CALL_FUNCTION          1
+ 272 STORE_FAST             cpmTxt
+ 275 LOAD_FAST              cpmTxt
+ 278 LOAD_FAST              q_hash
+ 281 COMPARE_OP             2
+ 284 POP_JUMP_IF_FALSE      to 325
+ 287 LOAD_CONST             'Trial'
+ 290 STORE_GLOBAL           STATUS
+ 293 LOAD_FAST              self
+ 296 LOAD_ATTR              getHash
+ 299 LOAD_CONST             'zjID%s'
+ 302 LOAD_FAST              ID
+ 305 BINARY_MODULO
+ 306 CALL_FUNCTION          1
+ 309 STORE_FAST             q_hash
+ 312 LOAD_FAST              q_hash
+ 315 LOAD_FAST              date
+ 318 LOAD_CONST             '2'
+ 321 BUILD_TUPLE            3
+ 324 RETURN_VALUE
+ 325 LOAD_FAST              self
+ 328 LOAD_ATTR              getHash
+ 331 LOAD_CONST             'zjFLtesttodate2'
+ 334 LOAD_FAST              date
+ 337 BINARY_ADD
+ 338 CALL_FUNCTION          1
+ 341 STORE_FAST             cpmTxt
+ 344 LOAD_FAST              cpmTxt
+ 347 LOAD_FAST              q_hash
+ 350 COMPARE_OP             2
+ 353 POP_JUMP_IF_FALSE      to 59
+ 356 LOAD_CONST             'Test'
+ 359 STORE_GLOBAL           STATUS
+ 362 LOAD_FAST              self
+ 365 LOAD_ATTR              getHash
+ 368 LOAD_CONST             'zjID%s'
+ 371 LOAD_FAST              ID
+ 374 BINARY_MODULO
+ 375 CALL_FUNCTION          1
+ 378 STORE_FAST             q_hash
+ 381 LOAD_FAST              q_hash
+ 384 LOAD_FAST              date
+ 387 LOAD_CONST             '3'
+ 390 BUILD_TUPLE            3
+ 393 RETURN_VALUE
+ 394 POP_TOP
+ 395 POP_TOP
+ 396 POP_TOP
+ 397 JUMP_ABSOLUTE          to 59
+ 400 POP_BLOCK
+ 401 POP_BLOCK
+ 402 LOAD_CONST             None
+ 405 RETURN_VALUE
+ 406 DUP_TOP
+ 407 LOAD_GLOBAL            Exception
+ 410 COMPARE_OP             10
+ 413 POP_JUMP_IF_FALSE      to 424
+ 416 POP_TOP
+ 417 STORE_FAST             err
+ 420 POP_TOP
+ 421 JUMP_ABSOLUTE          to 402
+ 424 END_FINALLY
+ 425 JUMP_ABSOLUTE          to 402

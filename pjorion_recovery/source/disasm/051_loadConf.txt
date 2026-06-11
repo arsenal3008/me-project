@@ -1,0 +1,327 @@
+# loadConf(argc=1) varnames=('mody', 'colorConvert')
+   0 LOAD_CONST             'KEY_NUMPAD1'
+   3 LOAD_FAST              mody
+   6 STORE_ATTR             toggleKey
+   9 LOAD_GLOBAL            True
+  12 LOAD_FAST              mody
+  15 STORE_ATTR             autoLoadConf
+  18 LOAD_CONST             'KEY_LALT'
+  21 LOAD_FAST              mody
+  24 STORE_ATTR             altKey
+  27 LOAD_CONST             10
+  30 LOAD_FAST              mody
+  33 STORE_ATTR             distanceClose
+  36 LOAD_CONST             1000
+  39 LOAD_FAST              mody
+  42 STORE_ATTR             distanceFar
+  45 LOAD_GLOBAL            False
+  48 JUMP_IF_FALSE_OR_POP   to 57
+  51 LOAD_DEREF             isFull
+  54 CALL_FUNCTION          0
+  57 LOAD_FAST              mody
+  60 STORE_ATTR             viewAngleEnable
+  63 LOAD_CONST             0.3
+  66 LOAD_FAST              mody
+  69 STORE_ATTR             viewAngle
+  72 LOAD_GLOBAL            True
+  75 JUMP_IF_FALSE_OR_POP   to 84
+  78 LOAD_DEREF             isFull
+  81 CALL_FUNCTION          0
+  84 LOAD_FAST              mody
+  87 STORE_ATTR             forObstacleOnlyEnemies
+  90 LOAD_GLOBAL            True
+  93 LOAD_FAST              mody
+  96 STORE_ATTR             freeAttackMarker
+  99 LOAD_CONST             (255, 0, 0, 100)
+ 102 LOAD_FAST              mody
+ 105 STORE_ATTR             enemyRentClr
+ 108 LOAD_CONST             (255, 0, 0, 255)
+ 111 LOAD_FAST              mody
+ 114 STORE_ATTR             enemyHighClr
+ 117 LOAD_CONST             (0, 255, 110, 255)
+ 120 LOAD_FAST              mody
+ 123 STORE_ATTR             allyHighClr
+ 126 LOAD_CONST             (255, 0, 255, 255)
+ 129 LOAD_FAST              mody
+ 132 STORE_ATTR             attackClr
+ 135 LOAD_GLOBAL            ResMgr
+ 138 LOAD_ATTR              purge
+ 141 LOAD_FAST              mody
+ 144 LOAD_ATTR              PATH_xml
+ 147 LOAD_CONST             -1
+ 150 SLICE+2
+ 151 LOAD_GLOBAL            True
+ 154 CALL_FUNCTION          2
+ 157 POP_TOP
+ 158 LOAD_GLOBAL            ResMgr
+ 161 LOAD_ATTR              openSection
+ 164 LOAD_FAST              mody
+ 167 LOAD_ATTR              FILE_xml
+ 170 CALL_FUNCTION          1
+ 173 LOAD_FAST              mody
+ 176 STORE_ATTR             config
+ 179 LOAD_FAST              mody
+ 182 LOAD_ATTR              config
+ 185 LOAD_CONST             None
+ 188 COMPARE_OP             3
+ 191 POP_JUMP_IF_FALSE      to 814
+ 194 LOAD_FAST              mody
+ 197 LOAD_ATTR              configOnce
+ 200 POP_JUMP_IF_FALSE      to 329
+ 203 LOAD_FAST              mody
+ 206 LOAD_ATTR              config
+ 209 LOAD_ATTR              readBool
+ 212 LOAD_CONST             'modEnable'
+ 215 LOAD_FAST              mody
+ 218 LOAD_ATTR              modEnable
+ 221 CALL_FUNCTION          2
+ 224 LOAD_FAST              mody
+ 227 STORE_ATTR             modEnable
+ 230 LOAD_FAST              mody
+ 233 LOAD_ATTR              config
+ 236 LOAD_ATTR              readBool
+ 239 LOAD_CONST             'onLineActivated'
+ 242 LOAD_FAST              mody
+ 245 LOAD_ATTR              onLineActivated
+ 248 CALL_FUNCTION          2
+ 251 LOAD_FAST              mody
+ 254 STORE_ATTR             onLineActivated
+ 257 LOAD_FAST              mody
+ 260 LOAD_ATTR              config
+ 263 LOAD_ATTR              readBool
+ 266 LOAD_CONST             'interactivSettings'
+ 269 LOAD_FAST              mody
+ 272 LOAD_ATTR              interactivSettings
+ 275 CALL_FUNCTION          2
+ 278 JUMP_IF_FALSE_OR_POP   to 287
+ 281 LOAD_DEREF             isFull
+ 284 CALL_FUNCTION          0
+ 287 LOAD_FAST              mody
+ 290 STORE_ATTR             interactivSettings
+ 293 LOAD_FAST              mody
+ 296 LOAD_ATTR              config
+ 299 LOAD_ATTR              readBool
+ 302 LOAD_CONST             'sniperOnly'
+ 305 LOAD_FAST              mody
+ 308 LOAD_ATTR              sniperOnly
+ 311 CALL_FUNCTION          2
+ 314 LOAD_FAST              mody
+ 317 STORE_ATTR             sniperOnly
+ 320 LOAD_GLOBAL            False
+ 323 LOAD_FAST              mody
+ 326 STORE_ATTR             configOnce
+ 329 LOAD_FAST              mody
+ 332 LOAD_ATTR              config
+ 335 LOAD_ATTR              readString
+ 338 LOAD_CONST             'toggleKey'
+ 341 LOAD_FAST              mody
+ 344 LOAD_ATTR              toggleKey
+ 347 CALL_FUNCTION          2
+ 350 LOAD_FAST              mody
+ 353 STORE_ATTR             toggleKey
+ 356 LOAD_FAST              mody
+ 359 LOAD_ATTR              config
+ 362 LOAD_ATTR              readBool
+ 365 LOAD_CONST             'autoLoadConf'
+ 368 LOAD_FAST              mody
+ 371 LOAD_ATTR              autoLoadConf
+ 374 CALL_FUNCTION          2
+ 377 LOAD_FAST              mody
+ 380 STORE_ATTR             autoLoadConf
+ 383 LOAD_FAST              mody
+ 386 LOAD_ATTR              config
+ 389 LOAD_ATTR              readString
+ 392 LOAD_CONST             'altKey'
+ 395 LOAD_FAST              mody
+ 398 LOAD_ATTR              altKey
+ 401 CALL_FUNCTION          2
+ 404 LOAD_FAST              mody
+ 407 STORE_ATTR             altKey
+ 410 LOAD_FAST              mody
+ 413 LOAD_ATTR              config
+ 416 LOAD_ATTR              readFloat
+ 419 LOAD_CONST             'distanceClose'
+ 422 LOAD_FAST              mody
+ 425 LOAD_ATTR              distanceClose
+ 428 CALL_FUNCTION          2
+ 431 LOAD_FAST              mody
+ 434 STORE_ATTR             distanceClose
+ 437 LOAD_FAST              mody
+ 440 LOAD_ATTR              config
+ 443 LOAD_ATTR              readFloat
+ 446 LOAD_CONST             'distanceFar'
+ 449 LOAD_FAST              mody
+ 452 LOAD_ATTR              distanceFar
+ 455 CALL_FUNCTION          2
+ 458 LOAD_FAST              mody
+ 461 STORE_ATTR             distanceFar
+ 464 LOAD_FAST              mody
+ 467 LOAD_ATTR              config
+ 470 LOAD_ATTR              readBool
+ 473 LOAD_CONST             'viewAngleEnable'
+ 476 LOAD_FAST              mody
+ 479 LOAD_ATTR              viewAngleEnable
+ 482 CALL_FUNCTION          2
+ 485 JUMP_IF_FALSE_OR_POP   to 494
+ 488 LOAD_DEREF             isFull
+ 491 CALL_FUNCTION          0
+ 494 LOAD_FAST              mody
+ 497 STORE_ATTR             viewAngleEnable
+ 500 LOAD_FAST              mody
+ 503 LOAD_ATTR              config
+ 506 LOAD_ATTR              readFloat
+ 509 LOAD_CONST             'viewAngle'
+ 512 LOAD_FAST              mody
+ 515 LOAD_ATTR              viewAngle
+ 518 CALL_FUNCTION          2
+ 521 LOAD_FAST              mody
+ 524 STORE_ATTR             viewAngle
+ 527 LOAD_FAST              mody
+ 530 LOAD_ATTR              config
+ 533 LOAD_ATTR              readBool
+ 536 LOAD_CONST             'forObstacleOnlyEnemies'
+ 539 LOAD_FAST              mody
+ 542 LOAD_ATTR              forObstacleOnlyEnemies
+ 545 CALL_FUNCTION          2
+ 548 JUMP_IF_FALSE_OR_POP   to 557
+ 551 LOAD_DEREF             isFull
+ 554 CALL_FUNCTION          0
+ 557 LOAD_FAST              mody
+ 560 STORE_ATTR             forObstacleOnlyEnemies
+ 563 LOAD_FAST              mody
+ 566 LOAD_ATTR              config
+ 569 LOAD_ATTR              readBool
+ 572 LOAD_CONST             'freeAttackMarker'
+ 575 LOAD_FAST              mody
+ 578 LOAD_ATTR              freeAttackMarker
+ 581 CALL_FUNCTION          2
+ 584 LOAD_FAST              mody
+ 587 STORE_ATTR             freeAttackMarker
+ 590 LOAD_FAST              mody
+ 593 LOAD_ATTR              config
+ 596 LOAD_ATTR              readVector4
+ 599 LOAD_CONST             'enemyRentClr'
+ 602 LOAD_FAST              mody
+ 605 LOAD_ATTR              enemyRentClr
+ 608 CALL_FUNCTION          2
+ 611 LOAD_FAST              mody
+ 614 STORE_ATTR             enemyRentClr
+ 617 LOAD_FAST              mody
+ 620 LOAD_ATTR              config
+ 623 LOAD_ATTR              readVector4
+ 626 LOAD_CONST             'enemyHighClr'
+ 629 LOAD_FAST              mody
+ 632 LOAD_ATTR              enemyHighClr
+ 635 CALL_FUNCTION          2
+ 638 LOAD_FAST              mody
+ 641 STORE_ATTR             enemyHighClr
+ 644 LOAD_FAST              mody
+ 647 LOAD_ATTR              config
+ 650 LOAD_ATTR              readVector4
+ 653 LOAD_CONST             'allyHighClr'
+ 656 LOAD_FAST              mody
+ 659 LOAD_ATTR              allyHighClr
+ 662 CALL_FUNCTION          2
+ 665 LOAD_FAST              mody
+ 668 STORE_ATTR             allyHighClr
+ 671 LOAD_FAST              mody
+ 674 LOAD_ATTR              config
+ 677 LOAD_ATTR              readVector4
+ 680 LOAD_CONST             'attackClr'
+ 683 LOAD_FAST              mody
+ 686 LOAD_ATTR              attackClr
+ 689 CALL_FUNCTION          2
+ 692 LOAD_FAST              mody
+ 695 STORE_ATTR             attackClr
+ 698 LOAD_DEREF             SystemMessages
+ 701 LOAD_ATTR              SM_TYPE
+ 704 LOAD_ATTR              GameGreeting
+ 707 LOAD_FAST              mody
+ 710 STORE_ATTR             SM_TYPE
+ 713 LOAD_CLOSURE           Math
+ 716 BUILD_TUPLE            1
+ 719 LOAD_CONST             <code colorConvert>
+ 722 MAKE_CLOSURE           0
+ 725 STORE_FAST             colorConvert
+ 728 LOAD_FAST              colorConvert
+ 731 LOAD_FAST              mody
+ 734 LOAD_ATTR              enemyRentClr
+ 737 CALL_FUNCTION          1
+ 740 LOAD_FAST              mody
+ 743 STORE_ATTR             enemyRentClr
+ 746 LOAD_FAST              colorConvert
+ 749 LOAD_FAST              mody
+ 752 LOAD_ATTR              enemyHighClr
+ 755 CALL_FUNCTION          1
+ 758 LOAD_FAST              mody
+ 761 STORE_ATTR             enemyHighClr
+ 764 LOAD_FAST              colorConvert
+ 767 LOAD_FAST              mody
+ 770 LOAD_ATTR              allyHighClr
+ 773 CALL_FUNCTION          1
+ 776 LOAD_FAST              mody
+ 779 STORE_ATTR             allyHighClr
+ 782 LOAD_FAST              colorConvert
+ 785 LOAD_FAST              mody
+ 788 LOAD_ATTR              attackClr
+ 791 CALL_FUNCTION          1
+ 794 LOAD_FAST              mody
+ 797 STORE_ATTR             attackClr
+ 800 LOAD_FAST              mody
+ 803 LOAD_ATTR              SwitchEdgeColor
+ 806 CALL_FUNCTION          0
+ 809 POP_TOP
+ 810 LOAD_CONST             None
+ 813 RETURN_VALUE
+ 814 LOAD_DEREF             SystemMessages
+ 817 LOAD_ATTR              SM_TYPE
+ 820 LOAD_ATTR              Warning
+ 823 LOAD_FAST              mody
+ 826 STORE_ATTR             SM_TYPE
+ 829 JUMP_ABSOLUTE          to 713
+
+  # colorConvert(argc=1) varnames=('color', 'n', 'c')
+     0 LOAD_DEREF             Math
+     3 LOAD_ATTR              Vector4
+     6 LOAD_FAST              color
+     9 CALL_FUNCTION          1
+    12 STORE_FAST             color
+    15 LOAD_CONST             0
+    18 STORE_FAST             n
+    21 SETUP_LOOP             to 112
+    24 LOAD_FAST              color
+    27 GET_ITER
+    28 FOR_ITER               to 111
+    31 STORE_FAST             c
+    34 LOAD_FAST              c
+    37 LOAD_CONST             0
+    40 COMPARE_OP             0
+    43 POP_JUMP_IF_FALSE      to 87
+    46 LOAD_CONST             0
+    49 LOAD_FAST              color
+    52 LOAD_FAST              n
+    55 STORE_SUBSCR
+    56 LOAD_FAST              color
+    59 LOAD_FAST              n
+    62 BINARY_SUBSCR
+    63 LOAD_CONST             255.0
+    66 BINARY_DIVIDE
+    67 LOAD_FAST              color
+    70 LOAD_FAST              n
+    73 STORE_SUBSCR
+    74 LOAD_FAST              n
+    77 LOAD_CONST             1
+    80 INPLACE_ADD
+    81 STORE_FAST             n
+    84 JUMP_ABSOLUTE          to 28
+    87 LOAD_FAST              c
+    90 LOAD_CONST             255
+    93 COMPARE_OP             4
+    96 POP_JUMP_IF_FALSE      to 105
+    99 LOAD_CONST             255
+   102 JUMP_ABSOLUTE          to 49
+   105 LOAD_FAST              c
+   108 JUMP_ABSOLUTE          to 49
+   111 POP_BLOCK
+   112 LOAD_FAST              color
+   115 RETURN_VALUE
