@@ -1,0 +1,80 @@
+'<pjorion_protected>'  argc=0 nlocals=1 consts=2 names=0
+  '\x0f\x00\x03\x0f\x11\x1a\x19'  argc=1 nlocals=25 consts=60 names=3
+    '\n\x0f\x07\x12\x07\x1f\x1d\x0f\x13'  argc=3 nlocals=84 consts=121 names=4
+    '93b?sdw-T1g%}#bll&o`'  argc=0 nlocals=0 consts=25 names=25
+      'L>*y'  argc=0 nlocals=7 consts=20 names=28
+        'l&*Wm#,amu'  argc=0 nlocals=1 consts=3 names=6
+        'q0Gp/a'  argc=0 nlocals=0 consts=2 names=1
+        '\x19\t^K1c$dpj\x0f,nc'  argc=0 nlocals=0 consts=10 names=16
+          'GTh-77Z\x0f'  argc=1 nlocals=2 consts=26 names=33
+          '/=0(52:ds`ra0(5o:ds<s'  argc=3 nlocals=7 consts=16 names=7
+          'od%?x/q\x13gvm'  argc=1 nlocals=1 consts=1 names=6
+          "t1i'\x13nkm"  argc=1 nlocals=2 consts=33 names=35
+            'kd<,1Bwk{;z\x7f'  argc=1 nlocals=3 consts=5 names=1
+          'x|1w7[?1r'  argc=1 nlocals=1 consts=2 names=3
+          'h/hdzW?1#'  argc=1 nlocals=1 consts=1 names=1
+          'h,ccEn:6<}'  argc=1 nlocals=1 consts=7 names=7
+          '\r|*| eD4\x7f`\x1dd/g1'  argc=1 nlocals=5 consts=5 names=13
+          ' mh3`Io|\x0e;0vl7n'  argc=1 nlocals=4 consts=23 names=26
+            "054GCg7bch=17qbf0Jfu7?-kEi-oid,#\x1cplf'g`@=$*wc"  argc=5 nlocals=5 consts=4 names=5
+            '\x0eq\x10`"nhs\x19D'  argc=0 nlocals=0 consts=5 names=7
+              '9d7@j0m'  argc=2 nlocals=3 consts=1 names=4
+              'njeu\x0b?k+'  argc=3 nlocals=4 consts=1 names=4
+              '7;\x7fQL'  argc=1 nlocals=5 consts=5 names=6
+              "2p5s'"  argc=1 nlocals=6 consts=18 names=8
+              '1xe'  argc=1 nlocals=2 consts=4 names=2
+            '\x03njwmwN6& ;'  argc=0 nlocals=0 consts=6 names=8
+              '$;lC"#i'  argc=2 nlocals=3 consts=1 names=4
+              'n"fq\x18"vp'  argc=3 nlocals=4 consts=1 names=4
+              'o&7LO'  argc=1 nlocals=5 consts=5 names=6
+              'tm51r'  argc=1 nlocals=9 consts=23 names=10
+                '~mj5\x1c!t;wr'  argc=1 nlocals=2 consts=7 names=3
+              '16k'  argc=3 nlocals=4 consts=12 names=6
+            'Td d0{&'  argc=0 nlocals=0 consts=11 names=13
+              'TZ7f*u\x0fG'  argc=2 nlocals=2 consts=1 names=4
+              '$&|\x18`xe'  argc=2 nlocals=3 consts=1 names=4
+              ' d3}C`#`'  argc=3 nlocals=3 consts=1 names=1
+              'f&7\x16l"l'  argc=1 nlocals=1 consts=1 names=2
+              '9&uL\x14'  argc=1 nlocals=5 consts=5 names=6
+              'bn$\\?|"'  argc=1 nlocals=9 consts=21 names=11
+              'l;7\x14lqmUq.n'  argc=1 nlocals=2 consts=5 names=5
+              'i"0\x12d3mkkn'  argc=1 nlocals=1 consts=1 names=2
+              '*rG<?kf'  argc=1 nlocals=3 consts=1 names=6
+              'b61\x1ca1kn'  argc=1 nlocals=1 consts=1 names=2
+              '07i$tx'  argc=1 nlocals=3 consts=10 names=4
+            'b0J3 gpol'  argc=1 nlocals=5 consts=3 names=18
+            '\x11-l2ruq {'  argc=0 nlocals=0 consts=5 names=6
+              '\x1c\x1cdf7qT\x0f'  argc=2 nlocals=2 consts=3 names=11
+              '\x7fh\x7f@106'  argc=2 nlocals=3 consts=1 names=4
+              '`v1iq\x7f7n0\x1cr}$qae9~'  argc=2 nlocals=4 consts=16 names=9
+              '">dd:ub=~G/?dl'  argc=1 nlocals=2 consts=5 names=3
+            'k&vR\x1cgz<:]l&vR gh+/jq&'  argc=1 nlocals=1 consts=7 names=13
+              '2w?u:'  argc=0 nlocals=1 consts=10 names=11
+              'i?w.'  argc=0 nlocals=16 consts=101 names=47
+          '),jc\x1d,e~a`'  argc=1 nlocals=15 consts=28 names=15
+            '0`z\x0f\x13mja&z\x13`~#"fnk\x1ca0ly'  argc=1 nlocals=1 consts=1 names=1
+            '?eaNi\x7f5'  argc=1 nlocals=1 consts=1 names=6
+            "z}3?w&@'lh"  argc=2 nlocals=2 consts=1 names=8
+            'O,d4[bo7z?g'  argc=0 nlocals=5 consts=12 names=31
+            "be^`+h 25Sdgd`'"  argc=1 nlocals=3 consts=1 names=2
+            'f&4\x0fk\x7fds*[a061t'  argc=2 nlocals=2 consts=1 names=0
+            'c;vZx$,3^q~+`i'  argc=3 nlocals=3 consts=1 names=0
+            'vh)^q11$m\x7f^b=tv'  argc=3 nlocals=4 consts=1 names=9
+            'v`\x7f^7?1j5\x7fZi}s'  argc=3 nlocals=4 consts=1 names=5
+            'e;r\x1c|bI*o8g7b+lBq&z1\x7f7j-'  argc=3 nlocals=5 consts=3 names=13
+            'em4^iw\x0bl98ga$iyW3`,1\x7fa,o'  argc=4 nlocals=5 consts=3 names=10
+            '_5y\x15;+hkinN9h4\x1f-fd`'  argc=3 nlocals=14 consts=8 names=20
+            '\x045lG!-yjfm&'  argc=3 nlocals=8 consts=5 names=12
+            '$dqIl|l<&\x11-'  argc=0 nlocals=0 consts=2 names=3
+            '9}u\x19v\x10z6ll'  argc=1 nlocals=1 consts=1 names=5
+            '9&7\x19k]gdxm,'  argc=1 nlocals=1 consts=1 names=3
+            '9}u\x19v\x0fb5h'  argc=1 nlocals=1 consts=2 names=5
+            '9}u\x19v\x05y*hf:tx'  argc=1 nlocals=1 consts=2 names=5
+            'od\x7f\x190\x08lk*odd'  argc=1 nlocals=2 consts=1 names=4
+            "9dqB~N90*j2dIb{}\x15-&e'"  argc=1 nlocals=1 consts=1 names=0
+            "Anj'K1k6\x0fwbq"  argc=0 nlocals=3 consts=6 names=13
+            '0&oT^0$lw|\x1c"l\x7fm&'  argc=1 nlocals=1 consts=1 names=10
+            '0`z\x0f\x1cr\x7fw3J?qy<&'  argc=1 nlocals=1 consts=1 names=7
+            "v5z\x1c\x0e/`q`yP1c'2&Jm|Tq>d7"  argc=4 nlocals=4 consts=8 names=20
+
+TOTAL code objects: 78
